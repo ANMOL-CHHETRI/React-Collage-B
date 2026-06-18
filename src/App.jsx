@@ -1,9 +1,10 @@
+import { Router } from "react-router";
 import "./App.css";
 
 function App() {
   return (
     <>
-      <h1>let discuss about the our e-commerce-project</h1>
+      <Router/>
     </>
   );
 }
