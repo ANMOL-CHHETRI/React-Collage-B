@@ -1,7 +1,9 @@
 const Header = () => {
   return (
-    <div><h1>Header</h1></div>
-  )
-}
+   <>
+   <h4>navbar content</h4>
+   </>
+  );
+};
 
 export default Header;
