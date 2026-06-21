@@ -1,0 +1,55 @@
+import { useState } from "react"
+import { Link } from "react-router"
+import { useAuth } from "../context/AuthContext"
+
+const UserLoginPage = () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const { loginUser, error, setError } = useAuth()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    loginUser(email, password)
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="mx-auto w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+          <p className="text-gray-500 mt-2">Sign in to your account</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" placeholder="user@test.com" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" placeholder="••••••" />
+          </div>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          <p className="text-xs text-gray-400 text-center -mt-3">Any email and password will sign you in</p>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <input type="checkbox" className="rounded border-gray-300" />
+              Remember me
+            </label>
+            <a href="#" className="text-sm text-amber-600 hover:underline">Forgot password?</a>
+          </div>
+          <button type="submit" className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition cursor-pointer">Sign In</button>
+        </form>
+        <p className="text-center text-sm text-gray-500 mt-6">
+          <Link to="/" className="text-amber-600 font-medium hover:underline">Back to store</Link>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default UserLoginPage
