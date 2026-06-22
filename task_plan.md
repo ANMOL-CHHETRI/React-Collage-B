@@ -31,19 +31,24 @@ React + Vite frontend for an ecommerce platform with admin and user portals.
 - [x] tools/ scripts created (build.py, check_build.py)
 - [x] GitHub Actions deploy workflow created
 
-### Phase 5: Enhancements (Pending)
+### Phase 5: Enhancements
 - [ ] GitHub Pages deployment setup
 - [ ] REST API integration (future)
-- [ ] Product detail page
-- [ ] Contact page
-- [ ] Product detail page
-- [ ] Cart page
-- [ ] Checkout flow
-- [ ] Backend API integration
-- [ ] Authentication logic
+- [x] Product detail page
+- [x] Contact page
+- [x] Cart page
+- [x] Checkout flow
+- [ ] Backend API integration (future)
+- [x] Authentication logic
+- [x] CREDENTIALS.md created
+- [x] Per-user cart isolation
+- [x] Image upload in CRUD form
+- [x] Interactive Nepal map
+- [x] Profile editing page
+- [x] Admin/User dashboard separation
 
 ## Checklist
-- [ ] All pages render without errors
-- [ ] Tailwind classes compile
-- [ ] Build passes
-- [ ] Routes are accessible
+- [x] All pages render without errors
+- [x] Tailwind classes compile
+- [x] Build passes
+- [x] Routes are accessible

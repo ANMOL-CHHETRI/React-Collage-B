@@ -1,209 +1,509 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
-import NepalDeliveryMap from "../components/NepalDeliveryMap"
+import { useCart } from "../context/CartContext"
 
-const orders = [
-  { id: "#ORD-NP-001", date: "Jun 15, 2026", items: 3, total: "Rs. 3,650", status: "Delivered" },
-  { id: "#ORD-NP-002", date: "Jun 10, 2026", items: 1, total: "Rs. 9,500", status: "Shipped" },
-  { id: "#ORD-NP-003", date: "Jun 05, 2026", items: 2, total: "Rs. 2,400", status: "Processing" },
-  { id: "#ORD-NP-004", date: "May 28, 2026", items: 1, total: "Rs. 1,500", status: "Delivered" },
-]
-
-const wishlist = [
-  { name: "Premium Dhaka Topi (Handwoven)", price: "Rs. 1,200", image: "https://images.unsplash.com/photo-1626285861696-9f0be5a49c6d?w=100&h=100&fit=crop" },
-  { name: "Mt. Everest Arabica Coffee Beans", price: "Rs. 1,100", image: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=100&h=100&fit=crop" },
+const initialOrders = [
+  {
+    id: "#ORD-NP-92841",
+    storeName: "Univercell Mobile Zone",
+    status: "Completed",
+    date: "Jun 15, 2026",
+    items: [
+      {
+        name: "Vivo V23E 4G/5G / Vivo Y75 4G (Same Size) Transparent Bumper Cover Case - Non-yellowing Soft TPU",
+        attributes: "Compatibility By Model: Vivo V23e, Color Family: Black",
+        price: 223,
+        qty: 1,
+        image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=120&auto=format&fit=crop&q=80"
+      }
+    ]
+  },
+  {
+    id: "#ORD-NP-81724",
+    storeName: "Brothers Empire",
+    status: "Completed",
+    date: "Jun 10, 2026",
+    items: [
+      {
+        name: "MAIBO Original Fashion Canvas Backpack College Bag Unisex Large Capacity Travel",
+        attributes: "Color Family: Black",
+        price: 1950,
+        qty: 1,
+        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=120&auto=format&fit=crop&q=80"
+      }
+    ]
+  },
+  {
+    id: "#ORD-NP-73918",
+    storeName: "Patan Craft Cooperatives",
+    status: "To Ship",
+    date: "Jun 20, 2026",
+    items: [
+      {
+        name: "Handmade Shakyamuni Buddha Statue (Gold Gilded)",
+        attributes: "Material: Copper, Finish: 24k Gold Gilded",
+        price: 18500,
+        qty: 1,
+        image: "https://images.unsplash.com/photo-1609137144814-72251bb4c004?w=120&auto=format&fit=crop&q=80"
+      }
+    ]
+  }
 ]
 
 const UserDashboard = () => {
-  const { user, logout } = useAuth()
-  const [selectedProvince, setSelectedProvince] = useState("bagmati")
-  const displayName = user?.name || "User"
+  const { user, updateProfile, changePassword } = useAuth()
+  const { addToCart, setIsCartOpen } = useCart()
+
+  const [activeSection, setActiveSection] = useState("orders")
+  const [activeTab, setActiveTab] = useState("All")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [orders, setOrders] = useState(initialOrders)
+
+  const [profileName, setProfileName] = useState(user?.name || "Sahil Adhikari")
+  const [profileEmail, setProfileEmail] = useState(user?.email || "user@test.com")
+  const [profilePhone, setProfilePhone] = useState(user?.phone || "9841234567")
+  const [profileAddress, setProfileAddress] = useState(user?.address || "New Baneshwor, Kathmandu")
+  const [profileSaved, setProfileSaved] = useState(false)
+
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [passwordMessage, setPasswordMessage] = useState({ type: "", text: "" })
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault()
+    updateProfile({
+      name: profileName,
+      email: profileEmail,
+      phone: profilePhone,
+      address: profileAddress,
+    })
+    setProfileSaved(true)
+    setTimeout(() => setProfileSaved(false), 3000)
+  }
+
+  const handleChangePassword = (e) => {
+    e.preventDefault()
+    setPasswordMessage({ type: "", text: "" })
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: "error", text: "New passwords do not match" })
+      return
+    }
+
+    const result = changePassword("user", currentPassword, newPassword)
+    if (result.success) {
+      setPasswordMessage({ type: "success", text: result.message })
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+    } else {
+      setPasswordMessage({ type: "error", text: result.message })
+    }
+  }
+
+  const handleBuyAgain = (items) => {
+    items.forEach((item) => {
+      addToCart({
+        id: item.id || Math.floor(Math.random() * 1000000),
+        name: item.name,
+        price: item.price,
+        image: item.image
+      })
+    })
+    setIsCartOpen(true)
+  }
+
+  // Filter orders based on active status tab and search query
+  const filteredOrders = orders.filter((order) => {
+    // Search filter
+    const matchesSearch = 
+      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.storeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.items.some((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+
+    // Tab filter
+    if (activeTab === "All") return matchesSearch
+    if (activeTab === "To Pay") return matchesSearch && order.status === "Pending"
+    if (activeTab === "To Ship") return matchesSearch && order.status === "To Ship"
+    if (activeTab === "To Receive") return matchesSearch && order.status === "Shipped"
+    if (activeTab === "To Review(3)") return matchesSearch && order.status === "Completed"
+
+    return matchesSearch
+  })
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md hidden md:flex flex-col">
-        <div className="p-6 border-b border-gray-100">
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <div className="w-8 h-8 bg-amber-600 rounded-lg flex items-center justify-center text-white text-sm">U</div>
-            My Account
-          </h1>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-105 flex flex-col md:flex-row transition-colors duration-300">
+      
+      {/* SIDEBAR */}
+      <aside className="w-full md:w-64 bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 p-6 flex flex-col shrink-0">
+        
+        {/* User Card */}
+        <div className="mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase">
+              {user?.name ? user.name[0] : "S"}
+            </div>
+            <div>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold block">Hello,</span>
+              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">{user?.name || "Sahil Adhikari"}</h2>
+            </div>
+          </div>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {[
-            { name: "Dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
-            { name: "Orders", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
-            { name: "Wishlist", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
-            { name: "Profile", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
-            { name: "Settings", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" },
-            { name: "CRUD Ops", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" },
-          ].map((item) =>
-            item.name === "CRUD Ops" ? (
-              <Link key={item.name} to="/dashboard/crud" className="flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-600 hover:bg-gray-100 hover:text-gray-900">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
-                </svg>
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
-            ) : (
-              <a key={item.name} href="#" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${item.name === "Dashboard" ? "bg-amber-600 text-white" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`}>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
-                </svg>
-                <span className="text-sm font-medium">{item.name}</span>
-              </a>
-            )
-          )}
+
+        {/* Sidebar Nav Tree */}
+        <nav className="space-y-6 flex-1 text-sm">
+          
+          {/* Group 1: Manage My Account */}
+          <div className="space-y-2">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Manage My Account</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+              <li>
+                <button 
+                  onClick={() => setActiveSection("profile")} 
+                  className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
+                    activeSection === "profile" 
+                      ? "text-orange-600 dark:text-orange-400 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                  }`}
+                >
+                  My Profile
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Group 2: My Orders */}
+          <div className="space-y-2">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-205">My Orders</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-orange-500" : "border-slate-105 dark:border-slate-800"}`}>
+              <li>
+                <button 
+                  onClick={() => setActiveSection("orders")} 
+                  className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
+                    activeSection === "orders" 
+                      ? "text-orange-600 dark:text-orange-400 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                  }`}
+                >
+                  My Orders
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Group 5: Sell on ShopEase */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <a href="#" className="font-bold text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 block flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Sell On ShopEase
+            </a>
+          </div>
         </nav>
-        <div className="p-4 border-t border-gray-100">
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-gray-900 transition">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+
+        {/* Back link */}
+        <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <Link to="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-2 text-xs font-semibold">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Store
           </Link>
-          <button onClick={logout} className="w-full mt-2 text-center px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 cursor-pointer">
-            Logout
-          </button>
         </div>
       </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
-        {/* Top bar */}
-        <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Welcome back, {displayName}!</h2>
-            <p className="text-sm text-gray-500">Here's what's happening with your account</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="relative p-2 text-gray-500 hover:text-gray-700 cursor-pointer">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">2</span>
-            </button>
-            <div className="w-9 h-9 bg-amber-600 rounded-full flex items-center justify-center text-white font-medium">JD</div>
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          {/* Info cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total Orders</p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Delivered</p>
-                  <p className="text-2xl font-bold text-gray-900">9</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Wishlist</p>
-                  <p className="text-2xl font-bold text-gray-900">6</p>
-                </div>
-              </div>
+      {/* MAIN CONTENT AREA */}
+      {activeSection === "orders" ? (
+        <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
+          
+          {/* Header Title */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Orders</h1>
+              <p className="text-xs text-slate-400 dark:text-slate-550 mt-0.5">Manage and track your delivery packages across Nepal.</p>
             </div>
           </div>
 
-          {/* Recent Orders */}
-          <div className="bg-white rounded-xl shadow-sm mb-8">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
-              <a href="#" className="text-sm text-amber-600 font-medium hover:underline">View All</a>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 border-b border-gray-100">
-                    <th className="px-6 py-3 font-medium">Order</th>
-                    <th className="px-6 py-3 font-medium">Date</th>
-                    <th className="px-6 py-3 font-medium">Items</th>
-                    <th className="px-6 py-3 font-medium">Total</th>
-                    <th className="px-6 py-3 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium text-gray-900">{order.id}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.date}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.items}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.total}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          order.status === "Delivered" ? "bg-green-100 text-green-700" :
-                          order.status === "Shipped" ? "bg-yellow-100 text-yellow-700" :
-                          "bg-amber-100 text-amber-700"
-                        }`}>{order.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {/* Status Navigation Tabs (Daraz Style) */}
+          <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs md:text-sm font-semibold text-slate-505 dark:text-slate-400 overflow-x-auto whitespace-nowrap scrollbar-none">
+            {["All", "To Pay", "To Ship", "To Receive", "To Review(3)"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-3 px-5 border-b-2 transition duration-200 cursor-pointer ${
+                  activeTab === tab 
+                    ? "border-orange-500 text-orange-600 dark:text-orange-400 font-bold" 
+                    : "border-transparent hover:text-slate-800 dark:hover:text-white"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
-          {/* Wishlist */}
-          <div className="bg-white rounded-xl shadow-sm mb-8">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Wishlist</h3>
-              <a href="#" className="text-sm text-amber-600 font-medium hover:underline">View All</a>
-            </div>
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {wishlist.map((item) => (
-                <div key={item.name} className="flex items-center gap-4 p-4 border border-gray-100 rounded-lg hover:shadow-sm transition">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{item.name}</h4>
-                    <p className="text-amber-600 font-semibold mt-1">{item.price}</p>
-                  </div>
-                  <button className="px-4 py-2 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition cursor-pointer">Add to Cart</button>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Delivery Map */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Delivery Coverage in Nepal</h3>
-              <p className="text-sm text-gray-500 mt-1">Check delivery time and shipping fee for your province.</p>
-            </div>
-            <NepalDeliveryMap
-              selectedProvince={selectedProvince}
-              onSelectProvince={setSelectedProvince}
-              compact
+          {/* Interactive Search Bar */}
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by store name, order ID, or product name..."
+              className="w-full bg-white dark:bg-slate-950 border border-slate-202 dark:border-slate-800 rounded-xl py-3 px-4 pl-11 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-orange-500 transition shadow-sm"
             />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Grouped Orders List */}
+          <div className="space-y-5">
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-20 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
+                <svg className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-base font-bold text-slate-750 dark:text-slate-350">No orders found</h3>
+                <p className="text-slate-400 dark:text-slate-500 text-xs mt-1">There are no orders matching your current search or tab filter.</p>
+              </div>
+            ) : (
+              filteredOrders.map((order) => (
+                <div 
+                  key={order.id} 
+                  className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition duration-200 space-y-4"
+                >
+                  {/* Store Header */}
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      {/* Store Icon */}
+                      <div className="w-7 h-7 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-center text-slate-505">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">{order.storeName}</h4>
+                        <span className="text-[10px] text-slate-400 block">{order.id} • Order Date: {order.date}</span>
+                      </div>
+                    </div>
+
+                    <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
+                      order.status === "Completed" 
+                        ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30" 
+                        : "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-450 border border-orange-100 dark:border-orange-900/30"
+                    }`}>
+                      {order.status}
+                    </span>
+                  </div>
+
+                  {/* Items in the Order */}
+                  <div className="space-y-4">
+                    {order.items.map((item, idx) => (
+                      <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-1">
+                        
+                        {/* Product Thumbnail */}
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-16 h-16 rounded-xl object-cover bg-slate-50 dark:bg-slate-900 shrink-0 border border-slate-100 dark:border-slate-800"
+                        />
+
+                        {/* Product details */}
+                        <div className="flex-1 space-y-1">
+                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-150 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
+                            {item.name}
+                          </h5>
+                          <p className="text-[10px] text-slate-450 dark:text-slate-500 font-medium">
+                            {item.attributes}
+                          </p>
+                        </div>
+
+                        {/* Price & Quantity */}
+                        <div className="flex items-center justify-between sm:justify-end gap-10 w-full sm:w-auto text-xs border-t border-slate-50 dark:border-slate-900 sm:border-0 pt-2 sm:pt-0">
+                          <div className="text-slate-500 dark:text-slate-400">
+                            <span className="text-[10px] text-slate-400 block uppercase">Quantity</span>
+                            <span className="font-bold text-slate-700 dark:text-slate-300">Qty: {item.qty}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] text-slate-400 block uppercase">Price</span>
+                            <span className="font-extrabold text-orange-600 dark:text-orange-400 text-sm">Rs. {item.price.toLocaleString()}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-850">
+                    <button className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-605 dark:text-slate-350 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                      Contact Seller
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (order.status === "Completed") {
+                          handleBuyAgain(order.items)
+                        } else {
+                          alert(`Tracking order ${order.id}. Current status: ${order.status}`)
+                        }
+                      }} 
+                      className="px-4 py-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-850 dark:hover:bg-slate-200 text-white dark:text-slate-950 text-[11px] font-bold rounded-xl transition shadow shadow-slate-950/10 cursor-pointer"
+                    >
+                      {order.status === "Completed" ? "Buy Again" : "Track Order"}
+                    </button>
+                  </div>
+
+                </div>
+              ))
+            )}
+          </div>
+
+        </main>
+      ) : (
+        /* MY PROFILE SECTION */
+        <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Profile</h1>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Edit your personal contact and delivery details.</p>
+            </div>
+          </div>
+
+          {profileSaved && (
+            <div className="bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-150 dark:border-green-900/30 p-4 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+              <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Profile details updated successfully!
+            </div>
+          )}
+
+          <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm max-w-2xl space-y-6">
+            <form onSubmit={handleSaveProfile} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={profileEmail}
+                    onChange={(e) => setProfileEmail(e.target.value)}
+                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Phone Number (Nepal)</label>
+                  <input
+                    type="tel"
+                    required
+                    value={profilePhone}
+                    onChange={(e) => setProfilePhone(e.target.value)}
+                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase block">Default Delivery Address</label>
+                  <input
+                    type="text"
+                    required
+                    value={profileAddress}
+                    onChange={(e) => setProfileAddress(e.target.value)}
+                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer"
+                >
+                  Save Profile Changes
+                </button>
+              </div>
+            </form>
+
+            <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Change Password</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Must differ from your current password and the admin password.</p>
+
+              {passwordMessage.text && (
+                <div
+                  className={`mb-4 p-3 rounded-xl text-xs font-semibold ${
+                    passwordMessage.type === "success"
+                      ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30"
+                      : "bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30"
+                  }`}
+                >
+                  {passwordMessage.text}
+                </div>
+              )}
+
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Current Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">New Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={4}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Confirm Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={4}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-950 font-bold py-3 px-6 rounded-xl transition cursor-pointer"
+                >
+                  Update Password
+                </button>
+              </form>
+            </div>
           </div>
         </main>
-      </div>
+      )}
+
     </div>
   )
 }

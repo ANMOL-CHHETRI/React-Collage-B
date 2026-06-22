@@ -1,4 +1,6 @@
+import { useState } from "react"
 import { Link } from "react-router"
+import { useAuth } from "../context/AuthContext"
 
 const stats = [
   { label: "Total Revenue", value: "Rs. 4,82,500", change: "+12.5%", up: true, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
@@ -15,121 +17,238 @@ const recentOrders = [
   { id: "#ORD-NP-005", customer: "Karan Adhikari", product: "Gorkha Khukuri", amount: "Rs. 4,500", status: "Delivered" },
 ]
 
-const AdminDashboard = ({ onLogout }) => {
+const sidebarItems = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "products", label: "Products" },
+  { id: "orders", label: "Orders" },
+  { id: "crud", label: "CRUD Ops", path: "/dashboard/crud" },
+  { id: "users", label: "Users" },
+  { id: "settings", label: "Settings" },
+]
+
+const AdminDashboard = () => {
+  const { user, logoutAdmin, changePassword } = useAuth()
+  const [activeSection, setActiveSection] = useState("dashboard")
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [passwordMessage, setPasswordMessage] = useState({ type: "", text: "" })
+
+  const handleChangePassword = (e) => {
+    e.preventDefault()
+    setPasswordMessage({ type: "", text: "" })
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: "error", text: "New passwords do not match" })
+      return
+    }
+
+    const result = changePassword("admin", currentPassword, newPassword)
+    if (result.success) {
+      setPasswordMessage({ type: "success", text: result.message })
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+    } else {
+      setPasswordMessage({ type: "error", text: result.message })
+    }
+  }
+
+  const sectionTitle =
+    activeSection === "settings" ? "Settings" : "Dashboard"
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white hidden md:flex flex-col">
         <div className="p-6 border-b border-gray-700">
           <h1 className="text-xl font-bold flex items-center gap-2">
             <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center text-sm">A</div>
             Admin Panel
           </h1>
+          <p className="text-xs text-gray-400 mt-2">Signed in as {user?.username || "admin"}</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {["Dashboard", "Products", "Orders", "CRUD Ops", "Users", "Settings"].map((item) => (
-            item === "CRUD Ops" ? (
-              <Link key={item} to="/dashboard/crud" className="flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white">
-                <span className="text-sm">{item}</span>
+          {sidebarItems.map((item) =>
+            item.path ? (
+              <Link
+                key={item.id}
+                to={item.path}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white"
+              >
+                <span className="text-sm">{item.label}</span>
               </Link>
             ) : (
-              <a key={item} href="#" className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${item === "Dashboard" ? "bg-amber-600 text-white" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}>
-                <span className="text-sm">{item}</span>
-              </a>
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-left cursor-pointer ${
+                  activeSection === item.id
+                    ? "bg-amber-600 text-white"
+                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                }`}
+              >
+                <span className="text-sm">{item.label}</span>
+              </button>
             )
-          ))}
+          )}
         </nav>
         <div className="p-4 border-t border-gray-700">
-          <a href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition">
+          <Link to="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             Back to Store
-          </a>
+          </Link>
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col">
-        {/* Top bar */}
         <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
+          <h2 className="text-xl font-semibold text-gray-800">{sectionTitle}</h2>
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-gray-500 hover:text-gray-700 cursor-pointer">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
-            </button>
+              Back to Store
+            </Link>
             <div className="w-9 h-9 bg-amber-600 rounded-full flex items-center justify-center text-white font-medium">A</div>
-            {onLogout && (
-              <button onClick={onLogout} className="text-sm text-red-600 hover:text-red-700 font-medium cursor-pointer">Logout</button>
-            )}
+            <button onClick={logoutAdmin} className="text-sm text-red-600 hover:text-red-700 font-medium cursor-pointer">
+              Logout
+            </button>
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 p-6 overflow-y-auto">
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-500">{stat.label}</span>
-                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
-                    </svg>
+          {activeSection === "settings" ? (
+            <div className="max-w-lg">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Change Password</h3>
+                <p className="text-sm text-gray-500 mb-6">Update your admin account password. Must differ from the user account password.</p>
+
+                {passwordMessage.text && (
+                  <div
+                    className={`mb-4 p-3 rounded-lg text-sm ${
+                      passwordMessage.type === "success"
+                        ? "bg-green-50 text-green-700 border border-green-100"
+                        : "bg-red-50 text-red-700 border border-red-100"
+                    }`}
+                  >
+                    {passwordMessage.text}
                   </div>
+                )}
+
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={4}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={4}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-amber-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-amber-700 transition cursor-pointer"
+                  >
+                    Update Password
+                  </button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-medium text-gray-500">{stat.label}</span>
+                      <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                    <div className={`flex items-center gap-1 mt-2 text-sm ${stat.up ? "text-green-600" : "text-red-600"}`}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.up ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"} />
+                      </svg>
+                      {stat.change} from last month
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                <div className={`flex items-center gap-1 mt-2 text-sm ${stat.up ? "text-green-600" : "text-red-600"}`}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.up ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"} />
-                  </svg>
-                  {stat.change} from last month
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-gray-500 border-b border-gray-100">
+                        <th className="px-6 py-3 font-medium">Order</th>
+                        <th className="px-6 py-3 font-medium">Customer</th>
+                        <th className="px-6 py-3 font-medium">Product</th>
+                        <th className="px-6 py-3 font-medium">Amount</th>
+                        <th className="px-6 py-3 font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentOrders.map((order) => (
+                        <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-6 py-4 font-medium text-gray-900">{order.id}</td>
+                          <td className="px-6 py-4 text-gray-700">{order.customer}</td>
+                          <td className="px-6 py-4 text-gray-700">{order.product}</td>
+                          <td className="px-6 py-4 text-gray-700">{order.amount}</td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                order.status === "Delivered"
+                                  ? "bg-green-100 text-green-700"
+                                  : order.status === "Processing"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : order.status === "Shipped"
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : "bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Recent Orders */}
-          <div className="bg-white rounded-xl shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 border-b border-gray-100">
-                    <th className="px-6 py-3 font-medium">Order</th>
-                    <th className="px-6 py-3 font-medium">Customer</th>
-                    <th className="px-6 py-3 font-medium">Product</th>
-                    <th className="px-6 py-3 font-medium">Amount</th>
-                    <th className="px-6 py-3 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium text-gray-900">{order.id}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.customer}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.product}</td>
-                      <td className="px-6 py-4 text-gray-700">{order.amount}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          order.status === "Delivered" ? "bg-green-100 text-green-700" :
-                          order.status === "Processing" ? "bg-blue-100 text-blue-700" :
-                          order.status === "Shipped" ? "bg-yellow-100 text-yellow-700" :
-                          "bg-gray-100 text-gray-700"
-                        }`}>{order.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+            </>
+          )}
         </main>
       </div>
     </div>

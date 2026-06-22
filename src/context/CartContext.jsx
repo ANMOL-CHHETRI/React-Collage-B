@@ -1,17 +1,32 @@
 import { createContext, useContext, useState, useEffect } from "react"
+import { useAuth } from "./AuthContext"
 
 const CartContext = createContext()
 
+const cartKey = (user) => {
+  const id = user?.username || user?.email || "guest"
+  return `shopease_cart_${id}`
+}
+
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth()
+  const key = cartKey(user)
+
   const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem("shopease_cart")
+    const saved = localStorage.getItem(key)
     return saved ? JSON.parse(saved) : []
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
 
+  // re-load cart when user changes (login/logout)
   useEffect(() => {
-    localStorage.setItem("shopease_cart", JSON.stringify(cartItems))
-  }, [cartItems])
+    const saved = localStorage.getItem(key)
+    setCartItems(saved ? JSON.parse(saved) : [])
+  }, [key])
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(cartItems))
+  }, [cartItems, key])
 
   const addToCart = (product) => {
     setCartItems((prev) => {

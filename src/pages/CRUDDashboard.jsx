@@ -1,33 +1,20 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
+import { useProducts } from "../context/ProductContext"
 
-const initialProducts = [
-  { id: 1, name: "Wireless Headphones", price: 79.99, category: "Electronics", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop", addedBy: "admin" },
-  { id: 2, name: "Smart Watch", price: 199.99, category: "Electronics", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop", addedBy: "admin" },
-  { id: 3, name: "Premium Backpack", price: 59.99, category: "Accessories", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop", addedBy: "admin" },
-  { id: 4, name: "Running Shoes", price: 129.99, category: "Sports", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop", addedBy: "user" },
-  { id: 5, name: "Leather Wallet", price: 39.99, category: "Accessories", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=200&h=200&fit=crop", addedBy: "admin" },
-  { id: 6, name: "Sunglasses", price: 89.99, category: "Accessories", image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop", addedBy: "user" },
-  { id: 7, name: "Camera Lens", price: 299.99, category: "Electronics", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200&h=200&fit=crop", addedBy: "admin" },
-  { id: 8, name: "Leather Jacket", price: 149.99, category: "Clothing", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=200&fit=crop", addedBy: "user" },
-]
-
-const emptyForm = { name: "", price: "", category: "Electronics", image: "", description: "" }
+const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
 
 const CRUDDashboard = () => {
-  const { user, logout } = useAuth()
-  const [role, setRole] = useState("admin")
-  const [products, setProducts] = useState(initialProducts)
+  const { user, logoutAdmin } = useAuth()
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("name")
 
-  const isAdmin = role === "admin"
-  const currentUser = user?.email === "admin@shopease.com" ? "admin" : "user"
-
+  const isAdmin = user?.role === "admin"
   const filtered = products
     .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -39,12 +26,20 @@ const CRUDDashboard = () => {
 
   const canModify = (product) => isAdmin || product.addedBy === "user"
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => setForm({ ...form, image: ev.target.result, imageFile: file })
+    reader.readAsDataURL(file)
+  }
+
   const handleSave = (e) => {
     e.preventDefault()
     if (editing) {
-      setProducts(products.map((p) => p.id === editing.id ? { ...p, ...form, price: parseFloat(form.price) } : p))
+      updateProduct(editing.id, { ...form, price: parseFloat(form.price) })
     } else {
-      setProducts([...products, { ...form, id: Date.now(), price: parseFloat(form.price), addedBy: currentUser }])
+      addProduct({ ...form, price: parseFloat(form.price) })
     }
     setForm(emptyForm)
     setEditing(null)
@@ -52,13 +47,13 @@ const CRUDDashboard = () => {
   }
 
   const handleEdit = (product) => {
-    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, description: product.description || "" })
+    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "" })
     setEditing(product)
     setShowForm(true)
   }
 
   const handleDelete = (id) => {
-    if (confirm("Delete this product?")) setProducts(products.filter((p) => p.id !== id))
+    if (confirm("Delete this product?")) deleteProduct(id)
   }
 
   const sidebarLinks = [
@@ -88,7 +83,7 @@ const CRUDDashboard = () => {
           ))}
         </nav>
         <div className="p-4 border-t border-gray-700 space-y-2">
-          <button onClick={logout} className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-white transition cursor-pointer">
+          <button onClick={logoutAdmin} className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-white transition cursor-pointer">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -101,19 +96,16 @@ const CRUDDashboard = () => {
         <header className="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800">CRUD Operations</h2>
           <div className="flex items-center gap-4">
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
-              <button onClick={() => setRole("admin")} className={`px-4 py-1.5 rounded-md text-sm font-medium transition cursor-pointer ${isAdmin ? "bg-amber-600 text-white shadow-sm" : "text-gray-600 hover:text-gray-900"}`}>Admin</button>
-              <button onClick={() => setRole("user")} className={`px-4 py-1.5 rounded-md text-sm font-medium transition cursor-pointer ${!isAdmin ? "bg-amber-600 text-white shadow-sm" : "text-gray-600 hover:text-gray-900"}`}>User</button>
-            </div>
-            <div className="w-9 h-9 bg-amber-600 rounded-full flex items-center justify-center text-white font-medium">{isAdmin ? "A" : "U"}</div>
+            <span className="text-sm text-gray-500">Admin: <strong className="text-gray-900">{user?.username || "admin"}</strong></span>
+            <div className="w-9 h-9 bg-amber-600 rounded-full flex items-center justify-center text-white font-medium">A</div>
           </div>
         </header>
 
         <main className="flex-1 p-6 overflow-y-auto">
           <div className="bg-white rounded-xl shadow-sm mb-6 p-4 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-500">Role: <strong className="text-gray-900">{isAdmin ? "Admin" : "User"}</strong></span>
-              <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">{isAdmin ? "Full CRUD" : "Limited (own items only)"}</span>
+              <span className="text-sm font-medium text-gray-500">Role: <strong className="text-gray-900">Admin</strong></span>
+              <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">Full CRUD Access</span>
             </div>
             <div className="flex items-center gap-3">
               <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none w-48" />
@@ -137,23 +129,28 @@ const CRUDDashboard = () => {
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (₨)</label>
                       <input type="number" step="0.01" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                       <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                        <option>Electronics</option>
-                        <option>Clothing</option>
-                        <option>Accessories</option>
-                        <option>Sports</option>
-                        <option>Home</option>
+                        <option>Traditional Apparel</option>
+                        <option>Organic Tea & Coffee</option>
+                        <option>Local Handicrafts</option>
+                        <option>Herbs & Spices</option>
                       </select>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input type="url" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="https://..." />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer file:cursor-pointer" />
+                    {form.image && (
+                      <div className="mt-2 flex items-center gap-3">
+                        <img src={form.image} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
+                        <span className="text-xs text-gray-400">Image ready</span>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -194,7 +191,7 @@ const CRUDDashboard = () => {
                           </td>
                           <td className="px-4 py-3 font-medium text-gray-900">{product.name}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">{product.category}</span></td>
-                          <td className="px-4 py-3 font-semibold text-gray-900">${product.price}</td>
+                          <td className="px-4 py-3 font-semibold text-gray-900">₨{product.price}</td>
                           <td className="px-4 py-3">
                             <span className={`text-xs font-medium ${product.addedBy === "admin" ? "text-amber-600" : "text-blue-600"}`}>{product.addedBy}</span>
                           </td>
@@ -220,11 +217,6 @@ const CRUDDashboard = () => {
             </div>
           </div>
 
-          {!isAdmin && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-xl text-sm text-blue-700">
-              <strong>User mode:</strong> You can only edit or delete products you added (marked with "user" badge). Admin mode has full access.
-            </div>
-          )}
         </main>
       </div>
     </div>

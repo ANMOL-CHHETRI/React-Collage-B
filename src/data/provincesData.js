@@ -6,6 +6,14 @@ export const provincesData = {
     shippingFee: 200,
     status: "Standard Home Delivery Available",
     hubs: "Dhangadhi, Mahendranagar, Dadeldhura, Baitadi",
+    cities: [
+      "Dhangadhi (Chauraha)",
+      "Dhangadhi (Hasanpur)",
+      "Mahendranagar (Bajar)",
+      "Dadeldhura (Bajar)",
+      "Baitadi (Bajar)",
+      "Dipayal (Silgadhi)"
+    ],
     description: "Delivering to the far-western regions of Nepal with reliable courier networks.",
   },
   karnali: {
@@ -15,6 +23,13 @@ export const provincesData = {
     shippingFee: 250,
     status: "Standard Delivery (Rural zones may take longer)",
     hubs: "Birendranagar (Surkhet), Jumla, Dailekh",
+    cities: [
+      "Birendranagar (Surkhet)",
+      "Surkhet (Mangalgadhi)",
+      "Jumla (Khalanga)",
+      "Dailekh (Bajar)",
+      "Salyan (Bajar)"
+    ],
     description: "Reaching the heart of mid-western hills and mountain districts.",
   },
   lumbini: {
@@ -24,6 +39,14 @@ export const provincesData = {
     shippingFee: 150,
     status: "Express Home Delivery Active",
     hubs: "Butwal, Bhairahawa, Nepalgunj, Ghorahi, Tansen",
+    cities: [
+      "Butwal (Milan Chowk)",
+      "Butwal (Traffic Chowk)",
+      "Bhairahawa (Belahiya)",
+      "Nepalgunj (Birendra Chowk)",
+      "Ghorahi (Dang)",
+      "Tansen (Palpa)"
+    ],
     description: "Rapid shipping across the key economic towns of southern-mid Nepal.",
   },
   gandaki: {
@@ -33,6 +56,14 @@ export const provincesData = {
     shippingFee: 120,
     status: "Next-Day Delivery Available in Pokhara",
     hubs: "Pokhara, Lekhnath, Baglung, Waling, Besisahar",
+    cities: [
+      "Pokhara (Lakeside)",
+      "Pokhara (Mahendrapool)",
+      "Pokhara (Prithvi Chowk)",
+      "Lekhnath",
+      "Baglung (Bajar)",
+      "Waling (Syangja)"
+    ],
     description: "Seamless shipping around the Annapurna region and Pokhara valley.",
   },
   bagmati: {
@@ -42,6 +73,17 @@ export const provincesData = {
     shippingFee: 80,
     status: "Same-Day / Express Delivery Active",
     hubs: "Kathmandu, Lalitpur, Bhaktapur, Hetauda, Chitwan, Banepa",
+    cities: [
+      "Kathmandu (New Baneshwor)",
+      "Kathmandu (Thamel)",
+      "Kathmandu (Koteshwor)",
+      "Lalitpur (Patan)",
+      "Lalitpur (Jhamsikhel)",
+      "Bhaktapur (Durbar Square)",
+      "Chitwan (Bharatpur)",
+      "Hetauda (Chowk)",
+      "Banepa"
+    ],
     description: "Fastest delivery center covering the capital city and nearby zones.",
   },
   madhesh: {
@@ -51,6 +93,13 @@ export const provincesData = {
     shippingFee: 150,
     status: "Standard Home Delivery Active",
     hubs: "Janakpur, Birgunj, Kalaiya, Rajbiraj, Lahan",
+    cities: [
+      "Birgunj (Ghantaghar)",
+      "Janakpur (Janaki Mandir)",
+      "Kalaiya",
+      "Rajbiraj",
+      "Lahan"
+    ],
     description: "Delivering across the flatlands and borders of the Terai region.",
   },
   koshi: {
@@ -60,6 +109,13 @@ export const provincesData = {
     shippingFee: 150,
     status: "Express Home Delivery Active",
     hubs: "Biratnagar, Itahari, Dharan, Damak, Birtamode",
+    cities: [
+      "Biratnagar (Mahendra Chowk)",
+      "Itahari (Chowk)",
+      "Dharan (Bhanuchowk)",
+      "Damak",
+      "Birtamode"
+    ],
     description: "Comprehensive coverage of major cities and tea estates of Eastern Nepal.",
   },
 }

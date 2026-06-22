@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useAuth } from "../context/AuthContext"
-import AdminDashboard from "./AdminDashboard"
 
 const AdminLoginPage = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const { user, loginAdmin, logoutAdmin, error, setError } = useAuth()
+  const { user, loginAdmin, error, setError } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -14,7 +14,25 @@ const AdminLoginPage = () => {
   }
 
   if (user?.role === "admin") {
-    return <AdminDashboard onLogout={logoutAdmin} />
+    navigate("/admin/dashboard", { replace: true })
+    return null
+  }
+
+  if (user?.role === "user") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+          <p className="text-gray-700 mb-2">You are signed in as a <strong>user</strong>.</p>
+          <p className="text-sm text-gray-500 mb-6">Log out first to access the admin panel.</p>
+          <Link to="/user/dashboard" className="inline-block bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-amber-700 transition mr-3">
+            My Dashboard
+          </Link>
+          <Link to="/" className="inline-block text-amber-600 font-medium hover:underline">
+            Back to store
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -40,7 +58,7 @@ const AdminLoginPage = () => {
           </div>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           <button type="submit" className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition cursor-pointer">Sign In</button>
-          <p className="text-xs text-gray-400 text-center">Use admin / admin</p>
+          <p className="text-xs text-gray-400 text-center">Use <strong>admin</strong> / <strong>admin123</strong></p>
         </form>
         <p className="text-center text-sm text-gray-500 mt-6">
           <Link to="/" className="text-amber-600 font-medium hover:underline">Back to store</Link>

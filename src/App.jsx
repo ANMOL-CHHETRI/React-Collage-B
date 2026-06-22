@@ -1,12 +1,7 @@
 import Router from "./Router";
-import { CartProvider } from "./context/CartContext";
 
 function App() {
-  return (
-    <CartProvider>
-      <Router/>
-    </CartProvider>
-  );
+  return <Router/>;
 }
 
 export default App;
