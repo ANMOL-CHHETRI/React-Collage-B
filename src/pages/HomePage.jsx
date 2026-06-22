@@ -113,8 +113,8 @@ const HomePage = () => {
       {/* ===== HERO SECTION ===== */}
       <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
         {/* Abstract background blobs */}
-        <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-gradient-to-br from-amber-200/20 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/10 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute bottom-0 left-0 w-[450px] h-[450px] bg-slate-50 dark:bg-slate-900/50 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4" />
+        <div className="absolute top-0 right-0 w-137.5 h-137.5 bg-gradient-to-br from-amber-200/20 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/10 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/4" />
+        <div className="absolute bottom-0 left-0 w-112.5 h-112.5 bg-slate-50 dark:bg-slate-900/50 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4" />
 
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -188,7 +188,7 @@ const HomePage = () => {
             <div className="lg:col-span-6 flex justify-center relative">
               <div className="absolute -inset-4 bg-slate-100/50 dark:bg-slate-900/20 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 -z-20 pointer-events-none" />
               
-              <div className="w-full max-w-[460px] bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl p-5 relative overflow-hidden">
+              <div className="w-full max-w-115 bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl p-5 relative overflow-hidden">
                 <div className="relative rounded-2xl overflow-hidden aspect-square shadow-inner">
                   <img 
                     src={featuredProduct.image}

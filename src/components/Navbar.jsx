@@ -94,8 +94,8 @@ const Navbar = () => {
             </div>
 
             <NavLink to="/contact" className={linkClass}>Contact</NavLink>
-            <a href="#delivery" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200">Delivery Coverage</a>
-            <a href="#faq" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200">FAQ</a>
+            <Link to="#delivery" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200">Delivery Coverage</Link>
+            <Link to="#faq" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200">FAQ</Link>
           </div>
 
           {/* Right Section */}
