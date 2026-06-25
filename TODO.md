@@ -1,4 +1,7 @@
-# TODO - Sudurpashchim box fit
+# TODO
 
-- [x] Update `src/components/NepalInteractiveMap.jsx` so the `Sudurpashchim` label fits inside the SVG region (auto-fit/shrink).
-- [x] Run `npm run build` and `python tools/build.py` / `python tools/check_build.py` to ensure everything still passes.
+- [ ] Create edit plan for map changes.
+- [ ] Remove “black box” style/tooltip/popup behavior from NepalInteractiveMap (if any).
+- [ ] For map click: show a pin-like marker + province name at clicked location.
+- [ ] Ensure previous hover tooltip/persistent labels don’t conflict with the click pin.
+- [ ] Verify in browser that click behavior works and selected province styling remains correct.

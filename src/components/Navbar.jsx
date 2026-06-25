@@ -43,30 +43,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-<<<<<<< HEAD
             <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
-=======
-            <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200">
-              <svg
-                className="w-4 h-4 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              ShopEase{" "}
-              <span className="text-amber-600 font-semibold">Nepal</span>
-            </span>
->>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
           </Link>
 
           {/* Desktop Nav */}
