@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
 import { useCart } from "../context/CartContext"
+import { OrderCardUserSkeleton } from "../components/Skeleton"
 
 const initialOrders = [
   {
@@ -59,6 +60,12 @@ const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [orders, setOrders] = useState(initialOrders)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   const [profileName, setProfileName] = useState(user?.name || "Sahil Adhikari")
   const [profileEmail, setProfileEmail] = useState(user?.email || "user@test.com")
@@ -70,6 +77,22 @@ const UserDashboard = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [passwordMessage, setPasswordMessage] = useState({ type: "", text: "" })
+
+  // Theme state
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+    localStorage.setItem("theme", theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"))
+  }
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
@@ -193,7 +216,26 @@ const UserDashboard = () => {
             </ul>
           </div>
 
-          {/* Group 5: Sell on ShopEase */}
+          {/* Group 3: Settings */}
+          <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Preferences</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+              <li>
+                <button
+                  onClick={() => setActiveSection("settings")}
+                  className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
+                    activeSection === "settings"
+                      ? "text-orange-600 dark:text-orange-400 font-bold"
+                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                  }`}
+                >
+                  Settings
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Group 4: Sell on ShopEase */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
             <a href="#" className="font-bold text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 block flex items-center gap-1.5">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -216,19 +258,16 @@ const UserDashboard = () => {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      {activeSection === "orders" ? (
+      {activeSection === "orders" && (
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
-          
-          {/* Header Title */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Orders</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-550 mt-0.5">Manage and track your delivery packages across Nepal.</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
             </div>
           </div>
 
-          {/* Status Navigation Tabs (Daraz Style) */}
-          <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs md:text-sm font-semibold text-slate-505 dark:text-slate-400 overflow-x-auto whitespace-nowrap scrollbar-none">
+          <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 overflow-x-auto whitespace-nowrap scrollbar-none">
             {["All", "To Pay", "To Ship", "To Receive", "To Review(3)"].map((tab) => (
               <button
                 key={tab}
@@ -244,14 +283,13 @@ const UserDashboard = () => {
             ))}
           </div>
 
-          {/* Interactive Search Bar */}
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by store name, order ID, or product name..."
-              className="w-full bg-white dark:bg-slate-950 border border-slate-202 dark:border-slate-800 rounded-xl py-3 px-4 pl-11 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-orange-500 transition shadow-sm"
+              className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 pl-11 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-orange-500 transition shadow-sm"
             />
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -260,14 +298,17 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          {/* Grouped Orders List */}
           <div className="space-y-5">
-            {filteredOrders.length === 0 ? (
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <OrderCardUserSkeleton key={i} />
+              ))
+            ) : filteredOrders.length === 0 ? (
               <div className="text-center py-20 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
                 <svg className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h3 className="text-base font-bold text-slate-750 dark:text-slate-350">No orders found</h3>
+                <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">No orders found</h3>
                 <p className="text-slate-400 dark:text-slate-500 text-xs mt-1">There are no orders matching your current search or tab filter.</p>
               </div>
             ) : (
@@ -276,11 +317,9 @@ const UserDashboard = () => {
                   key={order.id} 
                   className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-5 shadow-sm hover:shadow-md transition duration-200 space-y-4"
                 >
-                  {/* Store Header */}
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
-                      {/* Store Icon */}
-                      <div className="w-7 h-7 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-center text-slate-505">
+                      <div className="w-7 h-7 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-center text-slate-500">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
@@ -294,27 +333,23 @@ const UserDashboard = () => {
                     <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
                       order.status === "Completed" 
                         ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30" 
-                        : "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-450 border border-orange-100 dark:border-orange-900/30"
+                        : "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30"
                     }`}>
                       {order.status}
                     </span>
                   </div>
 
-                  {/* Items in the Order */}
                   <div className="space-y-4">
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-1">
-                        
-                        {/* Product Thumbnail */}
                         <img 
                           src={item.image} 
                           alt={item.name} 
                           className="w-16 h-16 rounded-xl object-cover bg-slate-50 dark:bg-slate-900 shrink-0 border border-slate-100 dark:border-slate-800"
                         />
 
-                        {/* Product details */}
                         <div className="flex-1 space-y-1">
-                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-150 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
+                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
                             {item.name}
                           </h5>
                           <p className="text-[10px] text-slate-450 dark:text-slate-500 font-medium">
@@ -322,7 +357,6 @@ const UserDashboard = () => {
                           </p>
                         </div>
 
-                        {/* Price & Quantity */}
                         <div className="flex items-center justify-between sm:justify-end gap-10 w-full sm:w-auto text-xs border-t border-slate-50 dark:border-slate-900 sm:border-0 pt-2 sm:pt-0">
                           <div className="text-slate-500 dark:text-slate-400">
                             <span className="text-[10px] text-slate-400 block uppercase">Quantity</span>
@@ -338,9 +372,8 @@ const UserDashboard = () => {
                     ))}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-850">
-                    <button className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-605 dark:text-slate-350 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
                       Contact Seller
                     </button>
                     <button 
@@ -351,7 +384,7 @@ const UserDashboard = () => {
                           alert(`Tracking order ${order.id}. Current status: ${order.status}`)
                         }
                       }} 
-                      className="px-4 py-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-850 dark:hover:bg-slate-200 text-white dark:text-slate-950 text-[11px] font-bold rounded-xl transition shadow shadow-slate-950/10 cursor-pointer"
+                      className="px-4 py-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-950 text-[11px] font-bold rounded-xl transition shadow shadow-slate-950/10 cursor-pointer"
                     >
                       {order.status === "Completed" ? "Buy Again" : "Track Order"}
                     </button>
@@ -363,10 +396,10 @@ const UserDashboard = () => {
           </div>
 
         </main>
-      ) : (
-        /* MY PROFILE SECTION */
+      )}
+
+      {activeSection === "profile" && (
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
-          
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Profile</h1>
@@ -420,7 +453,7 @@ const UserDashboard = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase block">Default Delivery Address</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Default Delivery Address</label>
                   <input
                     type="text"
                     required
@@ -499,6 +532,52 @@ const UserDashboard = () => {
                   Update Password
                 </button>
               </form>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {activeSection === "settings" && (
+        <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Settings</h1>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage your preferences and appearance.</p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm max-w-2xl">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Appearance</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mb-6">Toggle between light and dark mode.</p>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+                  {theme === "dark" ? (
+                    <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-white">{theme === "dark" ? "Dark Mode" : "Light Mode"}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Currently active</p>
+                </div>
+              </div>
+              <button
+                onClick={toggleTheme}
+                className="relative inline-flex h-7 w-12 items-center rounded-full transition-colors cursor-pointer bg-gray-200 dark:bg-orange-500"
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    theme === "dark" ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
             </div>
           </div>
         </main>

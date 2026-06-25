@@ -9,7 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import UserLoginPage from "./pages/UserLoginPage"
 import UserDashboard from "./pages/UserDashboard"
 import UserProfilePage from "./pages/UserProfilePage"
-import CRUDDashboard from "./pages/CRUDDashboard"
+// CRUD merged into AdminDashboard Products section
 import PolicyPage from "./pages/PolicyPage"
 import CartPage from "./pages/CartPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
@@ -38,7 +38,7 @@ const Router = () => {
           <Route path="/user-login" element={<UserLoginPage />} />
           <Route path="/user/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
           <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfilePage /></ProtectedRoute>} />
-          <Route path="/dashboard/crud" element={<ProtectedRoute role="admin"><CRUDDashboard /></ProtectedRoute>} />
+          {/* /dashboard/crud route removed — product CRUD is now in /admin/dashboard Products section */}
         </Routes>
         </ProductProvider>
         </CartProvider>

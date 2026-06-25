@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext"
 import { useProducts } from "../context/ProductContext"
 import { provincesData } from "../data/provincesData"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
+import { ProductCardSkeleton } from "../components/Skeleton"
 
 const categories = [
   { name: "Traditional Apparel", image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400&auto=format&fit=crop&q=80", count: "12 Items" },
@@ -34,7 +35,13 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
-  
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Cart context states
   const { 
     cartItems, 
@@ -264,7 +271,13 @@ const HomePage = () => {
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto">Handpicked, sustainable items supporting rural communities across Nepal.</p>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-16 bg-white dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 p-6">
               <svg className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -702,11 +715,7 @@ const HomePage = () => {
             {/* Brand Logo & Tag */}
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                </div>
+                <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md" />
                 <span className="text-xl font-bold tracking-tight text-white">ShopEase <span className="text-amber-500">Nepal</span></span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-sm">

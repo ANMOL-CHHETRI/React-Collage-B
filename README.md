@@ -1,8 +1,17 @@
 # ShopEase Nepal — Ecommerce Platform
 
+## Team
+
+- **Anmol Chhetri** — Project Lead
+- **Sahil** — Backend
+- **Sarang** — Frontend
+- **Sanskarti** — UI Components
+- **Smriti** — QA & Testing
+
 ## User Groups & Permissions
 
 ### 👤 Guest (Not Logged In)
+
 - Browse the store (HomePage, About, Policy, Contact)
 - Search and filter products
 - View product details
@@ -11,13 +20,15 @@
 - **Cannot** place orders or access dashboards
 
 ### 👥 Logged-In User
-| Credential | Value |
-|------------|-------|
-| Email | `user@test.com` |
-| Password | `user123` |
-| Login URL | `/user-login` |
+
+| Credential | Value           |
+| ---------- | --------------- |
+| Email      | `user@test.com` |
+| Password   | `user123`       |
+| Login URL  | `/user-login`   |
 
 All guest abilities **plus**:
+
 - Place orders (checkout flow)
 - View **UserDashboard** at `/user/dashboard`
 - Edit profile (name, email, phone, address) at `/user/profile`
@@ -27,13 +38,15 @@ All guest abilities **plus**:
 - Access CRUD Dashboard at `/dashboard/crud` (limited — can only edit/delete products they added)
 
 ### 🔐 Admin
-| Credential | Value |
-|------------|-------|
-| Username | `admin` |
-| Password | `admin123` |
-| Login URL | `/admin-login` |
+
+| Credential | Value          |
+| ---------- | -------------- |
+| Username   | `admin`        |
+| Password   | `admin123`     |
+| Login URL  | `/admin-login` |
 
 All guest abilities **plus**:
+
 - Full **AdminDashboard** at `/admin/dashboard` (stats, recent orders, settings)
 - Full **CRUD Dashboard** at `/dashboard/crud` — add, edit, delete any product with image upload
 - Change admin/user passwords in Settings
@@ -48,4 +61,5 @@ npm run build   # production build
 ```
 
 ## Tech Stack
+
 React 19 + Vite + Tailwind CSS v4 + react-router v8

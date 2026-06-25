@@ -1,12 +1,22 @@
+import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router"
 import { useProducts } from "../context/ProductContext"
 import { useCart } from "../context/CartContext"
+import { ProductDetailSkeleton } from "../components/Skeleton"
 
 const ProductDetailPage = () => {
   const { id } = useParams()
   const { products } = useProducts()
   const { addToCart } = useCart()
   const product = products.find((p) => p.id === Number(id))
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 400)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (loading) return <ProductDetailSkeleton />
 
   if (!product) {
     return (

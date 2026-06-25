@@ -1,12 +1,19 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router"
 import { useCart } from "../context/CartContext"
 import { provincesData } from "../data/provincesData"
 import NepalInteractiveMap from "../components/NepalInteractiveMap"
+import { CartItemSkeleton } from "../components/Skeleton"
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500)
+    return () => clearTimeout(timer)
+  }, [])
 
   const shipping = provincesData[selectedProvince]?.shippingFee || 0
   const grandTotal = cartSubtotal + shipping
@@ -19,7 +26,34 @@ const CartPage = () => {
           <Link to="/" className="text-sm text-amber-600 hover:underline font-medium">&larr; Continue Shopping</Link>
         </div>
 
-        {cartItems.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <CartItemSkeleton key={i} />
+              ))}
+            </div>
+            {/* Order Summary skeleton */}
+            <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm space-y-4 animate-pulse">
+              <div className="h-5 bg-slate-200 rounded w-32" />
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <div className="h-3 bg-slate-200 rounded w-20" />
+                  <div className="h-3 bg-slate-200 rounded w-16" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="h-3 bg-slate-200 rounded w-20" />
+                  <div className="h-3 bg-slate-200 rounded w-16" />
+                </div>
+                <div className="h-px bg-slate-100" />
+                <div className="flex justify-between">
+                  <div className="h-4 bg-slate-200 rounded w-16" />
+                  <div className="h-4 bg-slate-200 rounded w-20" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : cartItems.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
             <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
