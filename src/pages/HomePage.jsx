@@ -934,21 +934,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                    />
-                  </svg>
-                </div>
+                <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25" />
                 <span className="text-xl font-bold tracking-tight text-white">
                   ShopEase <span className="text-amber-500">Nepal</span>
                 </span>
