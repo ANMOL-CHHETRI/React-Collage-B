@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState, useEffect } from "react"
 import { Link, NavLink } from "react-router"
 import { useCart } from "../context/CartContext"
@@ -6,14 +5,7 @@ import { useProducts } from "../context/ProductContext"
 import { provincesData } from "../data/provincesData"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
 import { ProductCardSkeleton } from "../components/Skeleton"
-=======
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router";
-import { useCart } from "../context/CartContext";
-import { useProducts } from "../context/ProductContext";
-import { provincesData } from "../data/provincesData";
-import NepalDeliveryMap from "../components/NepalDeliveryMap";
->>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
+
 
 const categories = [
   {
@@ -97,7 +89,6 @@ const faqs = [
 ];
 
 const HomePage = () => {
-<<<<<<< HEAD
   const { products } = useProducts()
   const featuredProduct = products.find((p) => p.id === 1) || products[0]
   const [openFaq, setOpenFaq] = useState(null)
@@ -110,14 +101,9 @@ const HomePage = () => {
     const timer = setTimeout(() => setLoading(false), 600)
     return () => clearTimeout(timer)
   }, [])
-=======
-  const { products } = useProducts();
-  const featuredProduct = products.find((p) => p.id === 1) || products[0];
-  const [openFaq, setOpenFaq] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedProvince, setSelectedProvince] = useState("bagmati");
->>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
+ 
+
+
 
   // Cart context states
   const {
@@ -1093,10 +1079,8 @@ const HomePage = () => {
             {/* Brand Logo & Tag */}
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-2.5">
-<<<<<<< HEAD
                 <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md" />
                 <span className="text-xl font-bold tracking-tight text-white">ShopEase <span className="text-amber-500">Nepal</span></span>
-=======
                 <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
                   <svg
                     className="w-4 h-4 text-white"
@@ -1115,7 +1099,6 @@ const HomePage = () => {
                 <span className="text-xl font-bold tracking-tight text-white">
                   ShopEase <span className="text-amber-500">Nepal</span>
                 </span>
->>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
                 Your premium destination for authentic Nepalese handicrafts,

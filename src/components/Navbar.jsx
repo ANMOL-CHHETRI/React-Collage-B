@@ -43,11 +43,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-<<<<<<< HEAD
-            <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
-=======
-            <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200">
+            {/* <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" /> */}
+              <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200">
               <svg
                 className="w-4 h-4 text-white"
                 fill="none"
@@ -62,11 +59,12 @@ const Navbar = () => {
                 />
               </svg>
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
+          
+            {/* <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               ShopEase{" "}
               <span className="text-amber-600 font-semibold">Nepal</span>
-            </span>
->>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
+            </span> */}
           </Link>
 
           {/* Desktop Nav */}
