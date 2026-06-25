@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router"
+import { Navigate} from "react-router"
 import { AuthProvider } from "./context/AuthContext"
 import { CartProvider } from "./context/CartContext"
 import { ProductProvider } from "./context/ProductContext"
