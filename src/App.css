@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
+<<<<<<< HEAD
 @custom-variant dark (&:where(.dark, .dark *));
+=======
+
+>>>>>>> 5df915d3b849f30ea8c388cd33a7a9cc3f9e76ef
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

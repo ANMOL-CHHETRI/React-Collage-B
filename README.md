@@ -63,3 +63,14 @@ npm run build   # production build
 ## Tech Stack
 
 React 19 + Vite + Tailwind CSS v4 + react-router v8
+
+
+## Development Team
+
+| Team Member        | Role                   | Task                                     |
+| ------------------ | ---------------------- | ---------------------------------------- |
+| Anmol Chhetri      | Project Lead           | Project coordination and team management |
+| Sahil Tuladhar     | Backend Developer      | Backend development                      |
+| Sarang Limbu       | Frontend Developer     | Frontend development                     |
+| Sanskriti Maharjan | UI Component Developer | UI component design and implementation   |
+| Smriti Tamang      | QA & Testing           | Testing and quality assurance            |
