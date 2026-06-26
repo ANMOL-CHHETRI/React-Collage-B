@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react"
 import { useAuth } from "./AuthContext"
 
@@ -19,10 +20,12 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false)
 
   // re-load cart when user changes (login/logout)
-  useEffect(() => {
+  const [prevKey, setPrevKey] = useState(key)
+  if (key !== prevKey) {
+    setPrevKey(key)
     const saved = localStorage.getItem(key)
     setCartItems(saved ? JSON.parse(saved) : [])
-  }, [key])
+  }
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(cartItems))

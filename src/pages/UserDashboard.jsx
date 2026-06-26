@@ -53,13 +53,16 @@ const initialOrders = [
 ]
 
 const UserDashboard = () => {
-  const { user, updateProfile, changePassword } = useAuth()
+  const { user, updateProfile, changePassword, registeredUsers } = useAuth()
   const { addToCart, setIsCartOpen } = useCart()
+
+  const dbUser = user && user.role === "user" ? (registeredUsers || []).find(u => u.username === user.username) : null;
+  const hasViolations = dbUser && dbUser.violations > 0;
 
   const [activeSection, setActiveSection] = useState("orders")
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
-  const [orders, setOrders] = useState(initialOrders)
+  const [orders] = useState(initialOrders)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -157,7 +160,7 @@ const UserDashboard = () => {
   })
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-105 flex flex-col md:flex-row transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col md:flex-row transition-colors duration-300">
       
       {/* SIDEBAR */}
       <aside className="w-full md:w-64 bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 p-6 flex flex-col shrink-0">
@@ -199,8 +202,8 @@ const UserDashboard = () => {
 
           {/* Group 2: My Orders */}
           <div className="space-y-2">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-205">My Orders</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-orange-500" : "border-slate-105 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">My Orders</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button 
                   onClick={() => setActiveSection("orders")} 
@@ -256,6 +259,16 @@ const UserDashboard = () => {
           </Link>
         </div>
       </aside>
+
+      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        {hasViolations && (
+          <div className="bg-red-600 text-white text-center py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 shrink-0 animate-pulse">
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>Warning: You have {dbUser.violations} active violation(s) on your account. Please review our policies to avoid a permanent ban.</span>
+          </div>
+        )}
 
       {/* MAIN CONTENT AREA */}
       {activeSection === "orders" && (
@@ -352,7 +365,7 @@ const UserDashboard = () => {
                           <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
                             {item.name}
                           </h5>
-                          <p className="text-[10px] text-slate-450 dark:text-slate-500 font-medium">
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                             {item.attributes}
                           </p>
                         </div>
@@ -408,7 +421,7 @@ const UserDashboard = () => {
           </div>
 
           {profileSaved && (
-            <div className="bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-150 dark:border-green-900/30 p-4 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+            <div className="bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-900/30 p-4 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
               <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -583,6 +596,7 @@ const UserDashboard = () => {
         </main>
       )}
 
+      </div>
     </div>
   )
 }

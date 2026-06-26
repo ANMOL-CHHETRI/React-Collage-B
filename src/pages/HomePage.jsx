@@ -94,7 +94,6 @@ const HomePage = () => {
 
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProvince, setSelectedProvince] = useState("bagmati");
 
   const [loading, setLoading] = useState(true);
@@ -130,12 +129,10 @@ const HomePage = () => {
 
 
   const filteredProducts = products.filter((p) => {
-    const matchesQuery =
+    return (
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All" || p.category === selectedCategory;
-    return matchesQuery && matchesCategory;
+      p.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   const handlePlaceOrder = (e) => {
@@ -174,7 +171,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-105 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
+    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
       <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
         <div className="absolute top-0 right-0 w-137.5 h-137.5 bg-gradient-to-br from-amber-200/20 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/10 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/4" />
         <div className="absolute bottom-0 left-0 w-112.5 h-112.5 bg-slate-50 dark:bg-slate-900/50 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4" />
@@ -214,7 +211,7 @@ const HomePage = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search traditional Dhaka, Ilam tea, organic honey..."
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-202 dark:border-slate-800 rounded-full py-4 px-6 pr-12 focus:outline-none focus:border-amber-500 focus:bg-white dark:focus:bg-slate-950 transition-all text-slate-800 dark:text-slate-100 text-sm shadow-sm"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full py-4 px-6 pr-12 focus:outline-none focus:border-amber-500 focus:bg-white dark:focus:bg-slate-950 transition-all text-slate-800 dark:text-slate-100 text-sm shadow-sm"
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
                     <svg
@@ -256,7 +253,7 @@ const HomePage = () => {
 
                   <a
                     href="#delivery"
-                    className="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-305 border border-slate-200 dark:border-slate-800 font-semibold px-7 py-3.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-250 flex items-center gap-2"
+                    className="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 font-semibold px-7 py-3.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-250 flex items-center gap-2"
                   >
                     View Shipping Map
                     <svg
@@ -306,7 +303,7 @@ const HomePage = () => {
                       </span>
                       <button
                         onClick={() => addToCart(featuredProduct)}
-                        className="bg-white dark:bg-slate-900 text-slate-955 dark:text-amber-400 font-bold px-4 py-2 rounded-xl text-xs transition duration-200 flex items-center gap-1.5 shadow cursor-pointer hover:bg-amber-500 hover:text-white"
+                        className="bg-white dark:bg-slate-900 text-slate-950 dark:text-amber-400 font-bold px-4 py-2 rounded-xl text-xs transition duration-200 flex items-center gap-1.5 shadow cursor-pointer hover:bg-amber-500 hover:text-white"
                       >
                         Add to Cart
                       </button>
@@ -319,7 +316,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="bg-white dark:bg-slate-955 border-y border-slate-100 dark:border-slate-800 py-16 transition-colors duration-300">
+      <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
             <div>
@@ -330,28 +327,14 @@ const HomePage = () => {
                 Curated Local Collections
               </h2>
             </div>
-            <button
-              onClick={() => setSelectedCategory("All")}
-              className={`text-sm font-semibold transition mt-3 md:mt-0 ${
-                selectedCategory === "All"
-                  ? "text-amber-600 underline"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              Clear Filter
-            </button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.map((cat) => (
-              <button
+              <Link
                 key={cat.name}
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 border transition text-left group cursor-pointer ${
-                  selectedCategory === cat.name
-                    ? "border-amber-500 bg-amber-50/30 dark:bg-amber-955/20 ring-1 ring-amber-500"
-                    : "border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700"
-                }`}
+                to={`/category/${encodeURIComponent(cat.name)}`}
+                className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition text-left group cursor-pointer block"
               >
                 <div className="rounded-xl overflow-hidden aspect-[4/3] mb-4 bg-slate-200 dark:bg-slate-800">
                   <img
@@ -366,7 +349,7 @@ const HomePage = () => {
                 <span className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">
                   {cat.count}
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
@@ -396,7 +379,7 @@ const HomePage = () => {
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-800 p-6">
+            <div className="text-center py-16 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
               <svg
                 className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4"
                 fill="none"
@@ -418,12 +401,11 @@ const HomePage = () => {
               </p>
               <button
                 onClick={() => {
-                  setSelectedCategory("All");
                   setSearchQuery("");
                 }}
                 className="mt-4 bg-amber-500 text-white font-semibold text-xs px-4.5 py-2 rounded-full hover:bg-amber-600 transition shadow cursor-pointer"
               >
-                Reset Filters
+                Reset Search
               </button>
             </div>
           ) : (
@@ -548,7 +530,7 @@ const HomePage = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{t.name}</h4>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-505 block">{t.location}, Nepal</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{t.location}, Nepal</span>
                   </div>
                 </div>
               </div>
@@ -577,7 +559,7 @@ const HomePage = () => {
                 >
                   <span>{faq.q}</span>
                   <svg
-                    className={`w-4 h-4 text-slate-400 dark:text-slate-505 transition-transform duration-250 ${
+                    className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-250 ${
                       openFaq === faq.q
                         ? "rotate-180 text-amber-600 dark:text-amber-400"
                         : ""
@@ -611,7 +593,7 @@ const HomePage = () => {
           />
 
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-slate-955 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right duration-300">
+            <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right duration-300">
               <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
                   {checkoutStep ? "Shipping Details (COD)" : `My Cart (${cartCount})`}
@@ -645,7 +627,7 @@ const HomePage = () => {
                     </div>
 
                     {orderError && (
-                      <div className="bg-red-50 text-red-700 border border-red-150 p-2.5 rounded-lg text-xs font-semibold">
+                      <div className="bg-red-50 text-red-700 border border-red-200 p-2.5 rounded-lg text-xs font-semibold">
                         {orderError}
                       </div>
                     )}
@@ -675,7 +657,7 @@ const HomePage = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-505 dark:text-slate-400 uppercase block">Delivery Province</label>
+                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Delivery Province</label>
                       <select
                         value={provinceValue}
 
@@ -683,7 +665,7 @@ const HomePage = () => {
                           setSelectedProvince(e.target.value);
 
                         }}
-                        className="w-full text-xs border border-slate-202 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
+                        className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
                       >
                         {Object.values(provincesData).map((p) => (
                           <option key={p.id} value={p.id}>
@@ -695,12 +677,12 @@ const HomePage = () => {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-505 dark:text-slate-400 uppercase block">City / Town</label>
+                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">City / Town</label>
                         <select
                           required
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
-                          className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-955 transition cursor-pointer"
+                          className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
                         >
                           {provincesData[provinceValue]?.cities?.map((c) => (
 
@@ -711,24 +693,24 @@ const HomePage = () => {
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-505 dark:text-slate-400 uppercase block">Zip / Postcode</label>
+                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Zip / Postcode</label>
                         <input
                           type="text"
                           placeholder="e.g. 44600"
-                          className="w-full text-xs border border-slate-202 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                          className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-505 dark:text-slate-400 uppercase block">Street Address</label>
+                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Street Address</label>
                       <input
                         type="text"
                         required
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                         placeholder="House no, Street name, Tole, Landmark"
-                        className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-955 transition"
+                        className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
                       />
                     </div>
 
@@ -745,7 +727,7 @@ const HomePage = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">Your cart is empty</h3>
-                    <p className="text-slate-400 dark:text-slate-505 text-xs max-w-[240px] mx-auto">
+                    <p className="text-slate-400 dark:text-slate-500 text-xs max-w-[240px] mx-auto">
                       Explore Nepalese crafts, garments, and tea to add them here.
                     </p>
                   </div>
@@ -773,7 +755,7 @@ const HomePage = () => {
                             <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-lg">
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                className="px-2 py-0.5 text-slate-505 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-55 dark:hover:bg-slate-900 rounded-l-lg transition cursor-pointer"
+                                className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-l-lg transition cursor-pointer"
                               >
                                 -
                               </button>
@@ -782,7 +764,7 @@ const HomePage = () => {
                               </span>
                               <button
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="px-2 py-0.5 text-slate-550 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-r-lg transition cursor-pointer"
+                                className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-r-lg transition cursor-pointer"
                               >
                                 +
                               </button>
@@ -805,15 +787,15 @@ const HomePage = () => {
               {cartItems.length > 0 && !checkoutStep && (
                 <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 space-y-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-505 dark:text-slate-400 font-semibold">Subtotal</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-semibold">Subtotal</span>
                     <span className="font-extrabold text-slate-900 dark:text-white">Rs. {cartSubtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-450 dark:text-slate-500 font-medium">
+                  <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
                     <span>Shipping calculated at checkout. Delivery across Nepal.</span>
                   </div>
                   <button
                     onClick={() => setCheckoutStep(true)}
-                    className="w-full bg-slate-950 dark:bg-slate-100 text-white dark:text-slate-955 font-bold py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-md transition duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full bg-slate-950 dark:bg-slate-100 text-white dark:text-slate-950 font-bold py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-md transition duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     Proceed to Delivery (COD)
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -826,11 +808,11 @@ const HomePage = () => {
               {checkoutStep && (
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-505 dark:text-slate-400 font-medium">Cart Subtotal:</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Cart Subtotal:</span>
                     <span className="font-bold text-slate-700 dark:text-slate-300">Rs. {cartSubtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-550 dark:text-slate-400 font-medium">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">
                       Shipping ({provincesData[provinceValue].name}):
 
                     </span>
@@ -878,7 +860,7 @@ const HomePage = () => {
               <h4 className="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800 pb-1.5 mb-2.5">
                 Shipping & Delivery Summary
               </h4>
-              <div className="grid grid-cols-2 gap-2 text-slate-650 dark:text-slate-400">
+              <div className="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-400">
                 <div>
                   <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Recipient Name</span>
                   <span className="font-bold text-slate-700 dark:text-slate-300">{orderSuccess.fullName}</span>
@@ -906,16 +888,16 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-sm font-bold pt-4 px-1 border-t border-slate-150 dark:border-slate-800 mt-5">
+            <div className="flex justify-between items-center text-sm font-bold pt-4 px-1 border-t border-slate-200 dark:border-slate-800 mt-5">
               <span className="text-slate-700 dark:text-slate-300">Total Invoice (NPR)</span>
               <span className="text-amber-600 dark:text-amber-400 text-base font-extrabold">
                 Rs. {orderSuccess.total.toLocaleString()}
               </span>
             </div>
 
-            <p className="text-[10px] text-slate-450 dark:text-slate-500 leading-normal text-center mt-6">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-normal text-center mt-6">
               Our support desk will call you at {" "}
-              <strong className="text-slate-605 dark:text-slate-300">{orderSuccess.phone}</strong>
+              <strong className="text-slate-600 dark:text-slate-300">{orderSuccess.phone}</strong>
               {" "}within 12 hours to verify your delivery address before dispatching the rider.
             </p>
 
@@ -968,36 +950,36 @@ const HomePage = () => {
               <h4 className="text-xs font-bold uppercase tracking-wider text-white">Catalog</h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <button
-                    onClick={() => setSelectedCategory("Traditional Apparel")}
-                    className="hover:text-amber-500 transition-colors text-left cursor-pointer"
+                  <Link
+                    to={`/category/${encodeURIComponent("Traditional Apparel")}`}
+                    className="hover:text-amber-500 transition-colors text-left block"
                   >
                     Apparel
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => setSelectedCategory("Organic Tea & Coffee")}
-                    className="hover:text-amber-500 transition-colors text-left cursor-pointer"
+                  <Link
+                    to={`/category/${encodeURIComponent("Organic Tea & Coffee")}`}
+                    className="hover:text-amber-500 transition-colors text-left block"
                   >
                     Tea & Coffee
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => setSelectedCategory("Local Handicrafts")}
-                    className="hover:text-amber-500 transition-colors text-left cursor-pointer"
+                  <Link
+                    to={`/category/${encodeURIComponent("Local Handicrafts")}`}
+                    className="hover:text-amber-500 transition-colors text-left block"
                   >
                     Handicrafts
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => setSelectedCategory("Herbs & Spices")}
-                    className="hover:text-amber-500 transition-colors text-left cursor-pointer"
+                  <Link
+                    to={`/category/${encodeURIComponent("Herbs & Spices")}`}
+                    className="hover:text-amber-500 transition-colors text-left block"
                   >
                     Herbs & Spices
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>

@@ -198,9 +198,6 @@ const NepalDeliveryMap = ({
     const geoLayer = L.geoJson(nepalGeoJson, {
       style: getStyle,
       onEachFeature(feature, layer) {
-        const pid  = feature.properties.id
-        const name = feature.properties.name || `Province ${pid}`
-
         layer.on({
           mouseover: highlightFeature,
           mouseout:  resetHighlight,

@@ -13,6 +13,7 @@ import UserProfilePage from "./pages/UserProfilePage"
 import PolicyPage from "./pages/PolicyPage"
 import CartPage from "./pages/CartPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
+import CategoryPage from "./pages/CategoryPage"
 import ContactPage from "./pages/ContactPage"
 import MainLayout from "./layouts/MainLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -31,6 +32,7 @@ const Router = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
+          <Route path="/category/:categoryName" element={<CategoryPage />} />
           </Route>
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />

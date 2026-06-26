@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router"
+import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
 
 const PROFILE_KEY = "shopease_profile"
@@ -15,7 +15,6 @@ const loadProfile = () => {
 
 const UserProfilePage = () => {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [profile, setProfile] = useState(loadProfile)
   const [saved, setSaved] = useState(false)
 

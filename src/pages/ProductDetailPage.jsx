@@ -51,7 +51,12 @@ const ProductDetailPage = () => {
               <h1 className="text-3xl font-bold text-slate-900">{product.name}</h1>
               <p className="text-3xl font-bold text-amber-600">Rs. {product.price.toLocaleString()}</p>
               <p className="text-slate-600 leading-relaxed">{product.description}</p>
-              <p className="text-sm text-slate-400"><span className="font-medium">Category:</span> {product.category}</p>
+              <p className="text-sm text-slate-400">
+                <span className="font-medium">Category:</span>{" "}
+                <Link to={`/category/${encodeURIComponent(product.category)}`} className="text-amber-600 dark:text-amber-400 hover:underline">
+                  {product.category}
+                </Link>
+              </p>
               <button onClick={() => addToCart(product)} className="w-full sm:w-auto px-8 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition cursor-pointer">
                 Add to Cart
               </button>

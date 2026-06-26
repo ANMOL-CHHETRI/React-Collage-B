@@ -1,13 +1,27 @@
-import { createContext, useContext, useState } from "react"
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect } from "react"
 import { useNavigate } from "react-router"
 
 const AuthContext = createContext()
 
 const ADMIN_CREDS_KEY = "shopease_admin_credentials"
 const USER_CREDS_KEY = "shopease_user_credentials"
+const REGISTERED_USERS_KEY = "shopease_registered_users"
 
 const DEFAULT_ADMIN_CREDENTIALS = { username: "admin", password: "admin123" }
 const DEFAULT_USER_CREDENTIALS = { username: "user", password: "user123" }
+
+const DEFAULT_USERS = [
+  {
+    name: "Sahil Adhikari",
+    username: "user",
+    email: "user@test.com",
+    phone: "9841234567",
+    address: "New Baneshwor, Kathmandu",
+    violations: 0,
+    banned: false
+  }
+]
 
 const loadCredentials = (key, defaults) => {
   try {
@@ -29,8 +43,41 @@ export const AuthProvider = ({ children }) => {
   const [userCredentials, setUserCredentials] = useState(() =>
     loadCredentials(USER_CREDS_KEY, DEFAULT_USER_CREDENTIALS)
   )
+  const [registeredUsers, setRegisteredUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem(REGISTERED_USERS_KEY)
+      return saved ? JSON.parse(saved) : DEFAULT_USERS
+    } catch {
+      return DEFAULT_USERS
+    }
+  })
   const [error, setError] = useState("")
   const navigate = useNavigate()
+
+  const saveRegisteredUsers = (usersList) => {
+    setRegisteredUsers(usersList)
+    localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(usersList))
+  }
+
+  const updateUserViolations = (username, delta) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, violations: Math.max(0, u.violations + delta) }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+  }
+
+  const toggleUserBan = (username) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, banned: !u.banned }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+  }
 
   const loginAdmin = (username, password) => {
     setError("")
@@ -57,24 +104,29 @@ export const AuthProvider = ({ children }) => {
   const loginUser = (username, password) => {
     setError("")
     const trimmedUser = username.trim()
-    if (
-      trimmedUser !== userCredentials.username ||
-      password !== userCredentials.password
-    ) {
+    const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
+
+    if (!foundUser || password !== userCredentials.password) {
       setError("Invalid user username or password")
       return false
     }
+
+    if (foundUser.banned) {
+      setError("Your account has been banned due to violations.")
+      return false
+    }
+
     const regularUser = {
       role: "user",
-      name: "Sahil Adhikari",
-      username: userCredentials.username,
-      email: "user@test.com",
-      phone: "9841234567",
-      address: "New Baneshwor, Kathmandu",
+      name: foundUser.name,
+      username: foundUser.username,
+      email: foundUser.email,
+      phone: foundUser.phone,
+      address: foundUser.address,
     }
     setUser(regularUser)
     localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-    navigate("/user/dashboard")
+    navigate("/")
     return true
   }
 
@@ -99,21 +151,24 @@ export const AuthProvider = ({ children }) => {
       return false
     }
 
-    if (
-      trimmedUser === userCredentials.username &&
-      password === userCredentials.password
-    ) {
+    const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
+    if (foundUser && password === userCredentials.password) {
+      if (foundUser.banned) {
+        setError("Your account has been banned due to violations.")
+        return false
+      }
+
       const regularUser = {
         role: "user",
-        name: "Sahil Adhikari",
-        username: userCredentials.username,
-        email: "user@test.com",
-        phone: "9841234567",
-        address: "New Baneshwor, Kathmandu",
+        name: foundUser.name,
+        username: foundUser.username,
+        email: foundUser.email,
+        phone: foundUser.phone,
+        address: foundUser.address,
       }
       setUser(regularUser)
       localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-      navigate("/user/dashboard")
+      navigate("/")
       return true
     }
 
@@ -185,6 +240,32 @@ export const AuthProvider = ({ children }) => {
     navigate("/admin-login")
   }
 
+  useEffect(() => {
+    if (user && user.role === "user") {
+      const found = registeredUsers.find((u) => u.username === user.username)
+      if (found) {
+        if (found.banned) {
+          logout()
+        } else if (
+          found.name !== user.name ||
+          found.email !== user.email ||
+          found.phone !== user.phone ||
+          found.address !== user.address
+        ) {
+          const updatedUser = {
+            ...user,
+            name: found.name,
+            email: found.email,
+            phone: found.phone,
+            address: found.address
+          }
+          setUser(updatedUser)
+          localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+        }
+      }
+    }
+  }, [registeredUsers, user])
+
   return (
     <AuthContext.Provider
       value={{
@@ -198,6 +279,9 @@ export const AuthProvider = ({ children }) => {
         updateProfile,
         logout,
         logoutAdmin,
+        registeredUsers,
+        updateUserViolations,
+        toggleUserBan,
       }}
     >
       {children}

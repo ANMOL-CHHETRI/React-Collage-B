@@ -14,7 +14,7 @@ const UserLoginPage = () => {
   };
 
   if (user?.role === "user") {
-    navigate("/user/dashboard", { replace: true });
+    navigate("/", { replace: true });
     return null;
   }
 

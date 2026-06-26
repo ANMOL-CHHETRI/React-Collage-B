@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router"
+import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
@@ -30,12 +30,11 @@ const sidebarItems = [
 const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
 
 const AdminDashboard = () => {
-  const { user, logoutAdmin, changePassword } = useAuth()
+  const { user, logoutAdmin, changePassword, registeredUsers, updateUserViolations, toggleUserBan } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
 
   const [activeSection, setActiveSection] = useState("dashboard")
   const [mobileOpen, setMobileOpen] = useState(false)
-  const location = useLocation()
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState("")
@@ -481,15 +480,61 @@ const AdminDashboard = () => {
 
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Registered Accounts</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-slate-950 rounded-lg">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-950/40 rounded-full flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold">U</div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">Sahil Adhikari</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">user@test.com</p>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 font-medium">User</span>
+                <div className="space-y-4">
+                  {registeredUsers.map((regUser) => (
+                    <div key={regUser.username} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-slate-800">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/40 rounded-full flex items-center justify-center text-blue-700 dark:text-blue-400 font-bold text-lg">
+                          {regUser.name[0]}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-gray-900 dark:text-white">{regUser.name}</p>
+                            {regUser.banned && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">Banned</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{regUser.email}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">Username: <span className="font-mono font-medium">{regUser.username}</span></p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-4">
+                        {/* Violations Counter */}
+                        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-1">
+                          <button
+                            onClick={() => updateUserViolations(regUser.username, -1)}
+                            className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
+                            title="Decrease violations"
+                          >
+                            -
+                          </button>
+                          <span className="text-xs font-semibold px-2 text-gray-700 dark:text-gray-200">
+                            Violations: <strong className="text-red-600">{regUser.violations}</strong>
+                          </span>
+                          <button
+                            onClick={() => updateUserViolations(regUser.username, 1)}
+                            className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
+                            title="Increase violations"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Ban / Unban Button */}
+                        <button
+                          onClick={() => toggleUserBan(regUser.username)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer ${
+                            regUser.banned
+                              ? "bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                              : "bg-red-600 hover:bg-red-700 text-white shadow-sm"
+                          }`}
+                        >
+                          {regUser.banned ? "Unban User" : "Ban User"}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
