@@ -16,6 +16,7 @@ import ProductDetailPage from "./pages/ProductDetailPage"
 import ContactPage from "./pages/ContactPage"
 import MainLayout from "./layouts/MainLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
+import FAQPage from "./pages/FAQPage"
 
 const Router = () => {
   return (
@@ -29,6 +30,7 @@ const Router = () => {
             <Route path="/about" element={<AboutPage />} />
           <Route path="/policy" element={<PolicyPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           </Route>

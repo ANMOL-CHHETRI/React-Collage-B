@@ -136,7 +136,7 @@ const Navbar = () => {
               Delivery Coverage
             </a>
             <a
-              href="#faq"
+              href="/faq"
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200"
             >
               FAQ
