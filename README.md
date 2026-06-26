@@ -23,7 +23,7 @@
 
 | Credential | Value           |
 | ---------- | --------------- |
-| Email      | `user@test.com` |
+| Email      | `user|
 | Password   | `user123`       |
 | Login URL  | `/user-login`   |
 
