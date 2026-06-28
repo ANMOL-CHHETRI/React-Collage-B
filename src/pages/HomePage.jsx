@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, NavLink } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
@@ -6,29 +6,59 @@ import { provincesData } from "../data/provincesData";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 
+const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(!src)
+  const imgRef = useRef(null)
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true)
+    }
+  }, [src])
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
+      )}
+      <img
+        ref={imgRef}
+        referrerPolicy="no-referrer"
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
+        loading="lazy"
+      />
+    </div>
+  )
+}
+
 const categories = [
   {
     name: "Traditional Apparel",
     image:
-      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=400&auto=format&fit=crop&q=80",
+      "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg",
     count: "12 Items",
   },
   {
     name: "Organic Tea & Coffee",
     image:
-      "https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=400&auto=format&fit=crop&q=80",
+      "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
     count: "8 Items",
   },
   {
     name: "Local Handicrafts",
     image:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&auto=format&fit=crop&q=80",
+      "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
     count: "15 Items",
   },
   {
     name: "Herbs & Spices",
     image:
-      "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&auto=format&fit=crop&q=80",
+      "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
     count: "10 Items",
   },
 ];
@@ -284,7 +314,7 @@ const HomePage = () => {
 
               <div className="w-full max-w-115 bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl p-5 relative overflow-hidden">
                 <div className="relative rounded-2xl overflow-hidden aspect-square shadow-inner">
-                  <img
+                  <ImageWithSkeleton
                     src={featuredProduct?.image}
                     alt={featuredProduct?.name}
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
@@ -337,7 +367,7 @@ const HomePage = () => {
                 className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition text-left group cursor-pointer block"
               >
                 <div className="rounded-xl overflow-hidden aspect-[4/3] mb-4 bg-slate-200 dark:bg-slate-800">
-                  <img
+                  <ImageWithSkeleton
                     src={cat.image}
                     alt={cat.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
@@ -418,21 +448,23 @@ const HomePage = () => {
                 >
                   <div>
                     <div className="relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-100 dark:bg-slate-900">
-                      <img
+                      <ImageWithSkeleton
                         src={p.image}
                         alt={p.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&auto=format&fit=crop&q=80";
-                        }}
                       />
-                      {p.badge && (
+                      {p.id === 1 ? (
+                        <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5 shadow-lg border border-amber-300 animate-pulse">
+                          <svg referrerPolicy="no-referrer" className="w-3 h-3 fill-current text-slate-950" viewBox="0 0 24 24">
+                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z"/>
+                          </svg>
+                          Most Sold
+                        </span>
+                      ) : p.badge ? (
                         <span className="absolute top-2 left-2 bg-slate-900/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">
                           {p.badge}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                     <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block">
                       {p.category}
@@ -735,7 +767,7 @@ const HomePage = () => {
                   <div className="space-y-4">
                     {cartItems.map((item) => (
                       <div key={item.id} className="flex gap-4 p-3 border border-slate-100 dark:border-slate-800 rounded-xl hover:shadow-sm transition">
-                        <img
+                        <ImageWithSkeleton
                           src={item.image}
                           alt={item.name}
                           className="w-16 h-16 rounded-lg object-cover bg-slate-50 dark:bg-slate-900 shrink-0"
@@ -916,7 +948,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-2.5">
-                <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25" />
+                <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25" />
                 <span className="text-xl font-bold tracking-tight text-white">
                   ShopEase <span className="text-amber-500">Nepal</span>
                 </span>

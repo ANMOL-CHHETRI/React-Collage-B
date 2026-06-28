@@ -29,7 +29,7 @@ const UserLoginPage = () => {
 
         {/* Left Side Image */}
         <div className="hidden md:flex md:w-2/5 items-center justify-center bg-amber-50">
-          <img
+          <img referrerPolicy="no-referrer"
             src="/login-banner.png"
             alt="Login Banner"
             className="w-full h-full object-cover object-center"

@@ -67,7 +67,7 @@ const CartPage = () => {
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <div key={item.id} className="bg-white rounded-xl p-4 flex items-center gap-4 border border-slate-100 shadow-sm">
-                  <img src={item.image} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
+                  <img referrerPolicy="no-referrer" src={item.image} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>
                     <p className="text-amber-600 font-bold mt-1">Rs. {item.price.toLocaleString()}</p>

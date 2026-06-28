@@ -13,7 +13,7 @@ export const defaultProducts = [
     id: 2,
     name: "Himalayan Orthodox Golden Tea",
     price: 850,
-    image: "https://i.pinimg.com/736x/21/df/97/21df97eb098e945c7e148cebbd8e3d09.jpg",
+    image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
     badge: "Organic",
     category: "Organic Tea & Coffee",
     description: "Premium black tea hand-picked from the high-altitude hills of Ilam, Nepal.",
@@ -23,7 +23,7 @@ export const defaultProducts = [
     id: 3,
     name: "Handmade Shakyamuni Buddha Statue",
     price: 18500,
-    image: "https://i.pinimg.com/736x/8f/58/01/8f5801314672479768bada91c28c8dbb.jpg",
+    image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
     badge: "Handcrafted",
     category: "Local Handicrafts",
     description: "Exquisite copper statue with 24k gold gilding, handcrafted by master artisans in Patan.",
@@ -33,7 +33,7 @@ export const defaultProducts = [
     id: 4,
     name: "Organic Wild Himalayan Honey",
     price: 1500,
-    image: "https://i.pinimg.com/736x/01/be/df/01bedf72df9b4b035178652d88820f4f.jpg",
+    image: "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg",
     badge: "Pure & Raw",
     category: "Herbs & Spices",
     description: "100% pure raw honey harvested from the wild cliffs of Annapurna region.",
@@ -43,7 +43,7 @@ export const defaultProducts = [
     id: 5,
     name: "Pure Pashmina Cashmere Shawl",
     price: 9500,
-    image: "https://i.pinimg.com/736x/11/49/74/114974246fa4d567c9c05e54d8ecdb2f.jpg",
+    image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg",
     badge: "Premium Quality",
     category: "Traditional Apparel",
     description: "Ultra-soft, warm, and authentic Chyangra Pashmina shawl hand-woven in Kathmandu Valley.",
@@ -53,7 +53,7 @@ export const defaultProducts = [
     id: 6,
     name: "Gorkha Khukuri (Authentic Service)",
     price: 4500,
-    image: "https://i.pinimg.com/736x/9f/fa/b1/9ffab17cfd6c62f275727931b26c04f5.jpg",
+    image: "https://i.pinimg.com/736x/09/41/ae/0941aefdc7b7a3151698e1c3dcc3853d.jpg",
     badge: "Artisanal",
     category: "Local Handicrafts",
     description: "Genuine hand-forged steel Khukuri, crafted by traditional blacksmiths of Nepal.",
@@ -63,7 +63,7 @@ export const defaultProducts = [
     id: 7,
     name: "Organic Himalayan Cardamom (Alaichi)",
     price: 650,
-    image: "https://i.pinimg.com/736x/3f/82/ff/3f82ff025c898c0d1279a557876a3e5c.jpg",
+    image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
     badge: "Fresh Spice",
     category: "Herbs & Spices",
     description: "High-grade, aromatic large cardamom pods harvested in the Eastern hills of Taplejung.",
@@ -73,7 +73,7 @@ export const defaultProducts = [
     id: 8,
     name: "Mt. Everest Arabica Coffee Beans",
     price: 1100,
-    image: "https://i.pinimg.com/736x/82/05/69/820569994589255755.jpg",
+    image: "https://i.pinimg.com/736x/63/0d/01/630d013345d875610fec89f4c28dd2b6.jpg",
     badge: "Single Origin",
     category: "Organic Tea & Coffee",
     description: "Organic single-origin Arabica beans grown in the high altitude volcanic soils of Nuwakot.",
@@ -90,7 +90,24 @@ const mergeSavedProducts = (saved) => {
     if (!existing) return def
     
     // Auto-migrate if image is the old unsplash link or name/description matches defaults
-    const image = (!existing.image || existing.image.includes("unsplash.com")) ? def.image : existing.image
+    const isOldOrBroken = !existing.image || 
+      existing.image.includes("unsplash.com") || 
+      existing.image.includes("21/df/97") || 
+      existing.image.includes("8f/58/01") || 
+      existing.image.includes("01/be/df") || 
+      existing.image.includes("11/49/74") || 
+      existing.image.includes("9f/fa/b1") || 
+      existing.image.includes("3f/82/ff") || 
+      existing.image.includes("82/05/69") || 
+      existing.image.includes("d6/1f/26") || 
+      existing.image.includes("91/9a/c0") || 
+      existing.image.includes("c9/79/fb") || 
+      existing.image.includes("be/98/94") || 
+      existing.image.includes("21/bc/d0") || 
+      existing.image.includes("e4/c7/2a") || 
+      existing.image.includes("80/7e/61") || 
+      existing.image.includes("43/e7/70")
+    const image = isOldOrBroken ? def.image : existing.image
     return { ...existing, image }
   })
   
@@ -102,6 +119,15 @@ const mergeSavedProducts = (saved) => {
 
 export const loadProducts = () => {
   try {
+    // Version bump forces a refresh of cached products so new images apply
+    const DATA_VERSION = "v3-pinterest-2027-06"
+    const storedVersion = localStorage.getItem("shopease_data_version")
+    if (storedVersion !== DATA_VERSION) {
+      // Clear stale product cache so new default images are used
+      localStorage.removeItem("shopease_products")
+      localStorage.setItem("shopease_data_version", DATA_VERSION)
+      return defaultProducts
+    }
     const stored = localStorage.getItem("shopease_products")
     if (!stored) return defaultProducts
     return mergeSavedProducts(JSON.parse(stored))

@@ -1,0 +1,80 @@
+import urllib.request
+import urllib.parse
+import re
+import subprocess
+import time
+import json
+
+products = {
+    "Organic Wild Himalayan Honey": "site:i.pinimg.com \"honey\" \"nepal\"",
+    "Pure Pashmina Cashmere Shawl": "site:i.pinimg.com \"pashmina\" OR \"shawl\" \"nepal\"",
+    "Gorkha Khukuri": "site:i.pinimg.com \"kukri\" OR \"khukuri\"",
+    "Organic Himalayan Cardamom": "site:i.pinimg.com \"cardamom\"",
+    "Mt. Everest Arabica Coffee Beans": "site:i.pinimg.com \"coffee beans\"",
+    "Organic Tea & Coffee Category": "site:i.pinimg.com \"tea leaves\" OR \"coffee cup\"",
+    "Local Handicrafts Category": "site:i.pinimg.com \"wood carving\" OR \"handicraft\" \"nepal\"",
+    "Herbs & Spices Category": "site:i.pinimg.com \"spices\" \"nepal\""
+}
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+}
+
+def check_url_with_curl(url):
+    try:
+        cmd = [
+            'curl.exe', '-I', '-s',
+            '-H', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            '-H', 'Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            url
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+        stdout = res.stdout.lower()
+        if "200 ok" in stdout and "content-type: image/" in stdout:
+            return True
+    except Exception as e:
+        pass
+    return False
+
+results = {}
+
+for name, query in products.items():
+    print(f"Searching direct images for {name}...")
+    search_url = 'https://search.yahoo.com/search?p=' + urllib.parse.quote(query)
+    found_accessible = False
+    try:
+        req = urllib.request.Request(search_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=5) as r:
+            html = r.read().decode('utf-8')
+        
+        # Find all i.pinimg.com URLs
+        img_urls = re.findall(r'https://i\.pinimg\.com/[a-zA-Z0-9_/.-]+\.(?:jpg|png|jpeg)', html)
+        unique_urls = list(dict.fromkeys(img_urls))
+        print(f"Found {len(unique_urls)} raw image links on search results page.")
+        
+        for img_url in unique_urls[:20]:
+            # Convert size to 736x or originals
+            url_to_test = img_url
+            if "originals" in img_url:
+                url_to_test = img_url.replace("originals", "736x")
+            elif "236x" in img_url:
+                url_to_test = img_url.replace("236x", "736x")
+            
+            print(f"Testing image: {url_to_test}")
+            if check_url_with_curl(url_to_test):
+                results[name] = url_to_test
+                print(f"-> FOUND ACCESSIBLE IMAGE: {url_to_test}")
+                found_accessible = True
+                break
+            time.sleep(0.5)
+    except Exception as e:
+        print(f"Error searching for {name}: {e}")
+        
+    if not found_accessible:
+        print(f"No REAL image found for {name}")
+    time.sleep(2)
+
+print("\nAll Verified Hot-linkable Pinterest Images (200 OK + Content-Type: image/):")
+print(json.dumps(results, indent=2))
+with open("verified_pins_accurate.json", "w") as f:
+    json.dump(results, f, indent=2)

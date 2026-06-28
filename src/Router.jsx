@@ -18,6 +18,7 @@ import ContactPage from "./pages/ContactPage"
 import MainLayout from "./layouts/MainLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
 import FAQPage from "./pages/FAQPage"
+import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
 
 const Router = () => {
   return (
@@ -35,6 +36,7 @@ const Router = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />
           </Route>
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />

@@ -30,7 +30,7 @@ const sidebarItems = [
 const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
 
 const AdminDashboard = () => {
-  const { user, logoutAdmin, changePassword, registeredUsers, updateUserViolations, toggleUserBan } = useAuth()
+  const { user, logoutAdmin, changePassword, registeredUsers, updateUserViolations, toggleUserBan, theme, toggleTheme } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
 
   const [activeSection, setActiveSection] = useState("dashboard")
@@ -49,8 +49,7 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("name")
 
-  // Theme state
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
+
 
   // Loading state
   const [loading, setLoading] = useState(true)
@@ -59,18 +58,7 @@ const AdminDashboard = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-    localStorage.setItem("theme", theme)
-  }, [theme])
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"))
-  }
 
   const handleChangePassword = (e) => {
     e.preventDefault()
@@ -334,7 +322,7 @@ const AdminDashboard = () => {
                         <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60 cursor-pointer file:cursor-pointer" />
                         {form.image && (
                           <div className="mt-2 flex items-center gap-3">
-                            <img src={form.image} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-slate-700" />
+                            <img referrerPolicy="no-referrer" src={form.image} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-slate-700" />
                             <span className="text-xs text-gray-400 dark:text-gray-500">Image ready</span>
                           </div>
                         )}
@@ -382,7 +370,7 @@ const AdminDashboard = () => {
                           return (
                             <tr key={product.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
                               <td className="px-4 py-3">
-                                <img src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                                <img referrerPolicy="no-referrer" src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
                               </td>
                               <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{product.name}</td>
                               <td className="px-4 py-3"><span className="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-md text-xs">{product.category}</span></td>

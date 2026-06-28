@@ -1,8 +1,38 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
 import { useCart } from "../context/CartContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
+
+const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(!src)
+  const imgRef = useRef(null)
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true)
+    }
+  }, [src])
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
+      )}
+      <img
+        ref={imgRef}
+        referrerPolicy="no-referrer"
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
+        loading="lazy"
+      />
+    </div>
+  )
+}
 
 const initialOrders = [
   {
@@ -16,7 +46,7 @@ const initialOrders = [
         attributes: "Compatibility By Model: Vivo V23e, Color Family: Black",
         price: 223,
         qty: 1,
-        image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=120&auto=format&fit=crop&q=80"
+        image: "https://i.pinimg.com/736x/3f/82/ff/3f82ff025c898c0d1279a557876a3e5c.jpg"
       }
     ]
   },
@@ -31,7 +61,7 @@ const initialOrders = [
         attributes: "Color Family: Black",
         price: 1950,
         qty: 1,
-        image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=120&auto=format&fit=crop&q=80"
+        image: "https://i.pinimg.com/736x/11/49/74/114974246fa4d567c9c05e54d8ecdb2f.jpg"
       }
     ]
   },
@@ -46,14 +76,14 @@ const initialOrders = [
         attributes: "Material: Copper, Finish: 24k Gold Gilded",
         price: 18500,
         qty: 1,
-        image: "https://images.unsplash.com/photo-1609137144814-72251bb4c004?w=120&auto=format&fit=crop&q=80"
+        image: "https://i.pinimg.com/736x/8f/58/01/8f5801314672479768bada91c28c8dbb.jpg"
       }
     ]
   }
 ]
 
 const UserDashboard = () => {
-  const { user, updateProfile, changePassword, registeredUsers } = useAuth()
+  const { user, updateProfile, changePassword, registeredUsers, theme, toggleTheme } = useAuth()
   const { addToCart, setIsCartOpen } = useCart()
 
   const dbUser = user && user.role === "user" ? (registeredUsers || []).find(u => u.username === user.username) : null;
@@ -81,21 +111,9 @@ const UserDashboard = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [passwordMessage, setPasswordMessage] = useState({ type: "", text: "" })
 
-  // Theme state
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-    localStorage.setItem("theme", theme)
-  }, [theme])
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"))
-  }
+
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
@@ -355,7 +373,7 @@ const UserDashboard = () => {
                   <div className="space-y-4">
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-1">
-                        <img 
+                        <img referrerPolicy="no-referrer" 
                           src={item.image} 
                           alt={item.name} 
                           className="w-16 h-16 rounded-xl object-cover bg-slate-50 dark:bg-slate-900 shrink-0 border border-slate-100 dark:border-slate-800"

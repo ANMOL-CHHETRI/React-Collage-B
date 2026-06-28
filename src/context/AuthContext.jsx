@@ -43,6 +43,20 @@ export const AuthProvider = ({ children }) => {
   const [userCredentials, setUserCredentials] = useState(() =>
     loadCredentials(USER_CREDS_KEY, DEFAULT_USER_CREDENTIALS)
   )
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light")
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+    localStorage.setItem("theme", theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"))
+  }
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
       const saved = localStorage.getItem(REGISTERED_USERS_KEY)
@@ -282,6 +296,8 @@ export const AuthProvider = ({ children }) => {
         registeredUsers,
         updateUserViolations,
         toggleUserBan,
+        theme,
+        toggleTheme,
       }}
     >
       {children}

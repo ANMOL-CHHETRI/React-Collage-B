@@ -7,24 +7,9 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, logout, registeredUsers } = useAuth();
+  const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
 
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition-colors duration-200 py-1.5 px-3 rounded-full dark:hover:text-slate-100  dark:hover:text-slate-100 hover:bg-slate-50${
@@ -54,7 +39,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
+            <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
           </Link>
 
@@ -136,12 +121,9 @@ const Navbar = () => {
             <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
-            <a
-              href="#delivery"
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200"
-            >
+            <NavLink to="/delivery-coverage" className={linkClass}>
               Delivery Coverage
-            </a>
+            </NavLink>
             <a
               href="/faq"
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200"
@@ -391,13 +373,13 @@ const Navbar = () => {
               </div>
             )}
 
-            <a
-              href="#delivery"
+            <NavLink
+              to="/delivery-coverage"
               className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
               onClick={() => setIsOpen(false)}
             >
               Delivery Coverage
-            </a>
+            </NavLink>
             <a
               href="#faq"
               className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"

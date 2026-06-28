@@ -1,8 +1,38 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router"
 import { useProducts } from "../context/ProductContext"
 import { useCart } from "../context/CartContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
+
+const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(!src)
+  const imgRef = useRef(null)
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true)
+    }
+  }, [src])
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
+      )}
+      <img
+        ref={imgRef}
+        referrerPolicy="no-referrer"
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
+        loading="lazy"
+      />
+    </div>
+  )
+}
 
 const CategoryPage = () => {
   const { categoryName } = useParams()
@@ -160,21 +190,23 @@ const CategoryPage = () => {
                 >
                   <div>
                     <div className="relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-100 dark:bg-slate-900 shadow-inner">
-                      <img
+                      <ImageWithSkeleton
                         src={p.image}
                         alt={p.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&auto=format&fit=crop&q=80";
-                        }}
                       />
-                      {p.badge && (
+                      {p.id === 1 ? (
+                        <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5 shadow-lg border border-amber-300 animate-pulse">
+                          <svg referrerPolicy="no-referrer" className="w-3 h-3 fill-current text-slate-950" viewBox="0 0 24 24">
+                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z"/>
+                          </svg>
+                          Most Sold
+                        </span>
+                      ) : p.badge ? (
                         <span className="absolute top-2 left-2 bg-slate-900/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">
                           {p.badge}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                     <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest block">
                       {p.category}
