@@ -61,16 +61,32 @@ const CategoryPage = () => {
   )
 
   const filteredProducts = categoryProducts
-    .filter((p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name)
-      if (sortBy === "price-asc") return a.price - b.price
-      if (sortBy === "price-desc") return b.price - a.price
-      return 0
-    })
+  .filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (sortBy === "name") {
+      const badgePriority = {
+        "Best Seller": 1,
+        "New Arrival": 2,
+      }
+
+      const priorityA = badgePriority[a.badge] || 3
+      const priorityB = badgePriority[b.badge] || 3
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB
+      }
+
+      return a.name.localeCompare(b.name)
+    }
+
+    if (sortBy === "price-asc") return a.price - b.price
+    if (sortBy === "price-desc") return b.price - a.price
+
+    return 0
+  })
 
   // Visual header details based on category
   const categoryMeta = {
