@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import Footer from "../components/footer";
 
 const features = [
   {
@@ -193,7 +194,7 @@ const AboutPage = () => {
         </button>
 
       </section>
-
+      <Footer />
     </div>
   );
 };

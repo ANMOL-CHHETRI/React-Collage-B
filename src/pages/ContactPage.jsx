@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router"
+import Footer from "../components/footer"
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
@@ -13,7 +14,7 @@ const ContactPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 py-16 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 pt-16 transition-colors duration-300">
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Header section with Breadcrumb */}
@@ -180,8 +181,8 @@ const ContactPage = () => {
             </div>
           </div>
         </div>
-
       </div>
+      <Footer />
     </div>
   )
 }

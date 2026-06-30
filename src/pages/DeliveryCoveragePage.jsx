@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
+import Footer from "../components/footer"
 
 const DeliveryCoveragePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
@@ -103,6 +104,7 @@ const DeliveryCoveragePage = () => {
           ))}
         </div>
       </section>
+      <Footer />
     </div>
   )
 }
