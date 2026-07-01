@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useAuth } from "../context/AuthContext"
 import { useCart } from "../context/CartContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
@@ -85,6 +85,7 @@ const initialOrders = [
 const UserDashboard = () => {
   const { user, updateProfile, changePassword, registeredUsers, theme, toggleTheme } = useAuth()
   const { addToCart, setIsCartOpen } = useCart()
+  const navigate = useNavigate();
 
   const dbUser = user && user.role === "user" ? (registeredUsers || []).find(u => u.username === user.username) : null;
   const hasViolations = dbUser && dbUser.violations > 0;
@@ -147,17 +148,26 @@ const UserDashboard = () => {
     }
   }
 
+  
   const handleBuyAgain = (items) => {
-    items.forEach((item) => {
-      addToCart({
-        id: item.id || Math.floor(Math.random() * 1000000),
-        name: item.name,
-        price: item.price,
-        image: item.image
-      })
-    })
-    setIsCartOpen(true)
-  }
+  items.forEach((item) => {
+    addToCart({
+      id: item.id || Math.floor(Math.random() * 1000000),
+      name: item.name,
+      price: item.price,
+      image: item.image,
+    });
+  });
+
+  alert("Items have been added to your cart successfully!");
+
+  navigate("/");
+
+  setTimeout(() => {
+    setIsCartOpen(true);
+  }, 100);
+};
+  
 
   // Filter orders based on active status tab and search query
   const filteredOrders = orders.filter((order) => {
@@ -404,7 +414,7 @@ const UserDashboard = () => {
                   </div>
 
                   <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                    <button onClick={() => alert("Thank you for contacting us! Seller will contact you shortly.")} className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
                       Contact Seller
                     </button>
                     <button 
