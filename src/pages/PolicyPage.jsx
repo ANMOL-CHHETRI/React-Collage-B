@@ -67,4 +67,4 @@ const PolicyPage = () => {
   )
 }
 
-export default PolicyPage
+export default PolicyPage;
