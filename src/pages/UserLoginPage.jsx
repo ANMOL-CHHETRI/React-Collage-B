@@ -139,7 +139,7 @@ const UserLoginPage = () => {
                 to="/"
                 className="text-amber-600 font-medium hover:underline"
               >
-                Back to store
+                Back to Store
               </Link>
             </p>
           </div>

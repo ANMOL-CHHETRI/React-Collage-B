@@ -37,7 +37,7 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
 const initialOrders = [
   {
     id: "#ORD-NP-92841",
-    storeName: "Univercell Mobile Zone",
+    storeName: "Universal Mobile Zone",
     status: "Completed",
     date: "Jun 15, 2026",
     items: [

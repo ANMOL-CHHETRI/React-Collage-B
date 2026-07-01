@@ -160,4 +160,4 @@ const UserProfilePage = () => {
 )
 }
 
-export default UserProfilePage
+export default UserProfilePage;
