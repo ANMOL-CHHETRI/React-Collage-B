@@ -1,19 +1,27 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react"
-import { defaultProducts, loadProducts } from "../data/productsData"
+import { loadProducts } from "../data/productsData"
+import { useToast } from "./ToastContext"
 
 const STORAGE_KEY = "shopease_products"
 
 const ProductContext = createContext()
 
 export const ProductProvider = ({ children }) => {
+  const { error: toastError } = useToast()
   const [products, setProducts] = useState(loadProducts)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
+    } catch (err) {
+      console.error("Failed to save products to localStorage:", err)
+      toastError("Local storage quota exceeded! The product image you uploaded might be too large. Try a smaller file or a URL.")
+    }
   }, [products])
 
-  const addProduct = (product) => {
-    setProducts((prev) => [...prev, { ...product, id: Date.now(), addedBy: "admin" }])
+  const addProduct = (product, addedBy = "admin") => {
+    setProducts((prev) => [...prev, { ...product, id: Date.now(), addedBy }])
   }
 
   const updateProduct = (id, updates) => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { provincesData } from "../data/provincesData"
@@ -18,7 +18,7 @@ const PROVINCE_ID_MAP = {
 
 // Unified color scheme — orange on interact, slate default
 const DEFAULT_COLOR  = "#94a3b8"  // slate-400  — resting state
-const HOVER_COLOR    = "#fdba74"  // orange-300 — mouse-over (lighter)
+const HOVER_COLOR    = "#f97316"  // orange-500 — mouse-over
 const SELECTED_COLOR = "#ea580c"  // orange-600 — clicked / active
 
 // Province display names — override GeoJSON defaults
@@ -82,9 +82,8 @@ const NepalDeliveryMap = ({
   const mapRef          = useRef(null)
   const geoJsonLayerRef = useRef(null)
   const selectedProvinceRef = useRef(selectedProvince)
-  const setHoverInfoRef = useRef(null)
-  const [hoverInfo, setHoverInfo] = useState(null)
-  setHoverInfoRef.current = setHoverInfo
+  const clickMarkerRef = useRef(null)
+  const mapClickRef = useRef(false)
 
   const activeProvince = provincesData[selectedProvince]
 
@@ -131,13 +130,7 @@ const NepalDeliveryMap = ({
       const layer = e.target
       const pid   = layer.feature.properties.id
       const key   = PROVINCE_ID_MAP[pid]
-      const name  = PROVINCE_NAME_MAP[pid] || layer.feature.properties.name || `Province ${pid}`
-      const rect  = mapContainerRef.current.getBoundingClientRect()
-      setHoverInfoRef.current({
-        name,
-        x: e.originalEvent.clientX - rect.left,
-        y: e.originalEvent.clientY - rect.top,
-      })
+      // Don't override the selected province's deeper orange
 
       if (selectedProvinceRef.current === key) return
 
@@ -155,33 +148,56 @@ const NepalDeliveryMap = ({
 
     // Reset on mouse-out
     function resetHighlight(e) {
-      setHoverInfoRef.current(null)
       geoJsonLayerRef.current?.resetStyle(e.target)
     }
 
 
-    // Click → select province only (no zoom — map stays fixed)
+    // Click → select province + show a single pin at click location
     function clickProvince(e) {
       const pid = e.target.feature.properties.id
       const key = PROVINCE_ID_MAP[pid]
+
+      // Province name for the pin label
+      const provinceName =
+        e.target.feature.properties.name || provincesData?.[key]?.name || `Province ${pid}`
+
+      // Remove previous pin
+      if (clickMarkerRef.current) {
+        clickMarkerRef.current.remove()
+        clickMarkerRef.current = null
+      }
+
+      // Custom pin icon
+      const pinIcon = L.divIcon({
+        className: "custom-pin-icon",
+        html: `<div style="width:28px;height:28px;background:#f97316;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        tooltipAnchor: [0, -30],
+      })
+
+      // Add new pin
+      const marker = L.marker(e.latlng, { icon: pinIcon }).addTo(map)
+
+      marker.bindTooltip(provinceName, {
+        direction: "top",
+        className: "pin-label",
+        permanent: true,
+        sticky: false,
+        offset: [0, -30],
+      })
+
+      marker.openTooltip()
+      clickMarkerRef.current = marker
+
       onSelectProvince(key)
+      mapClickRef.current = true
     }
 
     // Build GeoJSON layer
     const geoLayer = L.geoJson(nepalGeoJson, {
       style: getStyle,
       onEachFeature(feature, layer) {
-        const pid  = feature.properties.id
-        const name = PROVINCE_NAME_MAP[pid] || feature.properties.name || `Province ${pid}`
-
-        // Tooltip (permanent label)
-        const tooltipClass = pid === 7 ? "nepal-province-label nepal-province-label-sm" : "nepal-province-label"
-        layer.bindTooltip(name, {
-          permanent:  true,
-          direction:  "center",
-          className:  tooltipClass,
-        }).openTooltip()
-
         layer.on({
           mouseover: highlightFeature,
           mouseout:  resetHighlight,
@@ -219,6 +235,49 @@ const NepalDeliveryMap = ({
         fillColor:   isSel ? SELECTED_COLOR : DEFAULT_COLOR,
       })
     })
+
+    // If change came from a map click, pin is already placed — skip
+    if (mapClickRef.current) {
+      mapClickRef.current = false
+      return
+    }
+
+    // Place pin at the center of the selected province (for pill clicks)
+    const map = mapRef.current
+    if (!map) return
+
+    if (clickMarkerRef.current) {
+      clickMarkerRef.current.remove()
+      clickMarkerRef.current = null
+    }
+
+    geoLayer.eachLayer((layer) => {
+      const pid = layer.feature.properties.id
+      const key = PROVINCE_ID_MAP[pid]
+      if (key !== selectedProvince) return
+
+      const provinceName = PROVINCE_NAME_MAP[pid] || layer.feature.properties.name || `Province ${pid}`
+      const center = layer.getBounds().getCenter()
+
+      const pinIcon = L.divIcon({
+        className: "custom-pin-icon",
+        html: `<div style="width:28px;height:28px;background:#f97316;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        tooltipAnchor: [0, -30],
+      })
+
+      const marker = L.marker(center, { icon: pinIcon }).addTo(map)
+      marker.bindTooltip(provinceName, {
+        direction: "top",
+        className: "pin-label",
+        permanent: true,
+        sticky: false,
+        offset: [0, -30],
+      })
+      marker.openTooltip()
+      clickMarkerRef.current = marker
+    })
   }, [selectedProvince])
 
   const mapBlock = (
@@ -234,7 +293,7 @@ const NepalDeliveryMap = ({
       </div>
 
       {/* Map Container */}
-      <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg relative">
+      <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
         {/* Leaflet overrides — labels always white, clean background */}
         <style>{`
           .nepal-province-label {
@@ -252,19 +311,31 @@ const NepalDeliveryMap = ({
             letter-spacing: 0.02em !important;
             white-space: nowrap !important;
             pointer-events: none !important;
-            text-align: center !important;
-            transform: translate(-50%, -50%) !important;
           }
-          .nepal-province-label::before,
-          .nepal-province-label::after {
-            display: none !important;
+          .nepal-province-label::before {
+            border-top-color: transparent !important;
           }
-          .nepal-province-label-sm {
-            font-size: 9px !important;
+          .pin-label {
+            background: #fff !important;
+            border: 2px solid #f97316 !important;
+            border-radius: 8px !important;
+            padding: 4px 10px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            font-family: Inter, system-ui, sans-serif !important;
+            color: #1e293b !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+          }
+          .pin-label::before {
+            border-top-color: #fff !important;
+            border-bottom-color: #f97316 !important;
           }
           .leaflet-container {
             background: #f1f5f9 !important;
             font-family: Inter, system-ui, sans-serif !important;
+            z-index: 0 !important;
           }
           .leaflet-control-zoom {
             border: none !important;
@@ -284,16 +355,8 @@ const NepalDeliveryMap = ({
         <div
           ref={mapContainerRef}
           id="nepal-leaflet-map"
-          style={{ width: "100%", height: compact ? 640 : 800 }}
+          style={{ width: "100%", height: compact ? 320 : 400 }}
         />
-        {hoverInfo && (
-          <div
-            className="absolute z-[9999] px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
-            style={{ left: hoverInfo.x + 12, top: hoverInfo.y - 30 }}
-          >
-            {hoverInfo.name}
-          </div>
-        )}
       </div>
 
       {/* Legend */}
@@ -305,7 +368,7 @@ const NepalDeliveryMap = ({
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Unselected</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-sm bg-orange-300 inline-block" />
+            <span className="w-3.5 h-3.5 rounded-sm bg-orange-500 inline-block" />
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Hover</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -321,8 +384,8 @@ const NepalDeliveryMap = ({
             { id: "lumbini", name: "Lumbini" },
             { id: "gandaki", name: "Gandaki" },
             { id: "bagmati", name: "Bagmati" },
-            { id: "madhesh", name: "Madhesh Province" },
-            { id: "koshi", name: "Koshi Province" },
+            { id: "madhesh", name: "Madhesh" },
+            { id: "koshi", name: "Koshi" },
           ].map(({ id, name }) => {
             const key   = id
 

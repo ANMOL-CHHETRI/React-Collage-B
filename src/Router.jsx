@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./context/AuthContext"
 import { CartProvider } from "./context/CartContext"
 import { ProductProvider } from "./context/ProductContext"
+import { ToastProvider } from "./context/ToastContext"
 import HomePage from "./pages/HomePage"
 import AboutPage from "./pages/AboutPage"
 import AdminLoginPage from "./pages/AdminLoginPage"
@@ -13,13 +14,18 @@ import UserProfilePage from "./pages/UserProfilePage"
 import PolicyPage from "./pages/PolicyPage"
 import CartPage from "./pages/CartPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
+import CategoryPage from "./pages/CategoryPage"
 import ContactPage from "./pages/ContactPage"
 import MainLayout from "./layouts/MainLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
+import FAQPage from "./pages/FAQPage"
+import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
+import NotFoundPage from "./pages/NotFoundPage"
 
 const Router = () => {
   return (
     <BrowserRouter>
+      <ToastProvider>
       <AuthProvider>
         <CartProvider>
         <ProductProvider>
@@ -29,8 +35,12 @@ const Router = () => {
             <Route path="/about" element={<AboutPage />} />
           <Route path="/policy" element={<PolicyPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
+          <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />
+          <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />
@@ -43,6 +53,7 @@ const Router = () => {
         </ProductProvider>
         </CartProvider>
       </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   )
 }

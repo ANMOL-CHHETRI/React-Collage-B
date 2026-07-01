@@ -1,20 +1,105 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 const UserLoginPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { user, login, error, setError } = useAuth();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  const [failedAttempts, setFailedAttempts] = useState(() => {
+    return parseInt(localStorage.getItem("shopease_failed_user_login") || "0", 10);
+  });
+  const [recoveryMode, setRecoveryMode] = useState(() => {
+    return parseInt(localStorage.getItem("shopease_failed_user_login") || "0", 10) >= 6;
+  });
+  const [identityVerified, setIdentityVerified] = useState(false);
+
+  const { user, login, signup, verifyUserIdentity, userSetNewPassword, error, setError } = useAuth();
+  const { success } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(username, password);
+
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+      signup(name, username, email, password);
+      setName("");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setConfirmPassword("");
+      
+      setRecoveryMode(false);
+      setFailedAttempts(0);
+      localStorage.removeItem("shopease_failed_user_login");
+      return;
+    }
+
+    if (recoveryMode) {
+      if (!identityVerified) {
+        if (verifyUserIdentity(username, email, phone)) {
+          setIdentityVerified(true);
+          setError("");
+          success("Identity verified! Please set your new password.");
+        } else {
+          setError("Invalid identity details. Please try again.");
+        }
+      } else {
+        if (password !== confirmPassword) {
+          setError("Passwords do not match");
+          return;
+        }
+        if (password.length < 4) {
+          setError("Password must be at least 4 characters");
+          return;
+        }
+        userSetNewPassword(username, password);
+        setFailedAttempts(0);
+        setRecoveryMode(false);
+        setIdentityVerified(false);
+        setEmail("");
+        setPhone("");
+        setPassword("");
+        setConfirmPassword("");
+        localStorage.removeItem("shopease_failed_user_login");
+        setError("");
+        success("Password reset successfully! You can now log in.");
+      }
+      return;
+    }
+
+    if (failedAttempts >= 6) return;
+
+    const success = login(username, password);
+    if (!success) {
+      setPassword("");
+      const newCount = failedAttempts + 1;
+      setFailedAttempts(newCount);
+      localStorage.setItem("shopease_failed_user_login", newCount);
+      if (newCount >= 6) {
+        setRecoveryMode(true);
+        setError("Account locked due to too many failed attempts. Please verify your identity.");
+      }
+    } else {
+      setUsername("");
+      setPassword("");
+      setFailedAttempts(0);
+      localStorage.removeItem("shopease_failed_user_login");
+    }
   };
 
-  if (user?.role === "user") {
-    navigate("/user/dashboard", { replace: true });
+  if (user?.role === "user" || user?.role === "sub-admin") {
+    navigate("/", { replace: true });
     return null;
   }
 
@@ -26,10 +111,10 @@ const UserLoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 p-6">
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex w-full max-w-6xl h-[650px]">
-
         {/* Left Side Image */}
         <div className="hidden md:flex md:w-2/5 items-center justify-center bg-amber-50">
           <img
+            referrerPolicy="no-referrer"
             src="/login-banner.png"
             alt="Login Banner"
             className="w-full h-full object-cover object-center"
@@ -37,91 +122,194 @@ const UserLoginPage = () => {
         </div>
 
         {/* Right Side Form */}
-        <div className="w-full md:w-3/5 flex items-center justify-center p-8">
+        <div className="w-full md:w-3/5 flex items-center justify-center p-8 overflow-y-auto">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
               <div className="mx-auto w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {recoveryMode ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  )}
                 </svg>
               </div>
-
-              <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-
-              <p className="text-gray-500 mt-2">Sign in to your account</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {!isLogin ? "Create an Account" : recoveryMode ? "Account Locked" : "Welcome Back"}
+              </h1>
+              <p className="text-gray-500 mt-2">
+                {!isLogin ? "Join ShopEase today" : recoveryMode ? (identityVerified ? "Set your new password" : "Verify your identity to unlock or reset password") : "Sign in to your account"}
+              </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Username
-                </label>
+            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+              {!isLogin ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => { setName(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                </>
+              ) : recoveryMode ? (
+                !identityVerified ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                      <input
+                        type="text"
+                        required
+                        value={username}
+                        onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Registered Email</label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Registered Phone</label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => { setPhone(e.target.value); setError(""); }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                )
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="off"
+                    />
+                  </div>
 
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    setError("");
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
-                  placeholder="user or admin"
-                  autoComplete="username"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setError("");
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
-                  placeholder="••••••"
-                  autoComplete="current-password"
-                />
-              </div>
-
-              {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                      autoComplete="new-password"
+                    />
+                    {!recoveryMode && (
+                      <div className="flex justify-end mt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRecoveryMode(true);
+                            setError("");
+                          }}
+                          className="text-xs text-amber-600 hover:underline"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
 
-              <div className="text-xs text-gray-400 text-center space-y-1 -mt-3">
-                <p>
-                  User: <strong>user</strong> / <strong>user123</strong>
-                </p>
+              {(!recoveryMode && !isLogin) || (recoveryMode && identityVerified) ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setError(""); }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition"
+                    autoComplete="new-password"
+                  />
+                </div>
+              ) : null}
 
-                <p>
-                  Admin: <strong>admin</strong> / <strong>admin123</strong>
-                </p>
-              </div>
+              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 text-sm text-gray-600">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  Remember me
-                </label>
-
-                <Link
-                  to="/admin-login"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setError("");
+                  }}
                   className="text-sm text-amber-600 hover:underline"
                 >
+                  {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
+                </button>
+                <Link to="/admin-login" className="text-sm text-amber-600 hover:underline">
                   Admin login page
                 </Link>
               </div>
@@ -130,15 +318,12 @@ const UserLoginPage = () => {
                 type="submit"
                 className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition cursor-pointer"
               >
-                Sign In
+                {!isLogin ? "Create Account" : recoveryMode ? (identityVerified ? "Reset Password" : "Verify Identity") : "Sign In"}
               </button>
             </form>
 
             <p className="text-center text-sm text-gray-500 mt-6">
-              <Link
-                to="/"
-                className="text-amber-600 font-medium hover:underline"
-              >
+              <Link to="/" className="text-amber-600 font-medium hover:underline">
                 Back to store
               </Link>
             </p>

@@ -1,0 +1,638 @@
+Abstract
+────────────────────────────────────────────────────────────────────────
+ShopEase Nepal is a modern, fully responsive e-commerce web application built as a pure frontend React project using React 19, Vite 8, Tailwind CSS v4, and React Router v8. The platform is designed to showcase and sell authentic Nepali products — including traditional handicrafts, organic teas and coffees, Pashmina shawls, Himalayan herbs, and cultural artifacts — to both domestic and international customers.
+The application provides three distinct user experiences: a Guest browsing flow, a Registered User dashboard with order management and profile editing, and a full Admin dashboard with complete product CRUD controls and settings management. All data is currently served from static mock datasets stored in browser localStorage, with the architecture designed to seamlessly integrate a REST API backend in future iterations.
+Key features include an interactive Nepal province delivery map, a persistent per-user shopping cart, protected route-based authentication, product filtering and search, order history, wishlist management, and a professional admin panel with revenue analytics. The project follows a clean component-based architecture with global state management via React Context API. It is deployed on GitHub Pages via an automated GitHub Actions CI/CD pipeline.
+Table of Contents
+────────────────────────────────────────────────────────────────────────
+1.  Introduction  ...................................................  3
+1.1  Project Overview  ..............................................  3
+1.2  Project Objectives  ............................................  3
+1.3  Scope  .........................................................  3
+2.  System Requirements  ............................................  4
+2.1  Software Requirements  .........................................  4
+2.2  Hardware Requirements  .........................................  4
+3.  Technology Stack  ...............................................  5
+3.1  Core Technologies  .............................................  5
+3.2  Development Tools  .............................................  5
+4.  System Architecture  ............................................  6
+4.1  Project Folder Structure  ......................................  6
+4.2  Application Entry Point  .......................................  6
+4.3  Routing Architecture  ..........................................  7
+4.4  Layout System  .................................................  7
+5.  State Management (React Context API)  ...........................  8
+5.1  AuthContext  ...................................................  8
+5.2  CartContext  ...................................................  8
+5.3  ProductContext  ................................................  9
+6.  Pages and Features  .............................................  10
+6.1  Home Page  .....................................................  10
+6.2  About Page  ....................................................  10
+6.3  Contact Page  ..................................................  11
+6.4  Policy Page  ...................................................  11
+6.5  Product Detail Page  ...........................................  11
+6.6  Cart Page  .....................................................  12
+6.7  Admin Login Page  ..............................................  12
+6.8  User Login Page  ...............................................  12
+6.9  Admin Dashboard  ...............................................  13
+6.10  User Dashboard  ...............................................  13
+6.11  User Profile Page  ............................................  14
+7.  Components  .....................................................  15
+7.1  Navbar  ........................................................  15
+7.2  ProtectedRoute  ................................................  15
+7.3  NepalDeliveryMap  ..............................................  15
+7.4  NepalInteractiveMap  ...........................................  15
+8.  Data Layer  .....................................................  16
+8.1  Product Data Schema  ...........................................  16
+8.2  Mock Products  .................................................  16
+8.3  LocalStorage Persistence  ......................................  17
+9.  User Roles and Permissions  .....................................  18
+9.1  Guest User  ....................................................  18
+9.2  Registered User  ...............................................  18
+9.3  Administrator  .................................................  18
+10.  Authentication System  .........................................  19
+11.  Deployment  ....................................................  20
+11.1  GitHub Pages Deployment  ......................................  20
+11.2  Build Configuration  ..........................................  20
+12.  Future Enhancements  ...........................................  21
+13.  Conclusion  ....................................................  22
+1. Introduction
+────────────────────────────────────────────────────────────────────────
+1.1 Project Overview
+ShopEase Nepal is a college-level frontend web application project that simulates a fully functional e-commerce platform specializing in authentic Nepali products. It was developed collaboratively as a team project, demonstrating proficiency in modern React development, component architecture, state management, and UI/UX design.
+1.2 Project Objectives
+Build a visually rich, responsive e-commerce UI using React 19 and Tailwind CSS v4.
+Implement multi-role access control (Guest, User, Admin) with protected routing.
+Demonstrate clean React Context API-based global state management.
+Deploy a production-ready build automatically via GitHub Actions to GitHub Pages.
+Design a scalable codebase ready to integrate a REST API backend in the future.
+1.3 Scope
+The current version of ShopEase is a pure frontend application. No backend server or database exists at this stage. All product, order, and user data is mocked using static JavaScript objects and persisted through the browser's localStorage API. Authentication is presentational — credentials are validated client-side only.
+2. System Requirements
+────────────────────────────────────────────────────────────────────────
+2.1 Software Requirements
+Requirement
+Version / Detail
+Node.js
+v18 or higher
+npm
+v9 or higher
+Git
+Any recent version
+Browser
+Chrome, Firefox, Edge (modern)
+Code Editor
+VS Code (recommended)
+Operating System
+Windows 10/11, macOS, or Linux
+2.2 Hardware Requirements
+Component
+Minimum
+Recommended
+RAM
+4 GB
+8 GB or more
+Storage
+500 MB
+1 GB (including node_modules)
+Processor
+Dual-core
+Quad-core or better
+3. Technology Stack
+────────────────────────────────────────────────────────────────────────
+3.1 Core Technologies
+Technology
+Version
+Purpose
+React
+19.2.6
+UI component framework
+Vite
+8.0.16
+Build tool and dev server
+Tailwind CSS
+4.3.1
+Utility-first CSS framework
+React Router
+8.0.0
+Client-side routing
+@tailwindcss/vite
+4.3.1
+Tailwind Vite integration plugin
+3.2 Development Tools
+Tool
+Purpose
+ESLint
+Code linting and style enforcement
+@vitejs/plugin-react
+React Fast Refresh via Vite
+eslint-plugin-react-hooks
+Enforces Rules of Hooks
+eslint-plugin-react-refresh
+Validates React Refresh compatibility
+GitHub Actions
+CI/CD pipeline for auto-deployment
+4. System Architecture
+────────────────────────────────────────────────────────────────────────
+4.1 Project Folder Structure
+react-collage-b/
+├── src/
+│   ├── pages/          # Route-level page components
+│   ├── components/     # Shared reusable components
+│   ├── layouts/        # Layout wrappers (MainLayout)
+│   ├── context/        # React Context providers
+│   ├── data/           # Static mock data
+│   ├── assets/         # Static images / icons
+│   ├── App.jsx         # Root component
+│   ├── Router.jsx      # All route definitions
+│   └── main.jsx        # Application entry point
+├── public/             # Static public assets
+├── .github/workflows/  # GitHub Actions CI/CD
+├── architecture/       # SOPs and design docs
+├── tools/              # Build helper scripts
+├── vite.config.js      # Vite build configuration
+├── package.json        # Project metadata & deps
+└── index.html          # HTML shell
+4.2 Application Entry Point
+The application bootstraps from main.jsx, which mounts the root <App /> component inside React.StrictMode into the DOM element with id='root'. App.jsx imports and renders the <Router /> component which wraps the entire app in context providers and defines all navigation routes.
+4.3 Routing Architecture
+All routes are defined in Router.jsx using React Router v8's BrowserRouter and Routes:
+Route Path
+Component
+Auth Required
+Layout
+/
+HomePage
+No
+MainLayout
+/about
+AboutPage
+No
+MainLayout
+/policy
+PolicyPage
+No
+MainLayout
+/contact
+ContactPage
+No
+MainLayout
+/cart
+CartPage
+No
+MainLayout
+/product/:id
+ProductDetailPage
+No
+MainLayout
+/admin-login
+AdminLoginPage
+No
+None
+/user-login
+UserLoginPage
+No
+None
+/admin/dashboard
+AdminDashboard
+Yes (admin)
+None
+/user/dashboard
+UserDashboard
+Yes (user)
+None
+/user/profile
+UserProfilePage
+Yes (user)
+None
+4.4 Layout System
+Public-facing pages use MainLayout, which renders the shared Navbar component at the top and an <Outlet /> below it to render the matched child route. Dashboard pages (Admin and User) are standalone — they render their own internal sidebar navigation without MainLayout, providing a full-page panel experience.
+5. State Management (React Context API)
+────────────────────────────────────────────────────────────────────────
+ShopEase uses React's built-in Context API for global state. Three context providers are nested inside Router.jsx, wrapping all route components:
+5.1 AuthContext
+Manages authentication state for both Admin and regular User roles. Persists the logged-in user object in localStorage (key: shopease_user). Exposes the following methods:
+loginAdmin(username, password) — validates admin credentials and redirects to /admin/dashboard
+loginUser(username, password) — validates user credentials and redirects to /user/dashboard
+logout() / logoutAdmin() — clears session and redirects to home or admin-login
+changePassword(role, currentPassword, newPassword) — updates credentials in localStorage
+updateProfile(updatedDetails) — merges profile changes into the current user session
+5.2 CartContext
+Manages the shopping cart with per-user isolation (guest cart vs. logged-in user cart). Cart state auto-persists to localStorage keyed by user identity. Exposes:
+addToCart(product) — adds item or increments quantity; auto-opens cart drawer
+removeFromCart(productId) — removes a line item
+updateQuantity(productId, quantity) — adjusts item count (0 removes the item)
+clearCart() — empties the entire cart
+cartCount — total number of items (sum of all quantities)
+cartSubtotal — total price computed from items × quantities
+5.3 ProductContext
+Manages the product catalog with full CRUD support. Initializes from localStorage (key: shopease_products), falling back to defaultProducts. Exposes:
+products — the current array of all products
+addProduct(product) — adds a new product with auto-generated id (Date.now())
+updateProduct(id, updates) — merges changes into an existing product
+deleteProduct(id) — removes a product by id
+6. Pages and Features
+────────────────────────────────────────────────────────────────────────
+6.1 Home Page  (/)
+The main landing page and the largest component (~51 KB). Sections include:
+Hero Section — full-screen banner with call-to-action buttons and animated background
+Category Grid — browse by category (Traditional Apparel, Organic Tea & Coffee, Local Handicrafts, Herbs & Spices)
+Featured Products — product cards with Add to Cart, price display, and product badges
+Benefits Section — highlights free delivery, secure payments, and authenticity guarantees
+Testimonials — customer reviews with star ratings and avatar initials
+FAQ Section — accordion-style frequently asked questions
+Footer — links, social media icons, newsletter signup, and company information
+Nepal Interactive Map — embedded delivery coverage visualization
+6.2 About Page  (/about)
+Presents the ShopEase brand story, mission, and team. Includes sections for company values, the team roster (Anmol, Sahil, Sarang, Sanskarti, Smriti), and a company timeline. Rendered inside MainLayout.
+6.3 Contact Page  (/contact)
+A contact form page with fields for name, email, subject, and message. Displays office address, phone number, email, and business hours. Includes a Nepal map reference. Presentational — no backend form submission.
+6.4 Policy Page  (/policy)
+Displays the platform's Terms of Service, Privacy Policy, Return Policy, and Shipping Policy in a structured, readable layout with section headings.
+6.5 Product Detail Page  (/product/:id)
+Dynamic route that reads the product id from URL params and finds the matching product from ProductContext. Displays a large product image, full description, price, category badge, and an Add to Cart button. Includes breadcrumb navigation.
+6.6 Cart Page  (/cart)
+Dedicated cart page (separate from the slide-out cart drawer in Navbar). Displays all cart items with quantity adjusters, item subtotals, and order total. Includes a Checkout section with delivery note. Guest users see a prompt to log in.
+6.7 Admin Login Page  (/admin-login)
+Standalone login page for Admins with a two-field form (username + password). Default credentials: username = admin / password = admin123. On success, redirects to /admin/dashboard via AuthContext.loginAdmin().
+6.8 User Login Page  (/user-login)
+Standalone login page for registered Users. Default credentials: username = user / password = user123. On success, redirects to /user/dashboard via AuthContext.loginUser().
+6.9 Admin Dashboard  (/admin/dashboard)
+A comprehensive protected admin panel (~35 KB) with multiple internal tabs:
+Overview — revenue cards, recent orders table, visitor stats
+Products — full product CRUD: add new products, edit name/price/category/description, delete products
+Orders — paginated order list with status badges (Delivered, Processing, Shipped, Pending)
+Customers — mock customer directory with search and filter
+Settings — change admin password and user password via AuthContext.changePassword()
+6.10 User Dashboard  (/user/dashboard)
+A protected dashboard for registered users (~30 KB) featuring:
+Dashboard Overview — order count, wishlist count, spent total
+My Orders — order history table with status tracking and 'Buy Again' action
+Wishlist — saved products with quick-add to cart
+Delivery Map — interactive Nepal province map showing delivery coverage
+Settings — account settings panel
+6.11 User Profile Page  (/user/profile)
+Allows logged-in users to view and edit their profile details: full name, email address, phone number, and delivery address. Changes are saved to the current session via AuthContext.updateProfile().
+7. Components
+────────────────────────────────────────────────────────────────────────
+7.1 Navbar
+The shared top navigation bar rendered by MainLayout (~16 KB). Features include: ShopEase brand logo, main navigation links (Home, About, Policy, Contact), a product search bar, a cart icon with live item count badge, user login/logout toggle, and a slide-out cart drawer. Fully responsive with a mobile hamburger menu.
+7.2 ProtectedRoute
+A HOC (Higher-Order Component) wrapper that checks the current user's role from AuthContext. If the user is not logged in or does not have the required role, it redirects them to the appropriate login page. Used to guard both /admin/dashboard and /user/dashboard routes.
+7.3 NepalDeliveryMap
+An SVG-based interactive map of Nepal rendered on the Home Page, showing delivery coverage zones across Nepal's seven provinces. Provinces highlight on hover and display coverage tooltips.
+7.4 NepalInteractiveMap
+An enhanced version of the delivery map used inside the User Dashboard. Displays a per-province delivery status with color-coded indicators and a legend showing coverage tiers.
+8. Data Layer
+───────────────────────────────────────────────────────────────────────
+8.1 Product Data Schema
+Field
+Type
+Description
+id
+number
+Unique product identifier
+name
+string
+Display name of the product
+price
+number
+Price in Nepalese Rupees (NPR)
+image
+string (URL)
+Unsplash CDN image URL
+badge
+string | null
+Promo badge label (e.g., Best Seller, Organic)
+category
+string
+Product category name
+description
+string
+Full product description
+addedBy
+string
+Creator role ('admin' or 'user')
+8.2 Mock Products
+The application ships with 8 pre-loaded Nepali products:
+#
+Product Name
+Category
+Price (NPR)
+1
+Premium Dhaka Topi (Handwoven)
+Traditional Apparel
+1,200
+2
+Himalayan Orthodox Golden Tea
+Organic Tea & Coffee
+850
+3
+Handmade Shakyamuni Buddha Statue
+Local Handicrafts
+18,500
+4
+Organic Wild Himalayan Honey
+Herbs & Spices
+1,500
+5
+Pure Pashmina Cashmere Shawl
+Traditional Apparel
+9,500
+6
+Gorkha Khukuri (Authentic Service)
+Local Handicrafts
+4,500
+7
+Organic Himalayan Cardamom (Alaichi)
+Herbs & Spices
+650
+8
+Mt. Everest Arabica Coffee Beans
+Organic Tea & Coffee
+1,100
+8.3 LocalStorage Persistence
+localStorage Key
+Contents
+shopease_user
+Logged-in user object (role, name, email)
+shopease_cart_{username}
+Per-user cart items array with quantities
+shopease_products
+Full product catalog (with admin edits)
+shopease_admin_credentials
+Current admin username and password
+shopease_user_credentials
+Current user username and password
+9. User Roles and Permissions
+───────────────────────────────────────────────────────────────────────
+Feature / Action
+Guest
+User
+Admin
+Browse products & categories
+✓
+✓
+✓
+Search and filter products
+✓
+✓
+✓
+View product details
+✓
+✓
+✓
+Add to cart (guest cart)
+✓
+✓
+✗
+View delivery map
+✓
+✓
+✓
+Place orders / checkout
+✗
+✓
+✗
+View order history
+✗
+✓
+✗
+Manage wishlist
+✗
+✓
+✗
+Edit user profile
+✗
+✓
+✗
+Access User Dashboard
+✗
+✓
+✗
+Add / Edit / Delete products
+✗
+✗
+✓
+View revenue & analytics
+✗
+✗
+✓
+Manage all orders
+✗
+✗
+✓
+Change passwords (admin/user)
+✗
+✗
+✓
+Access Admin Dashboard
+✗
+✗
+✓
+9.1 Default Credentials
+Role
+Username / Email
+Password
+Login URL
+Admin
+admin
+admin123
+/admin-login
+User
+user
+user123
+/user-login
+10. Authentication System
+───────────────────────────────────────────────────────────────────────
+Authentication in ShopEase is handled entirely client-side through the AuthContext. There is no server-side session management or JWT token exchange in the current version. The authentication flow works as follows:
+Step 1: User submits credentials on the login form.
+Step 2: AuthContext compares the input against credentials stored in localStorage (with defaults fallback).
+Step 3: On success, a user object with role, name, email, and username is stored in localStorage and set in React state.
+Step 4: React Router redirects the user to their role-appropriate dashboard.
+Step 5: ProtectedRoute components check useAuth().user.role before rendering protected pages.
+Step 6: On logout, the user object is removed from localStorage and state, and the cart is cleared.
+Password changes made in the Admin Dashboard Settings are persisted to localStorage, meaning credentials survive page refreshes but are reset if localStorage is cleared.
+11. Deployment
+───────────────────────────────────────────────────────────────────────
+11.1 GitHub Pages Deployment
+The project is deployed to GitHub Pages via a GitHub Actions CI/CD workflow defined in .github/workflows/deploy.yml. The pipeline triggers on every push to the main branch and performs the following steps:
+Checkout the repository code
+Set up Node.js environment
+Run npm install to install all dependencies
+Run npm run build to produce the production bundle in the /dist folder
+Upload the /dist folder as a GitHub Pages artifact
+Deploy the artifact to GitHub Pages
+11.2 Build Configuration
+Vite is configured in vite.config.js with the following key settings:
+base: Reads from the VITE_BASE_PATH environment variable (set in GitHub Actions) for correct asset path resolution under a subpath.
+plugins: Uses @tailwindcss/vite and @vitejs/plugin-react for integrated Tailwind v4 and React support.
+To build locally:
+npm install
+npm run dev       # Development server → http://localhost:5173
+npm run build     # Production build → /dist
+npm run preview   # Preview the production build locally
+12. Future Enhancements
+───────────────────────────────────────────────────────────────────────
+Enhancement
+Description
+REST API Backend
+Replace static mock data with a real Node.js / Django API
+Real Authentication
+Implement JWT-based auth with secure HttpOnly cookies
+Payment Gateway
+Integrate Khalti or eSewa payment for Nepal transactions
+Product Search (Server)
+Full-text search with Elasticsearch or similar
+Order Management
+Real order placement, tracking, and notification emails
+Image Upload (Cloud)
+Replace Unsplash URLs with Cloudinary or AWS S3 uploads
+Reviews & Ratings
+Allow users to leave product reviews with star ratings
+Internationalization (i18n)
+Support Nepali (नेपाली) language alongside English
+PWA Support
+Add service workers for offline browsing capability
+Unit & Integration Tests
+Add Vitest + React Testing Library test suite
+13. Conclusion
+───────────────────────────────────────────────────────────────────────
+ShopEase Nepal successfully demonstrates the design and implementation of a modern e-commerce frontend application using the React ecosystem. The project achieves its primary objectives: a visually polished, multi-role UI with amber-themed branding, clean component architecture, real-time cart management, and an automated deployment pipeline.
+The codebase is structured for future scalability — context providers can be swapped for Redux or Zustand, static data can be replaced with API calls, and the Vite build pipeline already supports environment-based configuration for different deployment targets. The project serves as both a functional ecommerce prototype and a strong portfolio piece demonstrating team-based React development.
+14. System UI Screenshots
+────────────────────────────────────────────────────────────────────────
+14.1 Home Page
+The Home Page is the primary landing page. It displays the hero banner, category navigation, featured product cards, and the Nepal delivery map.
+Figure 14.1 — ShopEase Nepal Home Page
+14.2 Admin Dashboard
+The Admin Dashboard provides a full management panel with revenue stats, product CRUD, order management, customer directory, and settings.
+Figure 14.2 — Admin Dashboard Overview
+15. Use Case Diagram
+────────────────────────────────────────────────────────────────────────
+The Use Case Diagram below illustrates all interactions between the three system actors (Guest, Registered User, Admin) and the ShopEase Nepal system. Each oval represents a system function accessible to one or more actors.
+Figure 15.1 — ShopEase Nepal Use Case Diagram
+Actor Summary
+Actor
+Role Description
+Key Use Cases
+Guest User
+Unauthenticated visitor
+Browse, Search, View Product, View Map
+Registered User
+Logged-in customer
+Place Order, Order History, Wishlist, Edit Profile
+Admin
+Platform administrator
+Manage Products, View Analytics, Manage Orders, Change Password
+16. Data Flow Diagrams (DFD)
+────────────────────────────────────────────────────────────────────────
+Data Flow Diagrams model how data moves through the ShopEase Nepal system. Yourdon & Coad notation is used: circles for processes, rectangles for external entities, open-ended rectangles for data stores, and labeled arrows for data flows.
+16.1 DFD Level 0 — Context Diagram
+The Level 0 (Context) Diagram presents the entire ShopEase system as a single process bubble. It identifies all external entities that interact with the system and the high-level data flows between them.
+Figure 16.1 — DFD Level 0 Context Diagram
+External Entities
+Entity
+Direction
+Data Exchanged
+Guest / User
+Input
+Browse requests, Search queries, Login credentials, Cart actions, Order requests
+Guest / User
+Output
+Product listings, Search results, Cart data, Auth session, Order confirmation
+Admin
+Input
+Login credentials, Product data, Password changes
+Admin
+Output
+Dashboard analytics, Product catalog, Order reports
+LocalStorage
+Bi-directional
+Cart data, Session data, Product catalog, Credentials
+16.2 DFD Level 1 — System Decomposition
+The Level 1 DFD decomposes the single system process into six sub-processes, each representing a major functional area of the application. Data stores (D1–D4) represent the localStorage keys used for data persistence.
+Figure 16.2 — DFD Level 1 System Decomposition
+Process Descriptions
+Process
+Name
+Description
+1.0
+Authenticate User
+Validates credentials against D4 User Store; creates/destroys session
+2.0
+Browse & Search Products
+Reads product catalog from D1; applies category and text filters
+3.0
+Manage Cart
+Reads/writes cart items to D2 Cart Store; computes subtotals
+4.0
+Process Orders
+Creates order records in D3 Order Store; links to user and products
+5.0
+Manage Products (Admin)
+Full CRUD on D1 Product Store; restricted to Admin role
+6.0
+Generate Reports
+Reads D1, D2, D3 to compute analytics displayed on Admin Dashboard
+17. Entity Relationship Diagram (ERD)
+────────────────────────────────────────────────────────────────────────
+The ER Diagram models the logical data structure of the ShopEase Nepal system using Crow's Foot notation. Although the current implementation uses localStorage (a flat key-value store), the ERD represents the relational schema that would be implemented when a database backend is integrated.
+Figure 17.1 — ShopEase Nepal Entity Relationship Diagram
+Entity Descriptions
+Entity
+Primary Key
+Description
+USER
+userID
+Platform users — both customers and admins
+PRODUCT
+productID
+Product catalog items with category and pricing
+ORDER
+orderID
+Customer purchase orders with status tracking
+ORDER_ITEM
+orderItemID
+Individual line items within an order
+CART
+cartID
+Active shopping cart belonging to a user
+CART_ITEM
+cartItemID
+Individual products in a cart with quantity
+CATEGORY
+categoryID
+Product categories for filtering and browsing
+Relationships
+From Entity
+Relationship
+To Entity
+Cardinality
+USER
+places
+ORDER
+One-to-Many
+ORDER
+contains
+ORDER_ITEM
+One-to-Many
+PRODUCT
+appears in
+ORDER_ITEM
+One-to-Many
+USER
+has
+CART
+One-to-One
+CART
+contains
+CART_ITEM
+One-to-Many
+PRODUCT
+included in
+CART_ITEM
+One-to-Many
+PRODUCT
+belongs to
+CATEGORY
+Many-to-One

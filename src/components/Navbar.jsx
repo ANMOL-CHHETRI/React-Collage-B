@@ -7,64 +7,40 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
 
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition-colors duration-200 py-1.5 px-3 rounded-full dark:hover:text-slate-100  dark:hover:text-slate-100 hover:bg-slate-50${
       isActive
         ? "text-orange-600 dark:text-orange-400 bg-orange-50/50 dark:bg-orange-950/30 "
-        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-105 hover:bg-slate-50 dark:hover:bg-slate-900 "
+        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 "
     }`;
 
   const toggleDropdown = (name) => {
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
+  const dbUser = user && (user.role === "user" || user.role === "sub-admin") ? (registeredUsers || []).find(u => u.username === user.username) : null;
+  const hasViolations = dbUser && dbUser.violations > 0;
+
   return (
     <nav className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 text-slate-800 dark:text-slate-100">
+      {hasViolations && (
+        <div className="bg-red-600 text-white text-center py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 animate-pulse">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Warning: {dbUser.violations} violation(s) detected on your account! Please review our policies to avoid a permanent ban.</span>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            {/* <img src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" /> */}
-              <div className="w-8 h-8 bg-gradient-to-tr from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200">
-              <svg
-                className="w-4 h-4 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-            </div>
+            <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
-          
-            {/* <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              ShopEase{" "}
-              <span className="text-amber-600 font-semibold">Nepal</span>
-            </span> */}
           </Link>
 
           {/* Desktop Nav */}
@@ -109,27 +85,23 @@ const Navbar = () => {
                       {
                         name: "Traditional Apparel",
                         desc: "Dhaka clothes, Pashmina shawl",
-                        path: "/",
                       },
                       {
                         name: "Organic Tea & Coffee",
                         desc: "Himalayan orthodox tea, local coffee",
-                        path: "/",
                       },
                       {
                         name: "Local Handicrafts",
                         desc: "Handmade sculptures, pottery",
-                        path: "/",
                       },
                       {
                         name: "Herbs & Spices",
                         desc: "Organic cardamom, honey, turmeric",
-                        path: "/",
                       },
                     ].map((item) => (
                       <Link
                         key={item.name}
-                        to={item.path}
+                        to={`/category/${encodeURIComponent(item.name)}`}
                         onClick={() => setOpenDropdown(null)}
                         className="block px-3 py-2 rounded-xl hover:bg-amber-50/50 dark:hover:bg-amber-950/20 group transition-colors"
                       >
@@ -149,14 +121,11 @@ const Navbar = () => {
             <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
-            <a
-              href="#delivery"
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200"
-            >
+            <NavLink to="/delivery-coverage" className={linkClass}>
               Delivery Coverage
-            </a>
+            </NavLink>
             <a
-              href="#faq"
+              href="/faq"
               className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-all duration-200"
             >
               FAQ
@@ -387,14 +356,14 @@ const Navbar = () => {
             {openDropdown === "mobile-features" && (
               <div className="pl-6 space-y-1 py-1 border-l-2 border-slate-100 dark:border-slate-800 ml-4">
                 {[
-                  { name: "Traditional Apparel", path: "/" },
-                  { name: "Organic Tea & Coffee", path: "/" },
-                  { name: "Local Handicrafts", path: "/" },
-                  { name: "Herbs & Spices", path: "/" },
+                  { name: "Traditional Apparel" },
+                  { name: "Organic Tea & Coffee" },
+                  { name: "Local Handicrafts" },
+                  { name: "Herbs & Spices" },
                 ].map((item) => (
                   <Link
                     key={item.name}
-                    to={item.path}
+                    to={`/category/${encodeURIComponent(item.name)}`}
                     className="block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
                     onClick={() => setIsOpen(false)}
                   >
@@ -404,13 +373,13 @@ const Navbar = () => {
               </div>
             )}
 
-            <a
-              href="#delivery"
+            <NavLink
+              to="/delivery-coverage"
               className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
               onClick={() => setIsOpen(false)}
             >
               Delivery Coverage
-            </a>
+            </NavLink>
             <a
               href="#faq"
               className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"

@@ -1,5 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react"
+import { useNavigate } from "react-router"
 import { useAuth } from "./AuthContext"
+import { useToast } from "./ToastContext"
 
 const CartContext = createContext()
 
@@ -10,6 +13,9 @@ const cartKey = (user) => {
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const { error: toastError } = useToast()
+  
   const key = cartKey(user)
 
   const [cartItems, setCartItems] = useState(() => {
@@ -19,16 +25,24 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false)
 
   // re-load cart when user changes (login/logout)
-  useEffect(() => {
+  const [prevKey, setPrevKey] = useState(key)
+  if (key !== prevKey) {
+    setPrevKey(key)
     const saved = localStorage.getItem(key)
     setCartItems(saved ? JSON.parse(saved) : [])
-  }, [key])
+  }
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(cartItems))
   }, [cartItems, key])
 
   const addToCart = (product) => {
+    if (!user) {
+      toastError("Please log in to add items to your cart.")
+      navigate("/user-login")
+      return
+    }
+
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id)
       if (existing) {
