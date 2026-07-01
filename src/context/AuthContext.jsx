@@ -8,7 +8,7 @@ const ADMIN_CREDS_KEY = "shopease_admin_credentials"
 const USER_CREDS_KEY = "shopease_user_credentials"
 const REGISTERED_USERS_KEY = "shopease_registered_users"
 
-const DEFAULT_ADMIN_CREDENTIALS = { username: "admin", password: "admin123" }
+const DEFAULT_ADMIN_CREDENTIALS = { username: "admin", password: "admin123", email: "admin@shopease.com", phone: "9800000000" }
 const DEFAULT_USER_CREDENTIALS = { username: "user", password: "user123" }
 
 const DEFAULT_USERS = [
@@ -19,7 +19,8 @@ const DEFAULT_USERS = [
     phone: "9841234567",
     address: "New Baneshwor, Kathmandu",
     violations: 0,
-    banned: false
+    banned: false,
+    oneStarReviews: 55
   }
 ]
 
@@ -83,6 +84,27 @@ export const AuthProvider = ({ children }) => {
     saveRegisteredUsers(updated)
   }
 
+  const setExactUserViolations = (username, count) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, violations: Math.max(0, count) }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+  }
+
+  const autoCalculateViolations = (username) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        const autoVio = Math.floor((u.oneStarReviews || 0) / 10)
+        return { ...u, violations: autoVio }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+  }
+
   const toggleUserBan = (username) => {
     const updated = registeredUsers.map((u) => {
       if (u.username === username) {
@@ -91,6 +113,38 @@ export const AuthProvider = ({ children }) => {
       return u
     })
     saveRegisteredUsers(updated)
+  }
+
+  const adminResetUserPassword = (username) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, password: "shopease123" }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+    localStorage.removeItem("shopease_failed_user_login")
+  }
+
+  const userSetNewPassword = (username, newPassword) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, password: newPassword }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+    localStorage.removeItem("shopease_failed_user_login")
+  }
+
+  const verifyUserIdentity = (username, email, phone) => {
+    const foundUser = registeredUsers.find((u) => u.username === username)
+    if (!foundUser) return false
+    return foundUser.email === email && foundUser.phone === phone
+  }
+
+  const verifyAdminIdentity = (email, phone) => {
+    return adminCredentials.email === email && adminCredentials.phone === phone
   }
 
   const loginAdmin = (username, password) => {
@@ -131,7 +185,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const regularUser = {
-      role: "user",
+      role: foundUser.role || "user",
       name: foundUser.name,
       username: foundUser.username,
       email: foundUser.email,
@@ -166,14 +220,15 @@ export const AuthProvider = ({ children }) => {
     }
 
     const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
-    if (foundUser && password === userCredentials.password) {
+    const validPassword = foundUser && (foundUser.password ? password === foundUser.password : password === userCredentials.password)
+    if (foundUser && validPassword) {
       if (foundUser.banned) {
         setError("Your account has been banned due to violations.")
         return false
       }
 
       const regularUser = {
-        role: "user",
+        role: foundUser.role || "user",
         name: foundUser.name,
         username: foundUser.username,
         email: foundUser.email,
@@ -211,7 +266,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true, message: "Admin password updated successfully" }
     }
 
-    if (role === "user") {
+    if (role === "user" || role === "sub-admin") {
       if (currentPassword !== userCredentials.password) {
         return { success: false, message: "Current password is incorrect" }
       }
@@ -247,6 +302,41 @@ export const AuthProvider = ({ children }) => {
     navigate("/")
   }
 
+  const signup = (name, username, email, password) => {
+    setError("")
+    const trimmedUser = username.trim()
+    if (registeredUsers.some((u) => u.username === trimmedUser)) {
+      setError("Username already exists.")
+      return false
+    }
+    const newUser = {
+      name,
+      username: trimmedUser,
+      email,
+      password,
+      phone: "",
+      address: "",
+      violations: 0,
+      banned: false,
+      role: "user"
+    }
+    const updatedUsers = [...registeredUsers, newUser]
+    saveRegisteredUsers(updatedUsers)
+    
+    const regularUser = {
+      role: "user",
+      name,
+      username: trimmedUser,
+      email,
+      phone: "",
+      address: "",
+    }
+    setUser(regularUser)
+    localStorage.setItem("shopease_user", JSON.stringify(regularUser))
+    navigate("/")
+    return true
+  }
+
   const logoutAdmin = () => {
     setUser(null)
     localStorage.removeItem("shopease_user")
@@ -254,8 +344,54 @@ export const AuthProvider = ({ children }) => {
     navigate("/admin-login")
   }
 
+  const promoteToSubAdmin = (username) => {
+    const updated = registeredUsers.map((u) => {
+      if (u.username === username) {
+        return { ...u, role: "sub-admin" }
+      }
+      return u
+    })
+    saveRegisteredUsers(updated)
+  }
+
+  const [sellerApplications, setSellerApplications] = useState(() => {
+    try {
+      const saved = localStorage.getItem("shopease_seller_applications")
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
+
+  const submitSellerApplication = (appDetails) => {
+    const newApp = {
+      ...appDetails,
+      username: user?.username,
+      status: "Pending",
+      submittedAt: new Date().toISOString(),
+    }
+    const updated = [...sellerApplications.filter(a => a.username !== user?.username), newApp]
+    setSellerApplications(updated)
+    localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
+  }
+
+  const reviewSellerApplication = (username, status) => {
+    const updated = sellerApplications.map((app) => {
+      if (app.username === username) {
+        return { ...app, status }
+      }
+      return app
+    })
+    setSellerApplications(updated)
+    localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
+
+    if (status === "Approved") {
+      promoteToSubAdmin(username)
+    }
+  }
+
   useEffect(() => {
-    if (user && user.role === "user") {
+    if (user && (user.role === "user" || user.role === "sub-admin")) {
       const found = registeredUsers.find((u) => u.username === user.username)
       if (found) {
         if (found.banned) {
@@ -264,14 +400,16 @@ export const AuthProvider = ({ children }) => {
           found.name !== user.name ||
           found.email !== user.email ||
           found.phone !== user.phone ||
-          found.address !== user.address
+          found.address !== user.address ||
+          (found.role || "user") !== user.role
         ) {
           const updatedUser = {
             ...user,
             name: found.name,
             email: found.email,
             phone: found.phone,
-            address: found.address
+            address: found.address,
+            role: found.role || "user"
           }
           setUser(updatedUser)
           localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
@@ -290,12 +428,24 @@ export const AuthProvider = ({ children }) => {
         loginUser,
         login,
         changePassword,
+        adminResetUserPassword,
+        userSetNewPassword,
         updateProfile,
         logout,
+        signup,
         logoutAdmin,
         registeredUsers,
         updateUserViolations,
+        setExactUserViolations,
+        autoCalculateViolations,
         toggleUserBan,
+        promoteToSubAdmin,
+        sellerApplications,
+        submitSellerApplication,
+        reviewSellerApplication,
+        adminResetUserPassword,
+        verifyUserIdentity,
+        verifyAdminIdentity,
         theme,
         toggleTheme,
       }}

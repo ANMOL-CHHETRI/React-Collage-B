@@ -22,7 +22,7 @@ const Navbar = () => {
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
-  const dbUser = user && user.role === "user" ? (registeredUsers || []).find(u => u.username === user.username) : null;
+  const dbUser = user && (user.role === "user" || user.role === "sub-admin") ? (registeredUsers || []).find(u => u.username === user.username) : null;
   const hasViolations = dbUser && dbUser.violations > 0;
 
   return (

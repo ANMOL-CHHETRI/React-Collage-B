@@ -1,8 +1,39 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Link } from "react-router"
 import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
+import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
+
+const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(!src)
+  const imgRef = useRef(null)
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true)
+    }
+  }, [src])
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-gray-200 dark:bg-slate-800 animate-pulse rounded-lg" />
+      )}
+      <img
+        ref={imgRef}
+        referrerPolicy="no-referrer"
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
+        loading="lazy"
+      />
+    </div>
+  )
+}
 
 const stats = [
   { label: "Total Revenue", value: "Rs. 4,82,500", change: "+12.5%", up: true, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
@@ -24,14 +55,30 @@ const sidebarItems = [
   { id: "products", label: "Products" },
   { id: "orders", label: "Orders" },
   { id: "users", label: "Users" },
+  { id: "seller-requests", label: "Seller Requests" },
   { id: "settings", label: "Settings" },
 ]
 
 const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
 
 const AdminDashboard = () => {
-  const { user, logoutAdmin, changePassword, registeredUsers, updateUserViolations, toggleUserBan, theme, toggleTheme } = useAuth()
+  const { 
+    user, 
+    logoutAdmin, 
+    registeredUsers, 
+    updateUserViolations, 
+    toggleUserBan, 
+    theme,
+    toggleTheme,
+    changePassword,
+    sellerApplications,
+    reviewSellerApplication,
+    setExactUserViolations,
+    autoCalculateViolations,
+    adminResetUserPassword
+  } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
+  const { success, error: toastError, info } = useToast()
 
   const [activeSection, setActiveSection] = useState("dashboard")
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -65,18 +112,18 @@ const AdminDashboard = () => {
     setPasswordMessage({ type: "", text: "" })
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: "error", text: "New passwords do not match" })
+      toastError("New passwords do not match")
       return
     }
 
     const result = changePassword("admin", currentPassword, newPassword)
     if (result.success) {
-      setPasswordMessage({ type: "success", text: result.message })
+      success(result.message)
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
     } else {
-      setPasswordMessage({ type: "error", text: result.message })
+      toastError(result.message)
     }
   }
 
@@ -102,10 +149,19 @@ const AdminDashboard = () => {
 
   const handleSave = (e) => {
     e.preventDefault()
+    const parsedPrice = parseFloat(form.price)
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      toastError("Please enter a valid price.")
+      return
+    }
+
+    const payload = { ...form, price: parsedPrice }
     if (editing) {
-      updateProduct(editing.id, { ...form, price: parseFloat(form.price) })
+      updateProduct(editing.id, payload)
+      success("Product updated successfully")
     } else {
-      addProduct({ ...form, price: parseFloat(form.price) })
+      addProduct(payload)
+      success("Product added successfully")
     }
     setForm(emptyForm)
     setEditing(null)
@@ -119,7 +175,10 @@ const AdminDashboard = () => {
   }
 
   const handleDelete = (id) => {
-    if (confirm("Delete this product?")) deleteProduct(id)
+    if (confirm("Delete this product?")) {
+      deleteProduct(id)
+      success("Product deleted")
+    }
   }
 
   const sectionTitles = {
@@ -127,6 +186,7 @@ const AdminDashboard = () => {
     products: "Products",
     orders: "Orders",
     users: "Users",
+    "seller-requests": "Seller Requests",
     settings: "Settings",
   }
 
@@ -322,7 +382,9 @@ const AdminDashboard = () => {
                         <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60 cursor-pointer file:cursor-pointer" />
                         {form.image && (
                           <div className="mt-2 flex items-center gap-3">
-                            <img referrerPolicy="no-referrer" src={form.image} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-slate-700" />
+                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
+                              <ImageWithSkeleton src={form.image} alt="Preview" className="w-full h-full object-cover" />
+                            </div>
                             <span className="text-xs text-gray-400 dark:text-gray-500">Image ready</span>
                           </div>
                         )}
@@ -370,7 +432,9 @@ const AdminDashboard = () => {
                           return (
                             <tr key={product.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
                               <td className="px-4 py-3">
-                                <img referrerPolicy="no-referrer" src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                                <div className="w-10 h-10 rounded-lg overflow-hidden">
+                                  <ImageWithSkeleton src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                </div>
                               </td>
                               <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{product.name}</td>
                               <td className="px-4 py-3"><span className="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-md text-xs">{product.category}</span></td>
@@ -481,15 +545,26 @@ const AdminDashboard = () => {
                             {regUser.banned && (
                               <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">Banned</span>
                             )}
+                            {regUser.role === "sub-admin" && !regUser.banned && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider">Seller</span>
+                            )}
+                            {regUser.oneStarReviews > 50 && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 font-bold uppercase tracking-wider" title="More than 50 1-star reviews">Poor Ratings</span>
+                            )}
                           </div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{regUser.email}</p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">Username: <span className="font-mono font-medium">{regUser.username}</span></p>
+                          {regUser.oneStarReviews !== undefined && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              1-Star Reviews: <strong className={regUser.oneStarReviews > 50 ? "text-red-600 dark:text-red-400" : "text-gray-900 dark:text-white"}>{regUser.oneStarReviews}</strong>
+                            </p>
+                          )}
                         </div>
                       </div>
                       
                       <div className="flex flex-wrap items-center gap-4">
                         {/* Violations Counter */}
-                        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-1">
+                        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
                           <button
                             onClick={() => updateUserViolations(regUser.username, -1)}
                             className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
@@ -497,9 +572,16 @@ const AdminDashboard = () => {
                           >
                             -
                           </button>
-                          <span className="text-xs font-semibold px-2 text-gray-700 dark:text-gray-200">
-                            Violations: <strong className="text-red-600">{regUser.violations}</strong>
-                          </span>
+                          <div className="flex items-center gap-1 px-1">
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Violations:</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={regUser.violations}
+                              onChange={(e) => setExactUserViolations(regUser.username, parseInt(e.target.value, 10) || 0)}
+                              className="w-10 text-xs font-bold text-red-600 dark:text-red-400 bg-transparent border-none focus:ring-0 text-center p-0 outline-none"
+                            />
+                          </div>
                           <button
                             onClick={() => updateUserViolations(regUser.username, 1)}
                             className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
@@ -509,16 +591,41 @@ const AdminDashboard = () => {
                           </button>
                         </div>
 
+                        {/* Auto Violations Button */}
+                        <button
+                          onClick={() => autoCalculateViolations(regUser.username)}
+                          className="px-3 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-950/60 shadow-sm"
+                          title="Auto calculate violations based on 1-star reviews"
+                        >
+                          Auto Calc
+                        </button>
+
+                        {/* Reset Password Button */}
+                        <button
+                          onClick={() => {
+                            if (confirm(`Reset password for ${regUser.username} to 'shopease123'?`)) {
+                              adminResetUserPassword(regUser.username)
+                              success("Password reset to shopease123")
+                            }
+                          }}
+                          className="px-3 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-950/60 shadow-sm"
+                          title="Reset user password to default"
+                        >
+                          Reset Password
+                        </button>
+
                         {/* Ban / Unban Button */}
                         <button
                           onClick={() => toggleUserBan(regUser.username)}
                           className={`px-4 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer ${
                             regUser.banned
                               ? "bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                              : regUser.oneStarReviews > 50
+                              ? "bg-red-600 hover:bg-red-700 text-white shadow-sm ring-2 ring-red-400 ring-offset-2 dark:ring-offset-slate-950 animate-pulse"
                               : "bg-red-600 hover:bg-red-700 text-white shadow-sm"
                           }`}
                         >
-                          {regUser.banned ? "Unban User" : "Ban User"}
+                          {regUser.banned ? "Unban User" : (regUser.oneStarReviews > 50 ? "Ban (Too Many 1-Stars)" : "Ban User")}
                         </button>
                       </div>
                     </div>
@@ -624,6 +731,70 @@ const AdminDashboard = () => {
                   </button>
                 </form>
               </div>
+            </div>
+          )}
+
+          {activeSection === "seller-requests" && (
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 font-bold">Pending Seller Requests</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Review applications from users requesting to sell on ShopEase Nepal.</p>
+
+              {(!sellerApplications || sellerApplications.filter(a => a.status === "Pending").length === 0) ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-400">No pending seller applications at this time.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-gray-100 dark:border-slate-850 text-gray-400 dark:text-slate-500 uppercase tracking-wider font-bold">
+                        <th className="py-3 px-4">Applicant</th>
+                        <th className="py-3 px-4">Store Info</th>
+                        <th className="py-3 px-4">Contact Info</th>
+                        <th className="py-3 px-4">Description</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-slate-850">
+                      {sellerApplications.filter(a => a.status === "Pending").map((app) => (
+                        <tr key={app.username} className="hover:bg-gray-50/50 dark:hover:bg-slate-950/20 transition">
+                          <td className="py-4 px-4 font-bold text-gray-800 dark:text-white">
+                            <div>{app.username}</div>
+                            <div className="text-[10px] text-red-500 font-normal mt-0.5">
+                              Violations: {registeredUsers.find(u => u.username === app.username)?.violations || 0}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="font-semibold text-gray-900 dark:text-white">{app.shopName}</div>
+                            <div className="text-[10px] text-amber-600 font-medium">{app.shopCategory}</div>
+                          </td>
+                          <td className="py-4 px-4 text-gray-600 dark:text-gray-400">
+                            <div>Phone: {app.contactNumber}</div>
+                            <div>Address: {app.shopAddress}</div>
+                          </td>
+                          <td className="py-4 px-4 text-gray-500 dark:text-gray-400 max-w-xs truncate" title={app.shopDescription}>
+                            {app.shopDescription}
+                          </td>
+                          <td className="py-4 px-4 text-right space-x-2 shrink-0">
+                            <button
+                              onClick={() => reviewSellerApplication(app.username, "Approved")}
+                              className="bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-3.5 rounded-lg transition text-xs shadow-sm cursor-pointer"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => reviewSellerApplication(app.username, "Rejected")}
+                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-3.5 rounded-lg transition text-xs shadow-sm cursor-pointer"
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </main>

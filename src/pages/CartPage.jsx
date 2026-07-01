@@ -4,11 +4,21 @@ import { useCart } from "../context/CartContext"
 import { provincesData } from "../data/provincesData"
 import NepalInteractiveMap from "../components/NepalInteractiveMap"
 import { CartItemSkeleton } from "../components/Skeleton"
+import { useToast } from "../context/ToastContext"
+import { useNavigate } from "react-router"
+import { useAuth } from "../context/AuthContext"
+import CheckoutModal from "../components/CheckoutModal"
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
-  const [selectedProvince, setSelectedProvince] = useState("bagmati")
+  const { user } = useAuth()
+  const [selectedProvince, setSelectedProvince] = useState("Bagmati")
   const [loading, setLoading] = useState(true)
+  const [checkoutModal, setCheckoutModal] = useState(false)
+  const [checkingOut, setCheckingOut] = useState(false)
+  const { success } = useToast()
+  const { error: toastError } = useToast()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500)
@@ -104,7 +114,20 @@ const CartPage = () => {
                     <span>Rs. {grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400">Select a province below to calculate shipping</p>
+                <button 
+                  onClick={() => {
+                    if (!user) {
+                      toastError("Please log in to proceed to checkout.")
+                      navigate("/user-login")
+                    } else {
+                      setCheckoutModal(true)
+                    }
+                  }}
+                  className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition cursor-pointer"
+                >
+                  Proceed to Checkout
+                </button>
+                <p className="text-xs text-slate-400 text-center mt-2">Select a province below to calculate shipping</p>
               </div>
 
               <NepalInteractiveMap selectedProvince={selectedProvince} onSelectProvince={setSelectedProvince} />
@@ -112,6 +135,12 @@ const CartPage = () => {
           </div>
         )}
       </div>
+
+      <CheckoutModal 
+        isOpen={checkoutModal} 
+        onClose={() => setCheckoutModal(false)} 
+        grandTotal={grandTotal} 
+      />
     </div>
   )
 }

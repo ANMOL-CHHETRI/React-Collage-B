@@ -1,6 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react"
+import { useNavigate } from "react-router"
 import { useAuth } from "./AuthContext"
+import { useToast } from "./ToastContext"
 
 const CartContext = createContext()
 
@@ -11,6 +13,9 @@ const cartKey = (user) => {
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const { error: toastError } = useToast()
+  
   const key = cartKey(user)
 
   const [cartItems, setCartItems] = useState(() => {
@@ -32,6 +37,12 @@ export const CartProvider = ({ children }) => {
   }, [cartItems, key])
 
   const addToCart = (product) => {
+    if (!user) {
+      toastError("Please log in to add items to your cart.")
+      navigate("/user-login")
+      return
+    }
+
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id)
       if (existing) {
