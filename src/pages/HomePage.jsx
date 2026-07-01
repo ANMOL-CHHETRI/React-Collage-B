@@ -5,17 +5,18 @@ import { useProducts } from "../context/ProductContext";
 import { provincesData } from "../data/provincesData";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
+import Footer from "../components/footer";
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(!src)
-  const imgRef = useRef(null)
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(!src);
+  const imgRef = useRef(null);
 
   useEffect(() => {
     if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true)
+      setLoaded(true);
     }
-  }, [src])
+  }, [src]);
 
   return (
     <div className="relative w-full h-full">
@@ -27,14 +28,20 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
         referrerPolicy="no-referrer"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
+        src={
+          error
+            ? fallbackSrc ||
+              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
+            : src ||
+              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
+        }
         alt={alt}
-        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
+        className={`${className} transition-opacity duration-300 ${loaded || error ? "opacity-100" : "opacity-0"}`}
         loading="lazy"
       />
     </div>
-  )
-}
+  );
+};
 
 const categories = [
   {
@@ -124,7 +131,7 @@ const HomePage = () => {
 
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProvince, setSelectedProvince] = useState("bagmati");
+  const [selectedProvince, setSelectedProvince] = useState("Bagmati");
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -156,7 +163,6 @@ const HomePage = () => {
   const [orderError, setOrderError] = useState("");
 
   const provinceValue = selectedProvince;
-
 
   const filteredProducts = products.filter((p) => {
     return (
@@ -191,7 +197,6 @@ const HomePage = () => {
       shipping: shippingCost,
       total: grandTotal,
       estDays: provincesData[provinceValue].deliveryTime,
-
     };
 
     setOrderSuccess(simulatedOrder);
@@ -214,7 +219,9 @@ const HomePage = () => {
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   ShopEase Nepal
                 </span>
-                <span className="text-xs text-slate-300 dark:text-slate-700">|</span>
+                <span className="text-xs text-slate-300 dark:text-slate-700">
+                  |
+                </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   Home Delivery Across 7 Provinces
                 </span>
@@ -323,7 +330,9 @@ const HomePage = () => {
                     <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-max mb-2">
                       Featured Craft
                     </span>
-                    <h3 className="text-xl font-bold text-white mb-1">Palpali Dhaka Topi</h3>
+                    <h3 className="text-xl font-bold text-white mb-1">
+                      Palpali Dhaka Topi
+                    </h3>
                     <p className="text-xs text-slate-200 dark:text-slate-300">
                       Woven by hand in traditional wooden looms. 100% Cotton.
                     </p>
@@ -398,7 +407,8 @@ const HomePage = () => {
               Featured Nepalese Goods
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto">
-              Handpicked, sustainable items supporting rural communities across Nepal.
+              Handpicked, sustainable items supporting rural communities across
+              Nepal.
             </p>
           </div>
 
@@ -455,8 +465,12 @@ const HomePage = () => {
                       />
                       {p.id === 1 ? (
                         <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5 shadow-lg border border-amber-300 animate-pulse">
-                          <svg referrerPolicy="no-referrer" className="w-3 h-3 fill-current text-slate-950" viewBox="0 0 24 24">
-                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z"/>
+                          <svg
+                            referrerPolicy="no-referrer"
+                            className="w-3 h-3 fill-current text-slate-950"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z" />
                           </svg>
                           Most Sold
                         </span>
@@ -526,7 +540,9 @@ const HomePage = () => {
       <section className="py-20 bg-slate-50/50 dark:bg-slate-900/20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-2">
-            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">Reviews</span>
+            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
+              Reviews
+            </span>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Customer Testimonials
             </h2>
@@ -554,15 +570,21 @@ const HomePage = () => {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 italic leading-relaxed mb-6 font-medium">"{t.text}"</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 italic leading-relaxed mb-6 font-medium">
+                    "{t.text}"
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-amber-100 dark:bg-amber-950/40 rounded-full flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-400">
                     {t.avatar}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{t.name}</h4>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{t.location}, Nepal</span>
+                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
+                      {t.name}
+                    </h4>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">
+                      {t.location}, Nepal
+                    </span>
                   </div>
                 </div>
               </div>
@@ -571,12 +593,21 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section id="faq" className="py-20 bg-white dark:bg-slate-950 transition-colors duration-300">
+      <section
+        id="faq"
+        className="py-20 bg-white dark:bg-slate-950 transition-colors duration-300"
+      >
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12 space-y-2">
-            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">Help Desk</span>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Frequently Asked Questions</h2>
-            <p className="text-slate-400 dark:text-slate-500 text-sm font-semibold">Everything you need to know about our service</p>
+            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
+              Help Desk
+            </span>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-slate-400 dark:text-slate-500 text-sm font-semibold">
+              Everything you need to know about our service
+            </p>
           </div>
 
           <div className="space-y-3.5">
@@ -601,7 +632,11 @@ const HomePage = () => {
                     strokeWidth="2.5"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
                 {openFaq === faq.q && (
@@ -628,7 +663,9 @@ const HomePage = () => {
             <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right duration-300">
               <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                  {checkoutStep ? "Shipping Details (COD)" : `My Cart (${cartCount})`}
+                  {checkoutStep
+                    ? "Shipping Details (COD)"
+                    : `My Cart (${cartCount})`}
                 </h2>
                 <button
                   onClick={() => {
@@ -644,7 +681,11 @@ const HomePage = () => {
                     strokeWidth="2.5"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -655,7 +696,8 @@ const HomePage = () => {
                     <div className="bg-amber-50 border border-amber-100 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed font-medium mb-4">
                       <strong>Payment Mode: Cash on Delivery (COD)</strong>
                       <br />
-                      You will pay cash to the courier agent upon receiving your order at your shipping address.
+                      You will pay cash to the courier agent upon receiving your
+                      order at your shipping address.
                     </div>
 
                     {orderError && (
@@ -665,7 +707,9 @@ const HomePage = () => {
                     )}
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase block">Full Name</label>
+                      <label className="text-[11px] font-bold text-slate-500 uppercase block">
+                        Full Name
+                      </label>
                       <input
                         type="text"
                         required
@@ -677,7 +721,9 @@ const HomePage = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase block">Phone Number (Nepal)</label>
+                      <label className="text-[11px] font-bold text-slate-500 uppercase block">
+                        Phone Number (Nepal)
+                      </label>
                       <input
                         type="tel"
                         required
@@ -689,13 +735,13 @@ const HomePage = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Delivery Province</label>
+                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
+                        Delivery Province
+                      </label>
                       <select
                         value={provinceValue}
-
                         onChange={(e) => {
                           setSelectedProvince(e.target.value);
-
                         }}
                         className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
                       >
@@ -709,7 +755,9 @@ const HomePage = () => {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">City / Town</label>
+                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
+                          City / Town
+                        </label>
                         <select
                           required
                           value={city}
@@ -717,7 +765,6 @@ const HomePage = () => {
                           className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
                         >
                           {provincesData[provinceValue]?.cities?.map((c) => (
-
                             <option key={c} value={c}>
                               {c}
                             </option>
@@ -725,7 +772,9 @@ const HomePage = () => {
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Zip / Postcode</label>
+                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
+                          Zip / Postcode
+                        </label>
                         <input
                           type="text"
                           placeholder="e.g. 44600"
@@ -735,7 +784,9 @@ const HomePage = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">Street Address</label>
+                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
+                        Street Address
+                      </label>
                       <input
                         type="text"
                         required
@@ -755,18 +806,34 @@ const HomePage = () => {
                   </form>
                 ) : cartItems.length === 0 ? (
                   <div className="text-center py-20 space-y-4">
-                    <svg className="w-16 h-16 text-slate-200 dark:text-slate-800 mx-auto" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg
+                      className="w-16 h-16 text-slate-200 dark:text-slate-800 mx-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                      />
                     </svg>
-                    <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">Your cart is empty</h3>
+                    <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">
+                      Your cart is empty
+                    </h3>
                     <p className="text-slate-400 dark:text-slate-500 text-xs max-w-[240px] mx-auto">
-                      Explore Nepalese crafts, garments, and tea to add them here.
+                      Explore Nepalese crafts, garments, and tea to add them
+                      here.
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex gap-4 p-3 border border-slate-100 dark:border-slate-800 rounded-xl hover:shadow-sm transition">
+                      <div
+                        key={item.id}
+                        className="flex gap-4 p-3 border border-slate-100 dark:border-slate-800 rounded-xl hover:shadow-sm transition"
+                      >
                         <ImageWithSkeleton
                           src={item.image}
                           alt={item.name}
@@ -786,7 +853,9 @@ const HomePage = () => {
                           <div className="flex items-center justify-between pt-1">
                             <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-lg">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
                                 className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-l-lg transition cursor-pointer"
                               >
                                 -
@@ -795,7 +864,9 @@ const HomePage = () => {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
                                 className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-r-lg transition cursor-pointer"
                               >
                                 +
@@ -819,19 +890,35 @@ const HomePage = () => {
               {cartItems.length > 0 && !checkoutStep && (
                 <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 space-y-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400 font-semibold">Subtotal</span>
-                    <span className="font-extrabold text-slate-900 dark:text-white">Rs. {cartSubtotal.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-semibold">
+                      Subtotal
+                    </span>
+                    <span className="font-extrabold text-slate-900 dark:text-white">
+                      Rs. {cartSubtotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
-                    <span>Shipping calculated at checkout. Delivery across Nepal.</span>
+                    <span>
+                      Shipping calculated at checkout. Delivery across Nepal.
+                    </span>
                   </div>
                   <button
                     onClick={() => setCheckoutStep(true)}
                     className="w-full bg-slate-950 dark:bg-slate-100 text-white dark:text-slate-950 font-bold py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-md transition duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     Proceed to Delivery (COD)
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -840,23 +927,30 @@ const HomePage = () => {
               {checkoutStep && (
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">Cart Subtotal:</span>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">Rs. {cartSubtotal.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">
+                      Cart Subtotal:
+                    </span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                      Rs. {cartSubtotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400 font-medium">
                       Shipping ({provincesData[provinceValue].name}):
-
                     </span>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">Rs. {provincesData[provinceValue].shippingFee}</span>
-
+                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                      Rs. {provincesData[provinceValue].shippingFee}
+                    </span>
                   </div>
                   <div className="flex justify-between border-t border-slate-200 dark:border-slate-800/80 pt-2 text-sm font-extrabold">
-                    <span className="text-slate-800 dark:text-slate-200">Grand Total (COD):</span>
+                    <span className="text-slate-800 dark:text-slate-200">
+                      Grand Total (COD):
+                    </span>
                     <span className="text-amber-600 dark:text-amber-400 font-extrabold">
                       Rs.{" "}
-                      {(cartSubtotal + provincesData[provinceValue].shippingFee).toLocaleString()}
-
+                      {(
+                        cartSubtotal + provincesData[provinceValue].shippingFee
+                      ).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -875,8 +969,18 @@ const HomePage = () => {
 
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-800 shadow-2xl relative transform transition duration-300 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="w-14 h-14 bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12l2 2 4-4"
+                />
               </svg>
             </div>
 
@@ -885,7 +989,9 @@ const HomePage = () => {
             </h3>
             <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-1 font-semibold">
               Order ID:{" "}
-              <span className="text-amber-600 dark:text-amber-400 font-bold">{orderSuccess.orderId}</span>
+              <span className="text-amber-600 dark:text-amber-400 font-bold">
+                {orderSuccess.orderId}
+              </span>
             </p>
 
             <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4.5 border border-slate-100 dark:border-slate-800 text-xs space-y-2 mt-5">
@@ -894,43 +1000,67 @@ const HomePage = () => {
               </h4>
               <div className="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-400">
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Recipient Name</span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">{orderSuccess.fullName}</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
+                    Recipient Name
+                  </span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">
+                    {orderSuccess.fullName}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Contact Phone</span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">{orderSuccess.phone}</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
+                    Contact Phone
+                  </span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">
+                    {orderSuccess.phone}
+                  </span>
                 </div>
               </div>
               <div className="pt-2 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
-                <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Delivery Location</span>
+                <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
+                  Delivery Location
+                </span>
                 <span className="font-bold text-slate-700 dark:text-slate-300">
-                  {orderSuccess.address}, {orderSuccess.city}, {orderSuccess.provinceName}
+                  {orderSuccess.address}, {orderSuccess.city},{" "}
+                  {orderSuccess.provinceName}
                 </span>
               </div>
               <div className="pt-2 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Payment Method</span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">Cash on Delivery (COD)</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
+                    Payment Method
+                  </span>
+                  <span className="font-bold text-slate-700 dark:text-slate-300">
+                    Cash on Delivery (COD)
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">Estimated Delivery</span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400">{orderSuccess.estDays}</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
+                    Estimated Delivery
+                  </span>
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {orderSuccess.estDays}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="flex justify-between items-center text-sm font-bold pt-4 px-1 border-t border-slate-200 dark:border-slate-800 mt-5">
-              <span className="text-slate-700 dark:text-slate-300">Total Invoice (NPR)</span>
+              <span className="text-slate-700 dark:text-slate-300">
+                Total Invoice (NPR)
+              </span>
               <span className="text-amber-600 dark:text-amber-400 text-base font-extrabold">
                 Rs. {orderSuccess.total.toLocaleString()}
               </span>
             </div>
 
             <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-normal text-center mt-6">
-              Our support desk will call you at {" "}
-              <strong className="text-slate-600 dark:text-slate-300">{orderSuccess.phone}</strong>
-              {" "}within 12 hours to verify your delivery address before dispatching the rider.
+              Our support desk will call you at{" "}
+              <strong className="text-slate-600 dark:text-slate-300">
+                {orderSuccess.phone}
+              </strong>{" "}
+              within 12 hours to verify your delivery address before dispatching
+              the rider.
             </p>
 
             <button
@@ -942,157 +1072,9 @@ const HomePage = () => {
           </div>
         </div>
       )}
-
-      <footer className="bg-slate-950 text-slate-400 border-t border-slate-900">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-            <div className="md:col-span-4 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25" />
-                <span className="text-xl font-bold tracking-tight text-white">
-                  ShopEase <span className="text-amber-500">Nepal</span>
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
-                Your premium destination for authentic Nepalese handicrafts, garments,
-                organic tea, and mountain coffee. Sourced directly from local cooperatives
-                supporting micro-enterprises.
-              </p>
-              <div className="flex gap-2.5 pt-2">
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center hover:bg-amber-500 hover:text-white transition"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center hover:bg-amber-500 hover:text-white transition"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            <div className="md:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">Catalog</h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link
-                    to={`/category/${encodeURIComponent("Traditional Apparel")}`}
-                    className="hover:text-amber-500 transition-colors text-left block"
-                  >
-                    Apparel
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/category/${encodeURIComponent("Organic Tea & Coffee")}`}
-                    className="hover:text-amber-500 transition-colors text-left block"
-                  >
-                    Tea & Coffee
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/category/${encodeURIComponent("Local Handicrafts")}`}
-                    className="hover:text-amber-500 transition-colors text-left block"
-                  >
-                    Handicrafts
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/category/${encodeURIComponent("Herbs & Spices")}`}
-                    className="hover:text-amber-500 transition-colors text-left block"
-                  >
-                    Herbs & Spices
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="md:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">Quick Links</h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <NavLink to="/about" className="hover:text-amber-500 transition-colors">
-                    About Us
-                  </NavLink>
-                </li>
-                <li>
-                  <a href="#delivery" className="hover:text-amber-500 transition-colors">
-                    Delivery Coverage
-                  </a>
-                </li>
-                <li>
-                  <a href="#faq" className="hover:text-amber-500 transition-colors">
-                    Help FAQ
-                  </a>
-                </li>
-                <li>
-                  <Link to="/user-login" className="hover:text-amber-500 transition-colors">
-                    User Login
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="md:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">Legal</h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link to="/policy#privacy" className="hover:text-amber-500 transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/policy#terms" className="hover:text-amber-500 transition-colors">
-                    Terms of Use
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/policy#cod" className="hover:text-amber-500 transition-colors">
-                    COD Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="md:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">Office Address</h4>
-              <p className="text-xs text-slate-500 leading-normal">
-                ShopEase Nepal Pvt. Ltd.
-                <br />
-                New Baneshwor, Kathmandu
-                <br />
-                Bagmati, Nepal
-                <br />
-                support@shopease.com.np
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 font-medium">
-            <p>© 2026 ShopEase Nepal. All rights reserved.</p>
-            <div className="flex gap-4">
-              <Link to="/policy#privacy" className="hover:underline">
-                Privacy Policy
-              </Link>
-              <Link to="/policy#terms" className="hover:underline">
-                Terms of Service
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
 
 export default HomePage;
-

@@ -52,8 +52,8 @@ const ProductDetailPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-700 mb-2">Product not found</h1>
-          <Link to="/" className="text-amber-600 hover:underline">Back to store</Link>
+          <h1 className="text-2xl font-bold text-slate-700 mb-2">Product Not Found</h1>
+          <Link to="/" className="text-amber-600 hover:underline">Back to Store</Link>
         </div>
       </div>
     )
@@ -120,4 +120,4 @@ const ProductDetailPage = () => {
   )
 }
 
-export default ProductDetailPage
+export default ProductDetailPage;
