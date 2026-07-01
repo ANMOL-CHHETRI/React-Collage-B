@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router"
 import { useProducts } from "../context/ProductContext"
 import { useCart } from "../context/CartContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
-import Footer from "../components/footer"
+import Footer from "../components/Footer"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)

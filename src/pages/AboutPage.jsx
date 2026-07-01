@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router";
-import Footer from "../components/footer";
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const features = [
   {

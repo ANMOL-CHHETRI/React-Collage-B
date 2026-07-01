@@ -5,7 +5,7 @@ export default defineConfig({
   retries: 0,
   timeout: 60 * 1000,
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://127.0.0.1:4173',
     headless: true,
     ignoreHTTPSErrors: true,
     video: 'retain-on-failure',
@@ -15,8 +15,8 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-results.json' }],
   ],
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 5173',
-    url: 'http://127.0.0.1:5173',
+    command: 'npm run preview -- --host 127.0.0.1 --port 4173',
+    url: 'http://127.0.0.1:4173',
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },

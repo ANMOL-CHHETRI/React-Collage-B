@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "./AuthContext"
 import { useToast } from "./ToastContext"
 
@@ -39,7 +39,9 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product) => {
     if (!user) {
       toastError("Please log in to add items to your cart.")
-      navigate("/user-login")
+      if (typeof navigate === "function") {
+        navigate("/user-login")
+      }
       return
     }
 

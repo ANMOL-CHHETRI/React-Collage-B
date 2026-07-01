@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router"
-import Footer from "../components/footer"
+import Footer from "../components/Footer"
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
