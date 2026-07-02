@@ -230,7 +230,8 @@ const HomePage = () => {
 
       <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+          <div className="text-center mb-12 space-y-2">
+          {/* <div className="flex flex-col md:flex-row md:items-end justify-between mb-10"> */}
             <div>
               <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
                 Shop By Category
