@@ -104,7 +104,7 @@ const DeliveryCoveragePage = () => {
           ))}
         </div>
       </section>
-      <Footer />
+      
     </div>
   )
 }
