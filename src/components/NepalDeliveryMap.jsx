@@ -16,10 +16,10 @@ const PROVINCE_ID_MAP = {
 }
 
 
-// Unified color scheme — orange on interact, slate default
-const DEFAULT_COLOR  = "#94a3b8"  // slate-400  — resting state
-const HOVER_COLOR    = "#f97316"  // orange-500 — mouse-over
-const SELECTED_COLOR = "#ea580c"  // orange-600 — clicked / active
+// Unified color scheme from the provided palette — slate default, burgundy hover, orange selected
+const DEFAULT_COLOR  = "#938ba1"  // palette slate resting state
+const HOVER_COLOR    = "#0A100D"  // palette black hover state
+const SELECTED_COLOR = "var(--map-selected-color)"  // Dynamic theme selected state
 
 // Province display names — override GeoJSON defaults
 const PROVINCE_NAME_MAP = {
@@ -170,7 +170,7 @@ const NepalDeliveryMap = ({
       // Custom pin icon
       const pinIcon = L.divIcon({
         className: "custom-pin-icon",
-        html: `<div style="width:28px;height:28px;background:#f97316;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
+        html: `<div style="width:28px;height:28px;background:var(--map-selected-color);border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         tooltipAnchor: [0, -30],
@@ -261,7 +261,7 @@ const NepalDeliveryMap = ({
 
       const pinIcon = L.divIcon({
         className: "custom-pin-icon",
-        html: `<div style="width:28px;height:28px;background:#f97316;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
+        html: `<div style="width:28px;height:28px;background:var(--map-selected-color);border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><div style="width:8px;height:8px;background:#fff;border-radius:50%;transform:rotate(45deg);"></div></div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         tooltipAnchor: [0, -30],
@@ -296,6 +296,12 @@ const NepalDeliveryMap = ({
       <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
         {/* Leaflet overrides — labels always white, clean background */}
         <style>{`
+          :root {
+            --map-selected-color: #AF412F;
+          }
+          .dark {
+            --map-selected-color: #6F1D1B;
+          }
           .nepal-province-label {
             background: transparent !important;
             border: none !important;
@@ -317,7 +323,7 @@ const NepalDeliveryMap = ({
           }
           .pin-label {
             background: #fff !important;
-            border: 2px solid #f97316 !important;
+            border: 2px solid var(--map-selected-color) !important;
             border-radius: 8px !important;
             padding: 4px 10px !important;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
@@ -330,7 +336,7 @@ const NepalDeliveryMap = ({
           }
           .pin-label::before {
             border-top-color: #fff !important;
-            border-bottom-color: #f97316 !important;
+            border-bottom-color: var(--map-selected-color) !important;
           }
           .leaflet-container {
             background: #f1f5f9 !important;
@@ -348,7 +354,7 @@ const NepalDeliveryMap = ({
             border-color: #e5e7eb !important;
           }
           .leaflet-control-zoom a:hover {
-            background: #f97316 !important;
+            background: var(--map-selected-color) !important;
             color: #fff !important;
           }
         `}</style>
@@ -364,15 +370,15 @@ const NepalDeliveryMap = ({
         {/* Color key */}
         <div className="flex items-center justify-center gap-6 mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-sm bg-slate-400 inline-block" />
+            <span className="w-3.5 h-3.5 rounded-sm bg-[#938ba1] inline-block" />
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Unselected</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-sm bg-orange-500 inline-block" />
+            <span className="w-3.5 h-3.5 rounded-sm bg-[#0A100D] inline-block" />
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Hover</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-sm bg-orange-600 inline-block" />
+            <span className="w-3.5 h-3.5 rounded-sm bg-[var(--map-selected-color)] inline-block" />
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Selected</span>
           </div>
         </div>
@@ -392,12 +398,12 @@ const NepalDeliveryMap = ({
             const isSel = selectedProvince === key
             return (
               <button
-                key={id}
+                key={key}
                 onClick={() => onSelectProvince(key)}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border transition-all duration-150 cursor-pointer ${
                   isSel
-                    ? "bg-orange-600 text-white border-orange-600 shadow-sm shadow-orange-200 dark:shadow-orange-900/30"
-                    : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-orange-500 hover:text-white hover:border-orange-500"
+                    ? "bg-[var(--map-selected-color)] text-white border-[var(--map-selected-color)] shadow-sm shadow-red-950/20 dark:shadow-red-950/30"
+                    : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-[#0A100D] hover:text-white hover:border-[#0A100D]"
                 }`}
               >
                 {name}

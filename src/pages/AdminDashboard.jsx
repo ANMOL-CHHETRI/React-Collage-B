@@ -55,7 +55,7 @@ const sidebarItems = [
   { id: "products", label: "Products" },
   { id: "orders", label: "Orders" },
   { id: "users", label: "Users" },
-  { id: "seller-requests", label: "Seller Requests" },
+  { id: "messages", label: "Messages" },
   { id: "settings", label: "Settings" },
 ]
 
@@ -97,6 +97,20 @@ const AdminDashboard = () => {
   const [sort, setSort] = useState("name")
 
 
+  // Dynamic Data state
+  const [adminOrders, setAdminOrders] = useState([])
+  const [adminMessages, setAdminMessages] = useState([])
+
+  useEffect(() => {
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem("shopease_orders")) || []
+      setAdminOrders(savedOrders)
+      const savedMessages = JSON.parse(localStorage.getItem("shopease_messages")) || []
+      setAdminMessages(savedMessages)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [activeSection])
 
   // Loading state
   const [loading, setLoading] = useState(true)
@@ -186,7 +200,7 @@ const AdminDashboard = () => {
     products: "Products",
     orders: "Orders",
     users: "Users",
-    "seller-requests": "Seller Requests",
+    messages: "Messages",
     settings: "Settings",
   }
 
@@ -304,12 +318,18 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {recentOrders.map((order) => (
-                        <tr key={order.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
-                          <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{order.id}</td>
-                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.customer}</td>
-                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.product}</td>
-                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.amount}</td>
+                    {(adminOrders.length > 0 ? adminOrders : recentOrders).slice(0, 5).filter(order => order).map((order) => {
+                      const orderId = order.orderId || order.id || "#ORD-UNK";
+                      const customer = order.fullName || order.customer || "Unknown Customer";
+                        const product = order.product || (order.items && order.items[0] ? `${order.items[0].name}${order.items.length > 1 ? ` (+${order.items.length - 1} more)` : ''}` : "Unknown Product");
+                        const amount = order.amount || `Rs. ${order.total?.toLocaleString()}`;
+                        
+                        return (
+                        <tr key={orderId} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
+                          <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{orderId}</td>
+                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{customer}</td>
+                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
+                          <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                           <td className="px-6 py-4">
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -326,7 +346,7 @@ const AdminDashboard = () => {
                             </span>
                           </td>
                         </tr>
-                      ))}
+                      )})}
                     </tbody>
                   </table>
                 </div>
@@ -484,12 +504,18 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {recentOrders.map((order) => (
-                      <tr key={order.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
-                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{order.id}</td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.customer}</td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.product}</td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{order.amount}</td>
+                    {(adminOrders.length > 0 ? adminOrders : recentOrders).filter(order => order).map((order) => {
+                      const orderId = order.orderId || order.id || "#ORD-UNK";
+                      const customer = order.fullName || order.customer || "Unknown Customer";
+                      const product = order.product || (order.items && order.items[0] ? `${order.items[0].name}${order.items.length > 1 ? ` (+${order.items.length - 1} more)` : ''}` : "Unknown Product");
+                      const amount = order.amount || `Rs. ${order.total?.toLocaleString()}`;
+                      
+                      return (
+                      <tr key={orderId} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
+                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{orderId}</td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{customer}</td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
+                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                         <td className="px-6 py-4">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -506,7 +532,7 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                       </tr>
-                    ))}
+                    )})}
                   </tbody>
                 </table>
               </div>
@@ -734,60 +760,43 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {activeSection === "seller-requests" && (
+          {activeSection === "messages" && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 font-bold">Pending Seller Requests</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Review applications from users requesting to sell on ShopEase Nepal.</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 font-bold">Contact Messages</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Review messages submitted by users through the Contact form.</p>
 
-              {(!sellerApplications || sellerApplications.filter(a => a.status === "Pending").length === 0) ? (
+              {(!adminMessages || adminMessages.length === 0) ? (
                 <div className="text-center py-8">
-                  <p className="text-sm text-gray-400">No pending seller applications at this time.</p>
+                  <p className="text-sm text-gray-400">No messages at this time.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="border-b border-gray-100 dark:border-slate-850 text-gray-400 dark:text-slate-500 uppercase tracking-wider font-bold">
-                        <th className="py-3 px-4">Applicant</th>
-                        <th className="py-3 px-4">Store Info</th>
-                        <th className="py-3 px-4">Contact Info</th>
-                        <th className="py-3 px-4">Description</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4">Sender</th>
+                        <th className="py-3 px-4">Subject</th>
+                        <th className="py-3 px-4">Message</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-slate-850">
-                      {sellerApplications.filter(a => a.status === "Pending").map((app) => (
-                        <tr key={app.username} className="hover:bg-gray-50/50 dark:hover:bg-slate-950/20 transition">
-                          <td className="py-4 px-4 font-bold text-gray-800 dark:text-white">
-                            <div>{app.username}</div>
-                            <div className="text-[10px] text-red-500 font-normal mt-0.5">
-                              Violations: {registeredUsers.find(u => u.username === app.username)?.violations || 0}
+                      {adminMessages.filter(msg => msg).map((msg, index) => (
+                        <tr key={msg.id || index} className="hover:bg-gray-50/50 dark:hover:bg-slate-950/20 transition">
+                          <td className="py-4 px-4 font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            {msg.date ? new Date(msg.date).toLocaleDateString() : "Unknown Date"}
+                          </td>
+                          <td className="py-4 px-4 font-bold text-gray-800 dark:text-white whitespace-nowrap">
+                            <div>{msg.name || "Unknown"}</div>
+                            <div className="text-[10px] text-amber-600 font-normal mt-0.5">
+                              {msg.email || "No email"}
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <div className="font-semibold text-gray-900 dark:text-white">{app.shopName}</div>
-                            <div className="text-[10px] text-amber-600 font-medium">{app.shopCategory}</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">{msg.subject || "No Subject"}</div>
                           </td>
-                          <td className="py-4 px-4 text-gray-600 dark:text-gray-400">
-                            <div>Phone: {app.contactNumber}</div>
-                            <div>Address: {app.shopAddress}</div>
-                          </td>
-                          <td className="py-4 px-4 text-gray-500 dark:text-gray-400 max-w-xs truncate" title={app.shopDescription}>
-                            {app.shopDescription}
-                          </td>
-                          <td className="py-4 px-4 text-right space-x-2 shrink-0">
-                            <button
-                              onClick={() => reviewSellerApplication(app.username, "Approved")}
-                              className="bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-3.5 rounded-lg transition text-xs shadow-sm cursor-pointer"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => reviewSellerApplication(app.username, "Rejected")}
-                              className="bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-3.5 rounded-lg transition text-xs shadow-sm cursor-pointer"
-                            >
-                              Reject
-                            </button>
+                          <td className="py-4 px-4 text-gray-600 dark:text-gray-400 max-w-md">
+                            {msg.message || ""}
                           </td>
                         </tr>
                       ))}

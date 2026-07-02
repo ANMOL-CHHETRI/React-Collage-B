@@ -113,15 +113,44 @@ const UserDashboard = () => {
   const [activeSection, setActiveSection] = useState("orders")
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
-  const [rawOrders] = useState(user?.username === "user" ? initialOrders : [])
+
+  const [rawOrders, setRawOrders] = useState([])
+
+  useEffect(() => {
+    try {
+      const dynamicOrders = JSON.parse(localStorage.getItem("shopease_orders")) || []
+      // Convert dynamic orders into the format UserDashboard expects safely
+      const formattedDynamicOrders = dynamicOrders.filter(o => o && (o.username === user?.username || o.fullName === user?.name || user?.username === "user")).map(o => ({
+        id: o.orderId || o.id || "#ORD-UNKNOWN",
+        storeName: "ShopEase Official",
+        status: o.status || "Processing",
+        date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+        items: (o.items || []).map(item => ({
+          name: item?.name || "Unknown Product",
+          attributes: "Qty: " + (item?.quantity || 1),
+          price: item?.price || 0,
+          qty: item?.quantity || 1,
+          image: item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
+        }))
+      }))
+      
+      const baseOrders = user?.username === "user" ? initialOrders : []
+      setRawOrders([...formattedDynamicOrders, ...baseOrders])
+    } catch (e) {
+      console.error(e)
+    }
+  }, [user])
 
   const orders = useMemo(() => {
     return rawOrders.map(order => {
-      const validItems = order.items.filter(item => 
-        products.some(p => p.name.toLowerCase() === item.name.toLowerCase() || item.name.toLowerCase().includes(p.name.toLowerCase()))
+      const validItems = (order.items || []).filter(item => 
+        products.some(p => {
+          if (!p?.name || !item?.name) return false;
+          return p.name.toLowerCase() === item.name.toLowerCase() || item.name.toLowerCase().includes(p.name.toLowerCase())
+        })
       )
       return { ...order, items: validItems }
-    }).filter(order => order.items.length > 0)
+    }).filter(order => order.items && order.items.length > 0)
   }, [rawOrders, products])
   const [loading, setLoading] = useState(true)
 

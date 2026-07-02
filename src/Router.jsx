@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext"
 import { CartProvider } from "./context/CartContext"
 import { ProductProvider } from "./context/ProductContext"
 import { ToastProvider } from "./context/ToastContext"
+import { WishlistProvider } from "./context/WishlistContext"
 import HomePage from "./pages/HomePage"
 import AboutPage from "./pages/AboutPage"
 import AdminLoginPage from "./pages/AdminLoginPage"
@@ -21,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import FAQPage from "./pages/FAQPage"
 import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
 import NotFoundPage from "./pages/NotFoundPage"
+import WishlistPage from "./pages/WishlistPage"
 
 const Router = () => {
   return (
@@ -29,6 +31,7 @@ const Router = () => {
       <AuthProvider>
         <CartProvider>
         <ProductProvider>
+        <WishlistProvider>
         <Routes>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
@@ -37,6 +40,7 @@ const Router = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />
@@ -50,6 +54,7 @@ const Router = () => {
           <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfilePage /></ProtectedRoute>} />
           {/* /dashboard/crud route removed — product CRUD is now in /admin/dashboard Products section */}
         </Routes>
+        </WishlistProvider>
         </ProductProvider>
         </CartProvider>
       </AuthProvider>

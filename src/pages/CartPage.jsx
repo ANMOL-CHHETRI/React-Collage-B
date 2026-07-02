@@ -12,7 +12,7 @@ import CheckoutModal from "../components/CheckoutModal"
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
   const { user } = useAuth()
-  const [selectedProvince, setSelectedProvince] = useState("Bagmati")
+  const [selectedProvince, setSelectedProvince] = useState("bagmati")
   const [loading, setLoading] = useState(true)
   const [checkoutModal, setCheckoutModal] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)

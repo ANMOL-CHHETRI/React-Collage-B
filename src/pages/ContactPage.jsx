@@ -1,13 +1,29 @@
 import { useState } from "react"
 import { Link } from "react-router"
 import Footer from "../components/footer"
+import { useAuth } from "../context/AuthContext"
 
 const ContactPage = () => {
+  const { user } = useAuth()
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
   const [sent, setSent] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    
+    const newMessage = {
+      id: "MSG-" + Math.floor(1000 + Math.random() * 9000),
+      ...form,
+      date: new Date().toISOString()
+    }
+
+    try {
+      const existing = JSON.parse(localStorage.getItem("shopease_messages")) || []
+      localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...existing]))
+    } catch (err) {
+      console.error("Error saving message:", err)
+    }
+
     setSent(true)
     setForm({ name: "", email: "", subject: "", message: "" })
     setTimeout(() => setSent(false), 3000)
@@ -36,6 +52,22 @@ const ContactPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Form Side */}
           <div className="lg:col-span-8">
+            {user?.role === 'admin' ? (
+              <div className="bg-white dark:bg-slate-950 rounded-2xl border border-amber-200 dark:border-amber-900 shadow-sm p-8 flex flex-col items-center justify-center text-center h-full space-y-4">
+                <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Admin Account</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm">
+                  You are logged in as an Administrator. This contact form is disabled for staff accounts.
+                </p>
+                <Link to="/admin/dashboard" className="mt-2 px-6 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-amber-700 transition">
+                  Go to Dashboard
+                </Link>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-8 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
@@ -96,6 +128,7 @@ const ContactPage = () => {
                 )}
               </div>
             </form>
+            )}
           </div>
 
           {/* Cards Side */}

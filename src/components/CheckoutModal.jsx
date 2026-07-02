@@ -2,8 +2,10 @@ import { useState } from "react"
 import { useNavigate } from "react-router"
 import { useToast } from "../context/ToastContext"
 import { useCart } from "../context/CartContext"
+import { useAuth } from "../context/AuthContext"
 
 const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
+  const { user } = useAuth()
   const [checkoutStep, setCheckoutStep] = useState(1) // 1: Shipping, 2: Payment, 3: Review
   const [shippingDetails, setShippingDetails] = useState({ fullName: "", phone: "", address: "", city: "" })
   const [paymentMethod, setPaymentMethod] = useState("credit_card")
@@ -20,6 +22,32 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
     setCheckingOut(true)
     setTimeout(() => {
       setCheckingOut(false)
+
+      const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000)
+      const simulatedOrder = {
+        orderId,
+        username: user?.username,
+        fullName: shippingDetails.fullName,
+        phone: shippingDetails.phone,
+        address: shippingDetails.address,
+        city: shippingDetails.city,
+        provinceName: "Bagmati", // Assuming a default or pass it as prop if needed
+        items: [...cartItems],
+        subtotal: grandTotal, // Note: grandTotal already has shipping
+        shipping: 0,
+        total: grandTotal,
+        estDays: "2-4 Days",
+        status: "Processing",
+        date: new Date().toISOString()
+      };
+
+      try {
+        const existingOrders = JSON.parse(localStorage.getItem("shopease_orders")) || [];
+        localStorage.setItem("shopease_orders", JSON.stringify([simulatedOrder, ...existingOrders]));
+      } catch (err) {
+        console.error("Error saving order:", err);
+      }
+
       clearCart()
       success("Order placed successfully! Check your dashboard for tracking.")
       navigate("/user/dashboard")
@@ -66,10 +94,10 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
 
         {checkoutStep === 1 && (
           <div className="animate-fade-in-up">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Shipping Information</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Receiver Details</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Receiver Name</label>
                 <input 
                   type="text" 
                   value={shippingDetails.fullName}
@@ -187,7 +215,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
                 <span className="font-bold text-orange-600">Rs. {grandTotal.toLocaleString()}</span>
               </div>
               <div className="border-t border-slate-200 dark:border-slate-700 my-2 pt-2">
-                <span className="text-slate-500 dark:text-slate-400 block mb-1">Shipping To:</span>
+                <span className="text-slate-500 dark:text-slate-400 block mb-1">Receiver Details:</span>
                 <span className="font-bold text-slate-900 dark:text-white block">{shippingDetails.fullName}</span>
                 <span className="text-slate-600 dark:text-slate-300 block">{shippingDetails.address}, {shippingDetails.city}</span>
               </div>

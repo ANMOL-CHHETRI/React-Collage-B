@@ -1,16 +1,17 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
+import CartDrawer from "../components/CartDrawer";
 import { Outlet } from "react-router";
 
 const MainLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="theme-public flex flex-col min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Navbar/>
       <main className="flex-grow flex flex-col">
         <Outlet />
       </main>
       <Footer />
+      <CartDrawer />
     </div>
   );
 };

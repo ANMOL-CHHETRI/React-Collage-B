@@ -1,5 +1,80 @@
 @import "tailwindcss";
 
+.theme-public {
+  --color-slate-50: #f8f6f9;
+  --color-slate-100: #edeaf1;
+  --color-slate-200: #dcd8e4;
+  --color-slate-300: #c7c2d0;
+  --color-slate-400: #938ba1;
+  --color-slate-500: #7d758f;
+  --color-slate-600: #645d70;
+  --color-slate-700: #4c4758;
+  --color-slate-800: #2f2e3b;
+  --color-slate-900: #0a100d;
+  --color-slate-950: #050806;
+
+  --color-gray-50: #f8f6f9;
+  --color-gray-100: #edeaf1;
+  --color-gray-200: #dcd8e4;
+  --color-gray-300: #c7c2d0;
+  --color-gray-400: #938ba1;
+  --color-gray-500: #7d758f;
+  --color-gray-600: #645d70;
+  --color-gray-700: #4c4758;
+  --color-gray-800: #2f2e3b;
+  --color-gray-900: #0a100d;
+  --color-gray-950: #050806;
+
+  --color-zinc-50: #f8f6f9;
+  --color-zinc-100: #edeaf1;
+  --color-zinc-200: #dcd8e4;
+  --color-zinc-300: #c7c2d0;
+  --color-zinc-400: #938ba1;
+  --color-zinc-500: #7d758f;
+  --color-zinc-600: #645d70;
+  --color-zinc-700: #4c4758;
+  --color-zinc-800: #2f2e3b;
+  --color-zinc-900: #0a100d;
+  --color-zinc-950: #050806;
+
+  --color-amber-50: #fff5f4;
+  --color-amber-100: #f9e3e1;
+  --color-amber-200: #efc7c3;
+  --color-amber-300: #e39d94;
+  --color-amber-400: #c05a53;
+  --color-amber-500: #6F1D1B;
+  --color-amber-600: #581514;
+  --color-amber-700: #40110f;
+  --color-amber-800: #250b09;
+  --color-amber-900: #0A100D;
+  --color-amber-950: #050806;
+
+  --color-orange-50: #fff7f3;
+  --color-orange-100: #ffeadf;
+  --color-orange-200: #ffd1b8;
+  --color-orange-300: #fca77b;
+  --color-orange-400: #f47c57;
+  --color-orange-500: #F06543;
+  --color-orange-600: #cc4e32;
+  --color-orange-700: #913626;
+  --color-orange-800: #602219;
+  --color-orange-900: #34110b;
+  --color-orange-950: #190806;
+
+  --color-red-50: #ffffff;
+  --color-red-100: #fce0d9;
+  --color-red-200: #f9c1b3;
+  --color-red-300: #f6a28e;
+  --color-red-400: #f38368;
+  --color-red-500: #f06543;
+  --color-red-600: #af412f;
+  --color-red-700: #6f1d1b;
+  --color-red-800: #3c1614;
+  --color-red-900: #050806;
+  --color-red-950: #000000;
+
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 body {

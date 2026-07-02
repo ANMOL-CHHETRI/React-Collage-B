@@ -5,35 +5,7 @@ import { useCart } from "../context/CartContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
 import Footer from "../components/footer"
 
-const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(!src)
-  const imgRef = useRef(null)
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true)
-    }
-  }, [src])
-
-  return (
-    <div className="relative w-full h-full">
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
-        loading="lazy"
-      />
-    </div>
-  )
-}
+import ProductCard from "../components/ProductCard"
 
 const CategoryPage = () => {
   const { categoryName } = useParams()
@@ -198,62 +170,9 @@ const CategoryPage = () => {
           </div>
         ) : (
           <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
               {filteredProducts.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/product/${p.id}`}
-                  className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-100 dark:bg-slate-900 shadow-inner">
-                      <ImageWithSkeleton
-                        src={p.image}
-                        alt={p.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      {p.id === 1 ? (
-                        <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5 shadow-lg border border-amber-300 animate-pulse">
-                          <svg referrerPolicy="no-referrer" className="w-3 h-3 fill-current text-slate-950" viewBox="0 0 24 24">
-                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z"/>
-                          </svg>
-                          Most Sold
-                        </span>
-                      ) : p.badge ? (
-                        <span className="absolute top-2 left-2 bg-slate-900/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">
-                          {p.badge}
-                        </span>
-                      ) : null}
-                    </div>
-                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest block">
-                      {p.category}
-                    </span>
-                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1 mb-2 leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
-                      {p.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                      {p.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50 dark:border-slate-800">
-                    <span className="text-base font-extrabold text-slate-900 dark:text-white">
-                      Rs. {p.price.toLocaleString()}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        addToCart(p);
-                      }}
-                      className="bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-500 text-amber-700 dark:text-amber-400 hover:text-white font-bold px-3.5 py-2 rounded-xl text-xs transition duration-200 flex items-center gap-1 cursor-pointer"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add
-                    </button>
-                  </div>
-                </Link>
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
             <div className="text-xs text-slate-400 dark:text-slate-500 mt-8 font-medium">

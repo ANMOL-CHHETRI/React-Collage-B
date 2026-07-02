@@ -5,6 +5,7 @@ import { useProducts } from "../context/ProductContext";
 import { provincesData } from "../data/provincesData";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
+import ProductCard from "../components/ProductCard";
 import Footer from "../components/footer";
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
@@ -124,14 +125,87 @@ const faqs = [
   },
 ];
 
+
+const HeroCarousel = ({ products, addToCart }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % products.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [products.length]);
+
+  if (!products.length) return null;
+  const product = products[currentIndex];
+
+  return (
+    <section className="relative pt-24 pb-24 md:pt-32 md:pb-32 overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
+       <div className="absolute inset-0 z-0 overflow-hidden">
+          <img src={product.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"} referrerPolicy="no-referrer" alt="" className="w-full h-full object-cover opacity-15 dark:opacity-20 blur-2xl scale-110" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
+       </div>
+       <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
+          <div className="flex-1 space-y-6 text-center md:text-left">
+             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Featured Product
+                </span>
+             </div>
+             <h1 className="text-[44px] md:text-[60px] font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight line-clamp-2">
+               {product.name}
+             </h1>
+             <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-xl line-clamp-3 mx-auto md:mx-0">
+               {product.description}
+             </p>
+             <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-500 pt-2">
+                Rs. {product.price.toLocaleString()}
+             </div>
+             <div className="pt-4 flex justify-center md:justify-start gap-4">
+               <button onClick={() => addToCart(product)} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
+                 Add to Cart
+               </button>
+               <Link to={`/product/${product.id}`} className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold px-8 py-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition duration-200 cursor-pointer">
+                 View Details
+               </Link>
+             </div>
+          </div>
+          <div className="flex-1 w-full max-w-md mx-auto">
+             <div className="relative rounded-3xl overflow-hidden aspect-square shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                 <ImageWithSkeleton src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition duration-700" />
+                 {product.badge && (
+                    <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-extrabold px-4 py-1.5 rounded-full uppercase shadow-md shadow-red-900/20">
+                       {product.badge}
+                    </div>
+                 )}
+             </div>
+          </div>
+       </div>
+
+       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20 overflow-x-auto max-w-[90vw] px-4 py-2 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {products.map((_, i) => (
+             <button 
+               key={i} 
+               onClick={() => setCurrentIndex(i)} 
+               className={`h-2.5 shrink-0 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${i === currentIndex ? 'bg-amber-500 w-8' : 'bg-slate-300 dark:bg-slate-700 w-2.5 hover:bg-slate-400 dark:hover:bg-slate-600'}`} 
+               aria-label={`Go to slide ${i + 1}`}
+             />
+          ))}
+       </div>
+    </section>
+  );
+};
+
 const HomePage = () => {
+
   const { products } = useProducts();
 
   const featuredProduct = products.find((p) => p.id === 1) || products[0];
 
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProvince, setSelectedProvince] = useState("Bagmati");
+  const [selectedProvince, setSelectedProvince] = useState("bagmati");
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -152,208 +226,10 @@ const HomePage = () => {
     cartSubtotal,
   } = useCart();
 
-  // Checkout form state
-  const [checkoutStep, setCheckoutStep] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("Kathmandu");
-
-  const [orderSuccess, setOrderSuccess] = useState(null);
-  const [orderError, setOrderError] = useState("");
-
-  const provinceValue = selectedProvince;
-
-  const filteredProducts = products.filter((p) => {
-    return (
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const handlePlaceOrder = (e) => {
-    e.preventDefault();
-    if (!fullName || !phone || !address || !city) {
-      setOrderError("Please fill in all the shipping details.");
-      return;
-    }
-    setOrderError("");
-
-    const shippingCost = provincesData[provinceValue].shippingFee;
-
-    const grandTotal = cartSubtotal + shippingCost;
-    const orderId = `ORD-NP-${Math.floor(100000 + Math.random() * 900000)}`;
-
-    const simulatedOrder = {
-      orderId,
-      fullName,
-      phone,
-      address,
-      city,
-      provinceName: provincesData[provinceValue].name,
-
-      items: [...cartItems],
-      subtotal: cartSubtotal,
-      shipping: shippingCost,
-      total: grandTotal,
-      estDays: provincesData[provinceValue].deliveryTime,
-    };
-
-    setOrderSuccess(simulatedOrder);
-    clearCart();
-    setCheckoutStep(false);
-    setIsCartOpen(false);
-  };
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
-      <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden bg-white dark:bg-slate-950">
-        <div className="absolute top-0 right-0 w-137.5 h-137.5 bg-gradient-to-br from-amber-200/20 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/10 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute bottom-0 left-0 w-112.5 h-112.5 bg-slate-50 dark:bg-slate-900/50 rounded-full blur-3xl -z-10 transform -translate-x-1/4 translate-y-1/4" />
-
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  ShopEase Nepal
-                </span>
-                <span className="text-xs text-slate-300 dark:text-slate-700">
-                  |
-                </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Home Delivery Across 7 Provinces
-                </span>
-              </div>
-
-              <h1 className="text-[44px] md:text-[60px] font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight">
-                Authentic Goods.
-                <br />
-                <span className="bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-                  Direct to Your Door.
-                </span>
-              </h1>
-
-              <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-xl">
-                Sourcing genuine handwoven garments, organic teas, spices, and
-                artisanal crafts directly from local cooperatives in Nepal. Pay
-                with cash only when it reaches you.
-              </p>
-
-              <div className="pt-2 space-y-4 max-w-lg">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search traditional Dhaka, Ilam tea, organic honey..."
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full py-4 px-6 pr-12 focus:outline-none focus:border-amber-500 focus:bg-white dark:focus:bg-slate-950 transition-all text-slate-800 dark:text-slate-100 text-sm shadow-sm"
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <a
-                    href="#catalog"
-                    className="bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white font-semibold px-7 py-3.5 rounded-full hover:bg-slate-800 dark:hover:bg-slate-200 transition-all duration-250 shadow-md shadow-slate-950/15 flex items-center gap-2 group hover:shadow-lg"
-                  >
-                    Browse Catalog
-                    <svg
-                      className="w-4 h-4 transform group-hover:translate-y-0.5 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </a>
-
-                  <a
-                    href="#delivery"
-                    className="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 font-semibold px-7 py-3.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-250 flex items-center gap-2"
-                  >
-                    View Shipping Map
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6 flex justify-center relative">
-              <div className="absolute -inset-4 bg-slate-100/50 dark:bg-slate-900/20 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 -z-20 pointer-events-none" />
-
-              <div className="w-full max-w-115 bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl p-5 relative overflow-hidden">
-                <div className="relative rounded-2xl overflow-hidden aspect-square shadow-inner">
-                  <ImageWithSkeleton
-                    src={featuredProduct?.image}
-                    alt={featuredProduct?.name}
-                    className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent flex flex-col justify-end p-6">
-                    <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-max mb-2">
-                      Featured Craft
-                    </span>
-                    <h3 className="text-xl font-bold text-white mb-1">
-                      Palpali Dhaka Topi
-                    </h3>
-                    <p className="text-xs text-slate-200 dark:text-slate-300">
-                      Woven by hand in traditional wooden looms. 100% Cotton.
-                    </p>
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/20">
-                      <span className="text-lg font-extrabold text-white">
-                        Rs. {featuredProduct?.price?.toLocaleString?.()}
-                      </span>
-                      <button
-                        onClick={() => addToCart(featuredProduct)}
-                        className="bg-white dark:bg-slate-900 text-slate-950 dark:text-amber-400 font-bold px-4 py-2 rounded-xl text-xs transition duration-200 flex items-center gap-1.5 shadow cursor-pointer hover:bg-amber-500 hover:text-white"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel products={products} addToCart={addToCart} />
 
       <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
@@ -413,8 +289,8 @@ const HomePage = () => {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
@@ -449,76 +325,9 @@ const HomePage = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
               {filteredProducts.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/product/${p.id}`}
-                  className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="relative rounded-xl overflow-hidden aspect-square mb-4 bg-slate-100 dark:bg-slate-900">
-                      <ImageWithSkeleton
-                        src={p.image}
-                        alt={p.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      {p.id === 1 ? (
-                        <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5 shadow-lg border border-amber-300 animate-pulse">
-                          <svg
-                            referrerPolicy="no-referrer"
-                            className="w-3 h-3 fill-current text-slate-950"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 14h14v2H5v-2z" />
-                          </svg>
-                          Most Sold
-                        </span>
-                      ) : p.badge ? (
-                        <span className="absolute top-2 left-2 bg-slate-900/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">
-                          {p.badge}
-                        </span>
-                      ) : null}
-                    </div>
-                    <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block">
-                      {p.category}
-                    </span>
-                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mt-1 mb-2 leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
-                      {p.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                      {p.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-50 dark:border-slate-800">
-                    <span className="text-base font-extrabold text-slate-900 dark:text-white">
-                      Rs. {p.price.toLocaleString()}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        addToCart(p);
-                      }}
-                      className="bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-500 text-amber-700 dark:text-amber-400 hover:text-white font-bold px-3.5 py-2 rounded-xl text-xs transition duration-200 flex items-center gap-1 cursor-pointer"
-                    >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      Add
-                    </button>
-                  </div>
-                </Link>
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
@@ -650,428 +459,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {isCartOpen && (
-        <div className="fixed inset-0 z-[100] overflow-hidden">
-          <div
-            className="absolute inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm transition-opacity"
-            onClick={() => {
-              if (!checkoutStep) setIsCartOpen(false);
-            }}
-          />
 
-          <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right duration-300">
-              <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                  {checkoutStep
-                    ? "Shipping Details (COD)"
-                    : `My Cart (${cartCount})`}
-                </h2>
-                <button
-                  onClick={() => {
-                    if (checkoutStep) setCheckoutStep(false);
-                    else setIsCartOpen(false);
-                  }}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition cursor-pointer"
-                >
-                  <svg
-                    className="w-5.5 h-5.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                {checkoutStep ? (
-                  <form onSubmit={handlePlaceOrder} className="space-y-4 pt-2">
-                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed font-medium mb-4">
-                      <strong>Payment Mode: Cash on Delivery (COD)</strong>
-                      <br />
-                      You will pay cash to the courier agent upon receiving your
-                      order at your shipping address.
-                    </div>
-
-                    {orderError && (
-                      <div className="bg-red-50 text-red-700 border border-red-200 p-2.5 rounded-lg text-xs font-semibold">
-                        {orderError}
-                      </div>
-                    )}
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase block">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full text-xs border border-slate-200 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 bg-slate-50 focus:bg-white transition"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase block">
-                        Phone Number (Nepal)
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="98XXXXXXXX"
-                        className="w-full text-xs border border-slate-200 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 bg-slate-50 focus:bg-white transition"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
-                        Delivery Province
-                      </label>
-                      <select
-                        value={provinceValue}
-                        onChange={(e) => {
-                          setSelectedProvince(e.target.value);
-                        }}
-                        className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
-                      >
-                        {Object.values(provincesData).map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
-                          City / Town
-                        </label>
-                        <select
-                          required
-                          value={city}
-                          onChange={(e) => setCity(e.target.value)}
-                          className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
-                        >
-                          {provincesData[provinceValue]?.cities?.map((c) => (
-                            <option key={c} value={c}>
-                              {c}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
-                          Zip / Postcode
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 44600"
-                          className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase block">
-                        Street Address
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="House no, Street name, Tole, Landmark"
-                        className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-6 cursor-pointer"
-                    >
-                      Confirm Order (Cash on Delivery)
-                    </button>
-                  </form>
-                ) : cartItems.length === 0 ? (
-                  <div className="text-center py-20 space-y-4">
-                    <svg
-                      className="w-16 h-16 text-slate-200 dark:text-slate-800 mx-auto"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                      />
-                    </svg>
-                    <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">
-                      Your cart is empty
-                    </h3>
-                    <p className="text-slate-400 dark:text-slate-500 text-xs max-w-[240px] mx-auto">
-                      Explore Nepalese crafts, garments, and tea to add them
-                      here.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {cartItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex gap-4 p-3 border border-slate-100 dark:border-slate-800 rounded-xl hover:shadow-sm transition"
-                      >
-                        <ImageWithSkeleton
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 rounded-lg object-cover bg-slate-50 dark:bg-slate-900 shrink-0"
-                        />
-
-                        <div className="flex-1 flex flex-col justify-between">
-                          <div>
-                            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug line-clamp-1">
-                              {item.name}
-                            </h4>
-                            <span className="text-xs font-extrabold text-amber-600 block mt-0.5">
-                              Rs. {item.price.toLocaleString()}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-1">
-                            <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-lg">
-                              <button
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity - 1)
-                                }
-                                className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-l-lg transition cursor-pointer"
-                              >
-                                -
-                              </button>
-                              <span className="px-2.5 text-xs font-bold text-slate-800 dark:text-slate-200">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  updateQuantity(item.id, item.quantity + 1)
-                                }
-                                className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-900 rounded-r-lg transition cursor-pointer"
-                              >
-                                +
-                              </button>
-                            </div>
-
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              className="text-[10px] font-bold text-red-500 hover:text-red-700 transition cursor-pointer"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {cartItems.length > 0 && !checkoutStep && (
-                <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400 font-semibold">
-                      Subtotal
-                    </span>
-                    <span className="font-extrabold text-slate-900 dark:text-white">
-                      Rs. {cartSubtotal.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
-                    <span>
-                      Shipping calculated at checkout. Delivery across Nepal.
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setCheckoutStep(true)}
-                    className="w-full bg-slate-950 dark:bg-slate-100 text-white dark:text-slate-950 font-bold py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-md transition duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    Proceed to Delivery (COD)
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              )}
-
-              {checkoutStep && (
-                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">
-                      Cart Subtotal:
-                    </span>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">
-                      Rs. {cartSubtotal.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">
-                      Shipping ({provincesData[provinceValue].name}):
-                    </span>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">
-                      Rs. {provincesData[provinceValue].shippingFee}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-t border-slate-200 dark:border-slate-800/80 pt-2 text-sm font-extrabold">
-                    <span className="text-slate-800 dark:text-slate-200">
-                      Grand Total (COD):
-                    </span>
-                    <span className="text-amber-600 dark:text-amber-400 font-extrabold">
-                      Rs.{" "}
-                      {(
-                        cartSubtotal + provincesData[provinceValue].shippingFee
-                      ).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {orderSuccess && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
-          <div
-            className="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm transition-opacity"
-            onClick={() => setOrderSuccess(null)}
-          />
-
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-800 shadow-2xl relative transform transition duration-300 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <div className="w-14 h-14 bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12l2 2 4-4"
-                />
-              </svg>
-            </div>
-
-            <h3 className="text-xl font-extrabold text-slate-900 dark:text-white text-center leading-tight">
-              Order Placed Successfully!
-            </h3>
-            <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-1 font-semibold">
-              Order ID:{" "}
-              <span className="text-amber-600 dark:text-amber-400 font-bold">
-                {orderSuccess.orderId}
-              </span>
-            </p>
-
-            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4.5 border border-slate-100 dark:border-slate-800 text-xs space-y-2 mt-5">
-              <h4 className="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800 pb-1.5 mb-2.5">
-                Shipping & Delivery Summary
-              </h4>
-              <div className="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-400">
-                <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
-                    Recipient Name
-                  </span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    {orderSuccess.fullName}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
-                    Contact Phone
-                  </span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    {orderSuccess.phone}
-                  </span>
-                </div>
-              </div>
-              <div className="pt-2 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
-                <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
-                  Delivery Location
-                </span>
-                <span className="font-bold text-slate-700 dark:text-slate-300">
-                  {orderSuccess.address}, {orderSuccess.city},{" "}
-                  {orderSuccess.provinceName}
-                </span>
-              </div>
-              <div className="pt-2 text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
-                    Payment Method
-                  </span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    Cash on Delivery (COD)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block uppercase">
-                    Estimated Delivery
-                  </span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {orderSuccess.estDays}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center text-sm font-bold pt-4 px-1 border-t border-slate-200 dark:border-slate-800 mt-5">
-              <span className="text-slate-700 dark:text-slate-300">
-                Total Invoice (NPR)
-              </span>
-              <span className="text-amber-600 dark:text-amber-400 text-base font-extrabold">
-                Rs. {orderSuccess.total.toLocaleString()}
-              </span>
-            </div>
-
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-normal text-center mt-6">
-              Our support desk will call you at{" "}
-              <strong className="text-slate-600 dark:text-slate-300">
-                {orderSuccess.phone}
-              </strong>{" "}
-              within 12 hours to verify your delivery address before dispatching
-              the rider.
-            </p>
-
-            <button
-              onClick={() => setOrderSuccess(null)}
-              className="w-full bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-950 font-bold py-2.5 rounded-xl shadow-md transition duration-200 mt-5 cursor-pointer"
-            >
-              Continue Shopping
-            </button>
-          </div>
-        </div>
-      )}
       <Footer />
     </div>
   );
