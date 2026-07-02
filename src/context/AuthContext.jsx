@@ -1,6 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
+<<<<<<< HEAD
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router"
+=======
+import { createContext, useContext, useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+>>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
 const AuthContext = createContext()
 
@@ -163,7 +168,9 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(adminUser)
       localStorage.setItem("shopease_user", JSON.stringify(adminUser))
-      navigate("/admin/dashboard")
+      if (typeof navigate === "function") {
+        navigate("/admin/dashboard")
+      }
       return true
     }
     setError("Invalid admin username or password")
@@ -213,7 +220,9 @@ export const AuthProvider = ({ children }) => {
         }
         setUser(adminUser)
         localStorage.setItem("shopease_user", JSON.stringify(adminUser))
-        navigate("/admin/dashboard")
+        if (typeof navigate === "function") {
+          navigate("/admin/dashboard")
+        }
         return true
       }
       setError("Invalid admin username or password")
@@ -238,7 +247,9 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(regularUser)
       localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-      navigate("/")
+      if (typeof navigate === "function") {
+        navigate("/")
+      }
       return true
     }
 
@@ -300,8 +311,15 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
     localStorage.removeItem("shopease_user")
     clearCartStorage()
+<<<<<<< HEAD
     navigate("/")
   }, [navigate])
+=======
+    if (typeof navigate === "function") {
+      navigate("/")
+    }
+  }
+>>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
   const signup = (name, username, email, password) => {
     setError("")
@@ -334,7 +352,9 @@ export const AuthProvider = ({ children }) => {
     }
     setUser(regularUser)
     localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-    navigate("/")
+    if (typeof navigate === "function") {
+      navigate("/")
+    }
     return true
   }
 
@@ -342,7 +362,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
     localStorage.removeItem("shopease_user")
     clearCartStorage()
-    navigate("/admin-login")
+    if (typeof navigate === "function") {
+      navigate("/admin-login")
+    }
   }
 
   const promoteToSubAdmin = (username) => {

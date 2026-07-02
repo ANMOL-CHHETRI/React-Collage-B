@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router"
+=======
+import { useState, useEffect, useRef } from "react"
+import { useParams, Link } from "react-router-dom"
+>>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 import { useProducts } from "../context/ProductContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
-import Footer from "../components/footer"
+import Footer from "../components/Footer"
 
 import ProductCard from "../components/ProductCard"
 

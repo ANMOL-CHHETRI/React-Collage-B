@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router"
+import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { provincesData } from "../data/provincesData"
 import NepalInteractiveMap from "../components/NepalInteractiveMap"
 import { CartItemSkeleton } from "../components/Skeleton"
 import { useToast } from "../context/ToastContext"
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import CheckoutModal from "../components/CheckoutModal"
 

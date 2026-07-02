@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
-import Footer from "../components/footer";
+import { NavLink } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const faqs = [
   {

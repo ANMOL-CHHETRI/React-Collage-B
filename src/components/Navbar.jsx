@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
+=======
+import { useState, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
+>>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";

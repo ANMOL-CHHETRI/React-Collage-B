@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
 import { useToast } from "../context/ToastContext"
