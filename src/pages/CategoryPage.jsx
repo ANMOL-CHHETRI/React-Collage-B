@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { useParams, Link } from "react-router"
+import { useParams, Link } from "react-router-dom"
 import { useProducts } from "../context/ProductContext"
 import { useCart } from "../context/CartContext"
 import { ProductCardSkeleton } from "../components/Skeleton"

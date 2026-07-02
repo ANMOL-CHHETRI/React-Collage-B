@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./context/AuthContext"
 import { CartProvider } from "./context/CartContext"
 import { ProductProvider } from "./context/ProductContext"
@@ -24,7 +24,7 @@ import NotFoundPage from "./pages/NotFoundPage"
 
 const Router = () => {
   return (
-    <BrowserRouter>
+
       <ToastProvider>
       <AuthProvider>
         <CartProvider>
@@ -54,7 +54,7 @@ const Router = () => {
         </CartProvider>
       </AuthProvider>
       </ToastProvider>
-    </BrowserRouter>
+    
   )
 }
 
