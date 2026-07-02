@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "./ToastContext";
 
@@ -7,7 +8,8 @@ export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
     try {
       const saved = localStorage.getItem("shopease_wishlist");
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }

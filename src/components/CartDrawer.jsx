@@ -66,10 +66,13 @@ const CartDrawer = () => {
   const [orderError, setOrderError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(null);
 
-  // Sync fullName if user changes
-  useEffect(() => {
-    if (user?.name) setFullName(user.name);
-  }, [user]);
+  const [prevUser, setPrevUser] = useState(user);
+  if (user !== prevUser) {
+    setPrevUser(user);
+    if (user?.name) {
+      setFullName(user.name);
+    }
+  }
 
   const handlePlaceOrder = (e) => {
     e.preventDefault();
@@ -119,7 +122,8 @@ const CartDrawer = () => {
       };
 
       try {
-        const existingOrders = JSON.parse(localStorage.getItem("shopease_orders")) || [];
+        const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+        const existingOrders = Array.isArray(rawOrders) ? rawOrders : [];
         localStorage.setItem("shopease_orders", JSON.stringify([simulatedOrder, ...existingOrders]));
       } catch (err) {
         console.error("Error saving order:", err);

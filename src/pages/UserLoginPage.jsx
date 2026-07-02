@@ -82,14 +82,14 @@ const UserLoginPage = () => {
       return;
     }
 
-    const success = login(username, password);
-    if (!success) {
+    const isSuccess = login(username, password);
+    if (!isSuccess) {
       setPassword("");
       const newCount = failedAttempts + 1;
       setFailedAttempts(newCount);
       localStorage.setItem("shopease_failed_user_login", newCount);
       if (newCount >= 5) {
-        setError("Account locked due to 5 failed attempts. Please click Forgot Password to reset.");
+        setError("Account locked. Please verify your identity using the Forgot Password flow.");
       }
     } else {
       setUsername("");

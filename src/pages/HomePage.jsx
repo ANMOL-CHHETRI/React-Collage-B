@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
-import { provincesData } from "../data/provincesData";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
@@ -201,8 +200,6 @@ const HomePage = () => {
 
   const { products } = useProducts();
 
-  const featuredProduct = products.find((p) => p.id === 1) || products[0];
-
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("bagmati");
@@ -214,17 +211,17 @@ const HomePage = () => {
   }, []);
 
   // Cart context states
-  const {
-    cartItems,
-    isCartOpen,
-    setIsCartOpen,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    cartCount,
-    cartSubtotal,
-  } = useCart();
+  const { addToCart } = useCart();
+
+  const filteredProducts = products.filter((p) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return true;
+    return (
+      p.name.toLowerCase().includes(query) ||
+      p.category.toLowerCase().includes(query) ||
+      (p.description && p.description.toLowerCase().includes(query))
+    );
+  });
 
 
   return (
@@ -286,6 +283,33 @@ const HomePage = () => {
               Handpicked, sustainable items supporting rural communities across
               Nepal.
             </p>
+          </div>
+
+          <div className="mb-12 max-w-md mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search products by name or category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-800 rounded-full bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm shadow-sm transition-all duration-300"
+              />
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                >
+                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
           {loading ? (

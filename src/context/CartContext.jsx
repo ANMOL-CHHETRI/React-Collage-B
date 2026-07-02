@@ -19,8 +19,13 @@ export const CartProvider = ({ children }) => {
   const key = cartKey(user)
 
   const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem(key)
-    return saved ? JSON.parse(saved) : []
+    try {
+      const saved = localStorage.getItem(key);
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
 
@@ -28,8 +33,13 @@ export const CartProvider = ({ children }) => {
   const [prevKey, setPrevKey] = useState(key)
   if (key !== prevKey) {
     setPrevKey(key)
-    const saved = localStorage.getItem(key)
-    setCartItems(saved ? JSON.parse(saved) : [])
+    try {
+      const saved = localStorage.getItem(key)
+      const parsed = saved ? JSON.parse(saved) : []
+      setCartItems(Array.isArray(parsed) ? parsed : [])
+    } catch {
+      setCartItems([])
+    }
   }
 
   useEffect(() => {

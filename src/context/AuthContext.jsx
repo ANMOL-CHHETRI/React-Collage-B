@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router"
 
 const AuthContext = createContext()
@@ -61,7 +61,8 @@ export const AuthProvider = ({ children }) => {
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
       const saved = localStorage.getItem(REGISTERED_USERS_KEY)
-      return saved ? JSON.parse(saved) : DEFAULT_USERS
+      const parsed = saved ? JSON.parse(saved) : DEFAULT_USERS
+      return Array.isArray(parsed) ? parsed : DEFAULT_USERS
     } catch {
       return DEFAULT_USERS
     }
@@ -295,12 +296,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("shopease_cart")
   }
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null)
     localStorage.removeItem("shopease_user")
     clearCartStorage()
     navigate("/")
-  }
+  }, [navigate])
 
   const signup = (name, username, email, password) => {
     setError("")
@@ -395,7 +396,8 @@ export const AuthProvider = ({ children }) => {
       const found = registeredUsers.find((u) => u.username === user.username)
       if (found) {
         if (found.banned) {
-          logout()
+          const timer = setTimeout(() => logout(), 0)
+          return () => clearTimeout(timer)
         } else if (
           found.name !== user.name ||
           found.email !== user.email ||
@@ -411,12 +413,15 @@ export const AuthProvider = ({ children }) => {
             address: found.address,
             role: found.role || "user"
           }
-          setUser(updatedUser)
-          localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+          const timer = setTimeout(() => {
+            setUser(updatedUser)
+            localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+          }, 0)
+          return () => clearTimeout(timer)
         }
       }
     }
-  }, [registeredUsers, user])
+  }, [registeredUsers, user, logout])
 
   return (
     <AuthContext.Provider
@@ -443,7 +448,6 @@ export const AuthProvider = ({ children }) => {
         sellerApplications,
         submitSellerApplication,
         reviewSellerApplication,
-        adminResetUserPassword,
         verifyUserIdentity,
         verifyAdminIdentity,
         theme,

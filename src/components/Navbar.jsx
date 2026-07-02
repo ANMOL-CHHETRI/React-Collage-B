@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, NavLink } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -175,7 +175,7 @@ const Navbar = () => {
               className="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors duration-200 relative cursor-pointer"
               title="Wishlist"
             >
-              <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className={`w-5.5 h-5.5 ${wishlistCount > 0 ? "animate-bounce" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               {wishlistCount > 0 && (

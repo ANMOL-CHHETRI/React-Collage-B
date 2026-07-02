@@ -18,7 +18,7 @@ export const ProductProvider = ({ children }) => {
       console.error("Failed to save products to localStorage:", err)
       toastError("Local storage quota exceeded! The product image you uploaded might be too large. Try a smaller file or a URL.")
     }
-  }, [products])
+  }, [products, toastError])
 
   const addProduct = (product, addedBy = "admin") => {
     setProducts((prev) => [...prev, { ...product, id: Date.now(), addedBy }])

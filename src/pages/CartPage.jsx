@@ -15,8 +15,6 @@ const CartPage = () => {
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
   const [loading, setLoading] = useState(true)
   const [checkoutModal, setCheckoutModal] = useState(false)
-  const [checkingOut, setCheckingOut] = useState(false)
-  const { success } = useToast()
   const { error: toastError } = useToast()
   const navigate = useNavigate()
 

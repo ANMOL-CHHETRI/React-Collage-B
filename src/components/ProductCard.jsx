@@ -47,12 +47,12 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group relative">
-      <div className="relative rounded-xl overflow-hidden aspect-[4/5] mb-4 bg-slate-100 dark:bg-slate-900 shrink-0">
+      <div className="relative rounded-xl overflow-hidden aspect-[3/4] mb-4 bg-slate-100 dark:bg-slate-900 shrink-0">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
           <ImageWithSkeleton
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
         </Link>
         {product.id === 1 ? (

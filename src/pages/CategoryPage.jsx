@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router"
 import { useProducts } from "../context/ProductContext"
-import { useCart } from "../context/CartContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
 import Footer from "../components/footer"
 
@@ -11,7 +10,6 @@ const CategoryPage = () => {
   const { categoryName } = useParams()
   const decodedCategory = decodeURIComponent(categoryName || "")
   const { products } = useProducts()
-  const { addToCart } = useCart()
 
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")

@@ -71,14 +71,12 @@ const AdminDashboard = () => {
     theme,
     toggleTheme,
     changePassword,
-    sellerApplications,
-    reviewSellerApplication,
     setExactUserViolations,
     autoCalculateViolations,
     adminResetUserPassword
   } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
-  const { success, error: toastError, info } = useToast()
+  const { success, error: toastError } = useToast()
 
   const [activeSection, setActiveSection] = useState("dashboard")
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -103,10 +101,16 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     try {
-      const savedOrders = JSON.parse(localStorage.getItem("shopease_orders")) || []
-      setAdminOrders(savedOrders)
-      const savedMessages = JSON.parse(localStorage.getItem("shopease_messages")) || []
-      setAdminMessages(savedMessages)
+      const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"))
+      const orders = Array.isArray(rawOrders) ? rawOrders : []
+      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
+      const messages = Array.isArray(rawMessages) ? rawMessages : []
+      
+      const timer = setTimeout(() => {
+        setAdminOrders(orders)
+        setAdminMessages(messages)
+      }, 0)
+      return () => clearTimeout(timer)
     } catch (e) {
       console.error(e)
     }

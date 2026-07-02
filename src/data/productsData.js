@@ -142,6 +142,39 @@ export const defaultProducts = [
   description: "Beautiful Dhaka saree woven with traditional Nepali patterns, ideal for festivals and special occasions.",
   addedBy: "admin",
 },
+{
+  id: 14,
+  name: "Hand-Carved Wooden Peacock Window",
+  price: 12500,
+  image: "https://i.pinimg.com/736x/cb/dc/ee/cbdceef98b105dcfd20dc3e3a4e9b922.jpg",
+  images: ["https://i.pinimg.com/736x/cb/dc/ee/cbdceef98b105dcfd20dc3e3a4e9b922.jpg", "https://i.pinimg.com/736x/8f/58/01/8f5801c876fbd1cbcc45187ad38dcfe0.jpg", "https://i.pinimg.com/736x/01/be/df/01bedf7a810f666cf4047a27eb2d0a0b.jpg"],
+  badge: "Artisanal",
+  category: "Local Handicrafts",
+  description: "Intricately carved wooden peacock window, a classic masterpiece of Newari architecture.",
+  addedBy: "admin",
+},
+{
+  id: 15,
+  name: "Pure Shilajit Resin from Himalayas",
+  price: 2400,
+  image: "https://i.pinimg.com/736x/b2/8f/fc/b28ffc5a7a9cb61db8dbfa20e4ebcbca.jpg",
+  images: ["https://i.pinimg.com/736x/b2/8f/fc/b28ffc5a7a9cb61db8dbfa20e4ebcbca.jpg", "https://i.pinimg.com/736x/8f/58/01/8f5801c876fbd1cbcc45187ad38dcfe0.jpg", "https://i.pinimg.com/736x/01/be/df/01bedf7a810f666cf4047a27eb2d0a0b.jpg"],
+  badge: "Organic",
+  category: "Herbs & Spices",
+  description: "100% pure Himalayan Shilajit, sustainably sourced from high altitude rocks.",
+  addedBy: "admin",
+},
+{
+  id: 16,
+  name: "Nepali Singing Bowl Set",
+  price: 4200,
+  image: "https://i.pinimg.com/736x/a2/b5/45/a2b545d9cc033cd505ef056b6b772b12.jpg",
+  images: ["https://i.pinimg.com/736x/a2/b5/45/a2b545d9cc033cd505ef056b6b772b12.jpg", "https://i.pinimg.com/736x/8f/58/01/8f5801c876fbd1cbcc45187ad38dcfe0.jpg", "https://i.pinimg.com/736x/01/be/df/01bedf7a810f666cf4047a27eb2d0a0b.jpg"],
+  badge: "Healing",
+  category: "Local Handicrafts",
+  description: "Hand-hammered brass singing bowl set for meditation and sound healing.",
+  addedBy: "admin",
+},
 ]
 
 const mergeSavedProducts = (saved) => {
@@ -183,7 +216,7 @@ const mergeSavedProducts = (saved) => {
 export const loadProducts = () => {
   try {
     // Version bump forces a refresh of cached products so new images apply
-    const DATA_VERSION = "v3-pinterest-2027-06"
+    const DATA_VERSION = "v3-pinterest-2027-06-v2"
     const storedVersion = localStorage.getItem("shopease_data_version")
     if (storedVersion !== DATA_VERSION) {
       // Clear stale product cache so new default images are used

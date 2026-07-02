@@ -18,7 +18,8 @@ const ContactPage = () => {
     }
 
     try {
-      const existing = JSON.parse(localStorage.getItem("shopease_messages")) || []
+      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"));
+      const existing = Array.isArray(rawMessages) ? rawMessages : [];
       localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...existing]))
     } catch (err) {
       console.error("Error saving message:", err)

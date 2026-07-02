@@ -42,7 +42,8 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
       };
 
       try {
-        const existingOrders = JSON.parse(localStorage.getItem("shopease_orders")) || [];
+        const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+        const existingOrders = Array.isArray(rawOrders) ? rawOrders : [];
         localStorage.setItem("shopease_orders", JSON.stringify([simulatedOrder, ...existingOrders]));
       } catch (err) {
         console.error("Error saving order:", err);

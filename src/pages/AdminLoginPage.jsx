@@ -38,8 +38,8 @@ const AdminLoginPage = () => {
 
     if (failedAttempts >= 6) return
 
-    const success = loginAdmin(username, password)
-    if (!success) {
+    const isSuccess = loginAdmin(username, password)
+    if (!isSuccess) {
       setPassword("")
       const newCount = failedAttempts + 1
       setFailedAttempts(newCount)

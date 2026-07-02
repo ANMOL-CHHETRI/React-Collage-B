@@ -1,19 +1,18 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useToast } from "../context/ToastContext"
 
 const PolicySection = ({ id, title, children }) => {
   const { success } = useToast()
-  const [agreed, setAgreed] = useState(false)
-  const [checked, setChecked] = useState(false)
-
-  // Load state from localStorage on mount
-  useEffect(() => {
+  
+  const [agreed, setAgreed] = useState(() => {
     const savedAgreements = JSON.parse(localStorage.getItem("shopease_policy_agreements") || "{}")
-    if (savedAgreements[id]) {
-      setAgreed(true)
-      setChecked(true)
-    }
-  }, [id])
+    return !!savedAgreements[id]
+  })
+  
+  const [checked, setChecked] = useState(() => {
+    const savedAgreements = JSON.parse(localStorage.getItem("shopease_policy_agreements") || "{}")
+    return !!savedAgreements[id]
+  })
 
   const handleAgree = () => {
     setAgreed(true)

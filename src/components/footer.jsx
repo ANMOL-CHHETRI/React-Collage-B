@@ -85,14 +85,14 @@ const Footer = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <a href="#delivery" className="hover:text-amber-500 transition-colors">
+                  <Link to="/delivery-coverage" className="hover:text-amber-500 transition-colors">
                     Delivery Coverage
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#faq" className="hover:text-amber-500 transition-colors">
+                  <Link to="/faq" className="hover:text-amber-500 transition-colors">
                     Help FAQ
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link to="/user-login" className="hover:text-amber-500 transition-colors">

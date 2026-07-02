@@ -7,15 +7,26 @@ const PROFILE_KEY = "shopease_profile"
 const loadProfile = () => {
   try {
     const saved = localStorage.getItem(PROFILE_KEY)
-    return saved ? JSON.parse(saved) : { name: "", email: "", phone: "", address: "" }
+    const parsed = saved ? JSON.parse(saved) : null
+    return (parsed && typeof parsed === "object" && !Array.isArray(parsed)) 
+      ? parsed 
+      : { name: "", email: "", phone: "", address: "" }
   } catch {
     return { name: "", email: "", phone: "", address: "" }
   }
 }
 
 const UserProfilePage = () => {
-  const { user } = useAuth()
-  const [profile, setProfile] = useState(loadProfile)
+  const { user, updateProfile } = useAuth()
+  const [profile, setProfile] = useState(() => {
+    const local = loadProfile()
+    return {
+      name: local.name || user?.name || "",
+      email: local.email || user?.email || "",
+      phone: local.phone || user?.phone || "",
+      address: local.address || user?.address || "",
+    }
+  })
   const [saved, setSaved] = useState(false)
 
   const handleChange = (e) => {
@@ -26,6 +37,9 @@ const UserProfilePage = () => {
   const handleSave = (e) => {
     e.preventDefault()
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
+    if (updateProfile) {
+      updateProfile(profile)
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }

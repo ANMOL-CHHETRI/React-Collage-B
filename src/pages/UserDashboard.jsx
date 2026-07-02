@@ -5,7 +5,7 @@ import { useCart } from "../context/CartContext"
 import { useProducts } from "../context/ProductContext"
 import { useMemo } from "react"
 import { useToast } from "../context/ToastContext"
-import { OrderCardUserSkeleton, ProductRowSkeleton } from "../components/Skeleton"
+import { OrderCardUserSkeleton } from "../components/Skeleton"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -106,6 +106,7 @@ const UserDashboard = () => {
   const { addToCart, setIsCartOpen } = useCart()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const { success, error: toastError, info } = useToast()
+  const navigate = useNavigate()
 
   const dbUser = user && (user.role === "user" || user.role === "sub-admin") ? (registeredUsers || []).find(u => u.username === user.username) : null;
   const hasViolations = dbUser && dbUser.violations > 0;
@@ -118,14 +119,15 @@ const UserDashboard = () => {
 
   useEffect(() => {
     try {
-      const dynamicOrders = JSON.parse(localStorage.getItem("shopease_orders")) || []
+      const rawDynamic = JSON.parse(localStorage.getItem("shopease_orders"));
+      const dynamicOrders = Array.isArray(rawDynamic) ? rawDynamic : [];
       // Convert dynamic orders into the format UserDashboard expects safely
       const formattedDynamicOrders = dynamicOrders.filter(o => o && (o.username === user?.username || o.fullName === user?.name || user?.username === "user")).map(o => ({
         id: o.orderId || o.id || "#ORD-UNKNOWN",
         storeName: "ShopEase Official",
         status: o.status || "Processing",
         date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-        items: (o.items || []).map(item => ({
+        items: (Array.isArray(o.items) ? o.items : []).map(item => ({
           name: item?.name || "Unknown Product",
           attributes: "Qty: " + (item?.quantity || 1),
           price: item?.price || 0,
@@ -135,7 +137,11 @@ const UserDashboard = () => {
       }))
       
       const baseOrders = user?.username === "user" ? initialOrders : []
-      setRawOrders([...formattedDynamicOrders, ...baseOrders])
+      const orders = [...formattedDynamicOrders, ...baseOrders]
+      const timer = setTimeout(() => {
+        setRawOrders(orders)
+      }, 0)
+      return () => clearTimeout(timer)
     } catch (e) {
       console.error(e)
     }
