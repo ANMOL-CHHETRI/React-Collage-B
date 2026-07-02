@@ -76,28 +76,28 @@ const testimonials = [
     location: "Kathmandu",
     text: "Ordered a handwoven Dhaka Topi and Himalayan Coffee. The delivery took just 4 hours in Lalitpur. Outstanding quality and pure Nepalese authenticity!",
     rating: 5,
-    avatar: "AS",
+    avatar: "/testimonials/arav.jpg",
   },
   {
     name: "Prerana Giri",
     location: "Pokhara",
     text: "The Himalayan Orthodox tea is incredibly fragrant. I chose Cash on Delivery, and the courier rider was polite. Will order again!",
     rating: 5,
-    avatar: "PG",
+    avatar: "/testimonials/prerana.jpg",
   },
   {
     name: "Sonam Sherpa",
     location: "Namche Bazaar",
     text: "Even out here, the Gorkha Khukuri was delivered within 4 days. Packaged beautifully and extremely sturdy.",
     rating: 5,
-    avatar: "SS",
+    avatar: "/testimonials/sonam.jpg",
   },
   {
     name: "Dinesh Chaudhary",
     location: "Birgunj",
     text: "Best online shopping experience in Nepal. Genuine products, accurate descriptions, and transparent shipping charges. 5 stars!",
     rating: 5,
-    avatar: "DC",
+    avatar: "/testimonials/dinesh.jpg",
   },
 ];
 
@@ -408,9 +408,11 @@ const HomePage = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-950/40 rounded-full flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-400">
-                    {t.avatar}
-                  </div>
+                  <img
+                    src={t.avatar}
+                    alt={t.name}
+                    className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+                  />
                   <div>
                     <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
                       {t.name}
