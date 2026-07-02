@@ -1,12 +1,7 @@
 import { useState } from "react"
-<<<<<<< HEAD
-import { Link } from "react-router"
+import { Link } from "react-router-dom"
 import Footer from "../components/footer"
 import { useAuth } from "../context/AuthContext"
-=======
-import { Link } from "react-router-dom"
-import Footer from "../components/Footer"
->>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
 const ContactPage = () => {
   const { user } = useAuth()

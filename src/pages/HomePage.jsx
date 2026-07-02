@@ -1,22 +1,11 @@
-<<<<<<< HEAD
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/footer";
-=======
-import { useEffect, useState, useRef } from "react"
-import { Link, NavLink } from "react-router-dom"
-import { useCart } from "../context/CartContext"
-import { useProducts } from "../context/ProductContext"
-import { provincesData } from "../data/provincesData"
-import NepalDeliveryMap from "../components/NepalDeliveryMap"
-import { ProductCardSkeleton } from "../components/Skeleton"
-import Footer from "../components/Footer"
->>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false);

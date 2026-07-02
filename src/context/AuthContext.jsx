@@ -1,11 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-<<<<<<< HEAD
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
-import { useNavigate } from "react-router"
-=======
-import { createContext, useContext, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
->>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
 const AuthContext = createContext()
 
@@ -311,15 +306,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
     localStorage.removeItem("shopease_user")
     clearCartStorage()
-<<<<<<< HEAD
     navigate("/")
   }, [navigate])
-=======
-    if (typeof navigate === "function") {
-      navigate("/")
-    }
-  }
->>>>>>> dca16ef8a52ef2b4f1f75e80b92914534f620f1e
 
   const signup = (name, username, email, password) => {
     setError("")
