@@ -142,7 +142,7 @@ const HeroCarousel = ({ products, addToCart }) => {
     <section className="relative pt-24 pb-24 md:pt-32 md:pb-32 overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
        <div className="absolute inset-0 z-0 overflow-hidden">
           <img src={product.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"} referrerPolicy="no-referrer" alt="" className="w-full h-full object-cover opacity-15 dark:opacity-20 blur-2xl scale-110" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
+          <div className="absolute inset-0 bg-linear-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
        </div>
        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 space-y-6 text-center md:text-left">
@@ -162,7 +162,7 @@ const HeroCarousel = ({ products, addToCart }) => {
                 Rs. {product.price.toLocaleString()}
              </div>
              <div className="pt-4 flex justify-center md:justify-start gap-4">
-               <button onClick={() => addToCart(product)} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
+               <button onClick={() => addToCart(product)} className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
                  Add to Cart
                </button>
                <Link to={`/product/${product.id}`} className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold px-8 py-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition duration-200 cursor-pointer">
@@ -249,7 +249,7 @@ const HomePage = () => {
                 to={`/category/${encodeURIComponent(cat.name)}`}
                 className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition text-left group cursor-pointer block"
               >
-                <div className="rounded-xl overflow-hidden aspect-[4/3] mb-4 bg-slate-200 dark:bg-slate-800">
+                <div className="rounded-xl overflow-hidden aspect-4/3 mb-4 bg-slate-200 dark:bg-slate-800">
                   <ImageWithSkeleton
                     src={cat.image}
                     alt={cat.name}
