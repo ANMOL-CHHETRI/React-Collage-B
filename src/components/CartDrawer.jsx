@@ -289,7 +289,7 @@ const CartDrawer = () => {
                     <button
                       type="submit"
                       disabled={isPlacingOrder}
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-6 cursor-pointer disabled:opacity-70 flex items-center justify-center"
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-6 cursor-pointer disabled:opacity-70 flex items-center justify-center"
                     >
                       {isPlacingOrder ? (
                         <>

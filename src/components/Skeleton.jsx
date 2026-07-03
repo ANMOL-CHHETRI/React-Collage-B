@@ -4,7 +4,7 @@ export const Skeleton = ({ className = "" }) => (
 
 export const Shimmer = ({ className = "" }) => (
   <div className={`relative overflow-hidden bg-slate-200 dark:bg-slate-800 rounded ${className}`}>
-    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-white/10" />
+    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-linear-to-r from-transparent via-white/20 to-transparent dark:via-white/10" />
   </div>
 )
 

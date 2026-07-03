@@ -5,7 +5,7 @@ import { useProducts } from "../context/ProductContext";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false);

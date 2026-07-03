@@ -42,7 +42,7 @@ export default function FAQPage() {
     <div className="bg-slate-50 dark:bg-slate-950 min-h-screen">
 
       {/* Hero */}
-      <section className="bg-gradient-to-r from-amber-500 to-orange-600 text-white py-20 px-6">
+      <section className="bg-linear-to-r from-amber-500 to-orange-600 text-white py-20 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-4">
             Frequently Asked Questions
@@ -103,7 +103,7 @@ export default function FAQPage() {
 
           <NavLink
             to="/contact"
-            className="inline-block mt-8 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-3 rounded-full font-semibold transition"
+            className="inline-block mt-8 bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-3 rounded-full font-semibold transition"
           >
             Contact Support
           </NavLink>

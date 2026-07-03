@@ -428,7 +428,7 @@ const UserDashboard = () => {
             {user?.role === "sub-admin" ? (
               <button
                 onClick={() => setActiveSection("seller-dashboard")}
-                className={`w-full text-left font-bold text-xs uppercase tracking-wider block flex items-center gap-1.5 transition duration-200 cursor-pointer ${
+                className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "seller-dashboard"
                     ? "text-orange-600 dark:text-orange-400"
                     : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
@@ -442,7 +442,7 @@ const UserDashboard = () => {
             ) : (
               <button
                 onClick={() => setActiveSection("sell-on-shopease")}
-                className={`w-full text-left font-bold text-xs uppercase tracking-wider block flex items-center gap-1.5 transition duration-200 cursor-pointer ${
+                className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "sell-on-shopease"
                     ? "text-orange-600 dark:text-orange-400"
                     : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
@@ -690,7 +690,7 @@ const UserDashboard = () => {
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer"
+                  className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer"
                 >
                   Save Profile Changes
                 </button>
@@ -943,7 +943,7 @@ const UserDashboard = () => {
                   <button
                     type="submit"
                     disabled={!sellerPolicyAgreed}
-                    className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Submit Seller Application
                   </button>
