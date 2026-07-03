@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
-import Footer from "../components/Footer"
+import Footer from "../components/footer"
 
 const DeliveryCoveragePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
