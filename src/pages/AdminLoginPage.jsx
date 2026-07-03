@@ -63,7 +63,7 @@ const AdminLoginPage = () => {
 
   if (user?.role === "user") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 to-slate-800">
         <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
           <p className="text-gray-700 mb-2">You are signed in as a <strong>user</strong>.</p>
           <p className="text-sm text-gray-500 mb-6">Log out first to access the admin panel.</p>
@@ -79,8 +79,8 @@ const AdminLoginPage = () => {
   }
 
  return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 p-6">
-    <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex w-full max-w-6xl h-[650px]">
+  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-amber-50 to-orange-100 p-6">
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex w-full max-w-6xl h-162.5">
 
       {/* Left Side Image */}
       <div className="hidden md:flex md:w-2/5 items-center justify-center bg-amber-50">

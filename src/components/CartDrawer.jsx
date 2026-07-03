@@ -140,7 +140,7 @@ const CartDrawer = () => {
   return (
     <>
       {isCartOpen && (
-        <div className="fixed inset-0 z-[100] overflow-hidden">
+        <div className="fixed inset-0 z-100 overflow-hidden">
           <div
             className="absolute inset-0 bg-slate-900/50 dark:bg-slate-950/70 backdrop-blur-sm transition-opacity"
             onClick={() => {
@@ -149,7 +149,7 @@ const CartDrawer = () => {
           />
 
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right duration-300">
+            <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right">
               <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
                   {checkoutStep
@@ -319,7 +319,7 @@ const CartDrawer = () => {
                     <h3 className="text-base font-bold text-slate-700 dark:text-slate-300">
                       Your cart is empty
                     </h3>
-                    <p className="text-slate-400 dark:text-slate-500 text-xs max-w-[240px] mx-auto">
+                    <p className="text-slate-400 dark:text-slate-500 text-xs max-w-60 mx-auto">
                       Explore Nepalese crafts, garments, and tea to add them
                       here.
                     </p>
@@ -458,13 +458,13 @@ const CartDrawer = () => {
       )}
 
       {orderSuccess && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 overflow-hidden">
           <div
             className="absolute inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm transition-opacity"
             onClick={() => setOrderSuccess(null)}
           />
 
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-800 shadow-2xl relative transform transition duration-300 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-800 shadow-2xl relative transform transition animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="w-14 h-14 bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8"
