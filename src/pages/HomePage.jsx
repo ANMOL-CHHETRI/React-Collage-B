@@ -5,7 +5,6 @@ import { useProducts } from "../context/ProductContext";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
-import Footer from "../components/footer";
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false);
@@ -38,6 +37,8 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
         alt={alt}
         className={`${className} transition-opacity duration-300 ${loaded || error ? "opacity-100" : "opacity-0"}`}
         loading="lazy"
+        onDragStart={(e) => e.preventDefault()}
+        draggable="false"
       />
     </div>
   );
@@ -127,68 +128,191 @@ const faqs = [
 
 const HeroCarousel = ({ products, addToCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [dragStart, setDragStart] = useState(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
+    if (isDragging) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % products.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, [products.length]);
+  }, [currentIndex, products.length, isDragging]);
 
   if (!products.length) return null;
-  const product = products[currentIndex];
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % products.length);
+  };
+
+  const handlePointerDown = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    setDragStart(e.clientX);
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging || dragStart === null) return;
+    setDragOffset(e.clientX - dragStart);
+  };
+
+  const handlePointerUp = (e) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (error) {
+      console.warn("releasePointerCapture failed", error);
+    }
+
+    const minSwipeDistance = 50;
+    if (dragOffset < -minSwipeDistance) {
+      handleNext();
+    } else if (dragOffset > minSwipeDistance) {
+      handlePrev();
+    }
+
+    setDragStart(null);
+    setDragOffset(0);
+  };
 
   return (
     <section className="relative pt-24 pb-24 md:pt-32 md:pb-32 overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
+       {/* Background image slider */}
        <div className="absolute inset-0 z-0 overflow-hidden">
-          <img src={product.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"} referrerPolicy="no-referrer" alt="" className="w-full h-full object-cover opacity-15 dark:opacity-20 blur-2xl scale-110" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
-       </div>
-       <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 space-y-6 text-center md:text-left">
-             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Featured Product
-                </span>
-             </div>
-             <h1 className="text-[44px] md:text-[60px] font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight line-clamp-2">
-               {product.name}
-             </h1>
-             <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-xl line-clamp-3 mx-auto md:mx-0">
-               {product.description}
-             </p>
-             <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-500 pt-2">
-                Rs. {product.price.toLocaleString()}
-             </div>
-             <div className="pt-4 flex justify-center md:justify-start gap-4">
-               <button onClick={() => addToCart(product)} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
-                 Add to Cart
-               </button>
-               <Link to={`/product/${product.id}`} className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold px-8 py-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition duration-200 cursor-pointer">
-                 View Details
-               </Link>
-             </div>
-          </div>
-          <div className="flex-1 w-full max-w-md mx-auto">
-             <div className="relative rounded-3xl overflow-hidden aspect-square shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-                 <ImageWithSkeleton src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition duration-700" />
-                 {product.badge && (
-                    <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-extrabold px-4 py-1.5 rounded-full uppercase shadow-md shadow-red-900/20">
-                       {product.badge}
-                    </div>
-                 )}
-             </div>
+          <div 
+             className={`flex h-full ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
+             style={{ 
+                transform: `translateX(calc(-${currentIndex * (100 / products.length)}% + ${dragOffset}px))`,
+                width: `${products.length * 100}%`
+             }}
+          >
+             {products.map((p, idx) => (
+                <div 
+                   key={`bg-${p.id || idx}`} 
+                   className="h-full flex-shrink-0 relative"
+                   style={{ width: `${100 / products.length}%` }}
+                >
+                   <img 
+                      src={p.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"} 
+                      referrerPolicy="no-referrer" 
+                      alt="" 
+                      className="w-full h-full object-cover opacity-15 dark:opacity-20 blur-2xl scale-110" 
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
+                </div>
+             ))}
           </div>
        </div>
 
+       {/* Slide container */}
+       <div 
+          className="max-w-7xl mx-auto px-6 relative z-10 overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+       >
+          <div 
+             className={`flex ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
+             style={{ 
+                transform: `translateX(calc(-${currentIndex * (100 / products.length)}% + ${dragOffset}px))`,
+                width: `${products.length * 100}%`
+             }}
+          >
+             {products.map((product, idx) => (
+                <div 
+                   key={product.id || idx} 
+                   className="flex-shrink-0 flex flex-col md:flex-row items-center gap-12 py-4 px-12 md:px-20"
+                   style={{ width: `${100 / products.length}%` }}
+                >
+                   <div className="flex-1 space-y-6 text-center md:text-left">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+                         <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                         <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                           Featured Product
+                         </span>
+                      </div>
+                      <h1 className="text-[44px] md:text-[60px] font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight line-clamp-2">
+                        {product.name}
+                      </h1>
+                      
+                      {/* Rating in Carousel */}
+                      <div className="flex items-center justify-center md:justify-start gap-1.5 pt-1">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <svg key={s} className={`w-4 h-4 ${s <= 4 ? "text-amber-400" : "text-slate-300 dark:text-slate-700"}`} fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400">4.4 (5 reviews)</span>
+                      </div>
+
+                      <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-xl line-clamp-3 mx-auto md:mx-0">
+                        {product.description}
+                      </p>
+                      <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-500 pt-2">
+                         Rs. {product.price.toLocaleString()}
+                      </div>
+                      <div className="pt-4 flex justify-center md:justify-start gap-4" onPointerDown={(e) => e.stopPropagation()}>
+                        <button onClick={() => addToCart(product)} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
+                          Add to Cart
+                        </button>
+                        <Link to={`/product/${product.id}`} className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold px-8 py-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition duration-200 cursor-pointer">
+                          View Details
+                        </Link>
+                      </div>
+                   </div>
+                   <div className="flex-1 w-full max-w-md mx-auto">
+                      <div className="relative rounded-3xl overflow-hidden aspect-square shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                          <ImageWithSkeleton src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition duration-700" />
+                          {product.badge && (
+                             <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-extrabold px-4 py-1.5 rounded-full uppercase shadow-md shadow-red-900/20">
+                                {product.badge}
+                             </div>
+                          )}
+                      </div>
+                   </div>
+                </div>
+             ))}
+          </div>
+       </div>
+
+       {/* Navigation Arrow Actions */}
+       <button 
+          onClick={handlePrev}
+          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full flex items-center justify-center bg-white/40 dark:bg-slate-900/40 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200/50 dark:border-slate-700/50 shadow-md backdrop-blur-md text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-500 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-pointer"
+          aria-label="Previous slide"
+       >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+       </button>
+       <button 
+          onClick={handleNext}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full flex items-center justify-center bg-white/40 dark:bg-slate-900/40 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200/50 dark:border-slate-700/50 shadow-md backdrop-blur-md text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-500 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-pointer"
+          aria-label="Next slide"
+       >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+       </button>
+
+       {/* Pagination dots */}
        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20 overflow-x-auto max-w-[90vw] px-4 py-2 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {products.map((_, i) => (
              <button 
-               key={i} 
-               onClick={() => setCurrentIndex(i)} 
-               className={`h-2.5 shrink-0 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${i === currentIndex ? 'bg-amber-500 w-8' : 'bg-slate-300 dark:bg-slate-700 w-2.5 hover:bg-slate-400 dark:hover:bg-slate-600'}`} 
-               aria-label={`Go to slide ${i + 1}`}
+                key={i} 
+                onClick={() => setCurrentIndex(i)} 
+                className={`h-2.5 shrink-0 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${i === currentIndex ? 'bg-amber-500 w-8' : 'bg-slate-300 dark:bg-slate-700 w-2.5 hover:bg-slate-400 dark:hover:bg-slate-600'}`} 
+                aria-label={`Go to slide ${i + 1}`}
              />
           ))}
        </div>
@@ -228,39 +352,51 @@ const HomePage = () => {
     <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
       <HeroCarousel products={products} addToCart={addToCart} />
 
-      <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-16 transition-colors duration-300">
+      <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
-              <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
+              <span className="inline-flex items-center gap-2 text-xs font-extrabold text-amber-600 uppercase tracking-widest mb-2">
+                <span className="w-5 h-px bg-amber-500" />
                 Shop By Category
+                <span className="w-5 h-px bg-amber-500" />
               </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-1">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Curated Local Collections
               </h2>
+              <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">Explore authentic Nepali goods by category</p>
             </div>
+            <Link to="/category/Traditional%20Apparel" className="hidden md:inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition group mt-4 md:mt-0">
+              View All
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {categories.map((cat) => (
               <Link
                 key={cat.name}
                 to={`/category/${encodeURIComponent(cat.name)}`}
-                className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition text-left group cursor-pointer block"
+                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
               >
-                <div className="rounded-xl overflow-hidden aspect-[4/3] mb-4 bg-slate-200 dark:bg-slate-800">
-                  <ImageWithSkeleton
-                    src={cat.image}
-                    alt={cat.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
+                <ImageWithSkeleton
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <span className="inline-block bg-amber-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider mb-2">
+                    {cat.count}
+                  </span>
+                  <h3 className="text-sm font-extrabold text-white leading-tight">{cat.name}</h3>
                 </div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
-                  {cat.name}
-                </h3>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">
-                  {cat.count}
-                </span>
+                {/* Hover arrow */}
+                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </div>
               </Link>
             ))}
           </div>
@@ -269,19 +405,19 @@ const HomePage = () => {
 
       <section
         id="catalog"
-        className="py-20 bg-slate-50/50 dark:bg-slate-900/20 transition-colors duration-300"
+        className="py-20 bg-slate-50 dark:bg-slate-900/30 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12 space-y-2">
-            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
-              Our Products
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              Featured Products
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Featured Nepalese Goods
+              Authentic Nepalese Goods
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto">
-              Handpicked, sustainable items supporting rural communities across
-              Nepal.
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mt-2">
+              Handpicked, sustainable items supporting rural communities across Nepal.
             </p>
           </div>
 
@@ -370,54 +506,47 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-slate-50/50 dark:bg-slate-900/20 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16 space-y-2">
-            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
-              Reviews
+      <section className="py-24 bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900 relative overflow-hidden transition-colors duration-300">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
+        <div className="max-w-7xl mx-auto px-6 relative">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4 backdrop-blur-sm">
+              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+              Customer Reviews
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Customer Testimonials
+            <h2 className="text-3xl font-extrabold text-white tracking-tight">
+              What Our Customers Say
             </h2>
-            <p className="text-slate-400 dark:text-slate-500 text-sm font-semibold">
-              Real feedback from shoppers across Nepal
-            </p>
+            <p className="text-slate-400 text-sm mt-2">Real feedback from verified shoppers across Nepal</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((t) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                className="bg-white dark:bg-slate-950 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition duration-200"
+                className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
               >
+                {/* Decorative quote mark */}
+                <div className="absolute top-3 right-4 text-6xl text-amber-500/10 font-serif leading-none group-hover:text-amber-500/20 transition-colors duration-300">"</div>
                 <div>
-                  <div className="flex items-center gap-1 mb-4">
+                  <div className="flex items-center gap-0.5 mb-4">
                     {Array.from({ length: t.rating }).map((_, i) => (
-                      <svg
-                        key={i}
-                        className="w-4 h-4 text-amber-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                      <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 italic leading-relaxed mb-6 font-medium">
-                    "{t.text}"
+                  <p className="text-sm text-slate-300 italic leading-relaxed mb-6">
+                    &ldquo;{t.text}&rdquo;
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-950/40 rounded-full flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-400">
+                <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-xs font-extrabold text-white shadow-md flex-shrink-0">
                     {t.avatar}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
-                      {t.name}
-                    </h4>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">
-                      {t.location}, Nepal
-                    </span>
+                    <h4 className="font-bold text-white text-sm">{t.name}</h4>
+                    <span className="text-xs text-slate-400">{t.location}, Nepal</span>
                   </div>
                 </div>
               </div>
@@ -428,63 +557,71 @@ const HomePage = () => {
 
       <section
         id="faq"
-        className="py-20 bg-white dark:bg-slate-950 transition-colors duration-300"
+        className="py-24 bg-white dark:bg-slate-950 transition-colors duration-300 relative"
       >
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-12 space-y-2">
-            <span className="text-xs font-extrabold text-amber-600 uppercase tracking-widest block">
+        {/* Faint background pattern */}
+        <div className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #f59e0b 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+        <div className="max-w-3xl mx-auto px-6 relative">
+          <div className="text-center mb-14">
+            <span className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Help Desk
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Frequently Asked Questions
             </h2>
-            <p className="text-slate-400 dark:text-slate-500 text-sm font-semibold">
-              Everything you need to know about our service
+            <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
+              Everything you need to know about shopping with us
             </p>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden transition-all duration-200"
+                className={`rounded-2xl border overflow-hidden transition-all duration-300 ${
+                  openFaq === faq.q
+                    ? "border-amber-200 dark:border-amber-800/50 shadow-md shadow-amber-50 dark:shadow-amber-950/20"
+                    : "border-slate-100 dark:border-slate-800"
+                }`}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === faq.q ? null : faq.q)}
-                  className="w-full flex items-center justify-between px-6 py-4.5 text-left font-bold text-slate-800 dark:text-slate-200 text-sm cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition"
+                  className={`w-full flex items-start justify-between gap-4 px-6 py-5 text-left text-sm cursor-pointer transition-all duration-200 ${
+                    openFaq === faq.q
+                      ? "bg-amber-50 dark:bg-amber-950/20 font-extrabold text-amber-700 dark:text-amber-400"
+                      : "bg-slate-50 dark:bg-slate-900 font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                  }`}
                 >
-                  <span>{faq.q}</span>
-                  <svg
-                    className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-250 ${
-                      openFaq === faq.q
-                        ? "rotate-180 text-amber-600 dark:text-amber-400"
-                        : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  <span className="flex-1 leading-snug">{faq.q}</span>
+                  <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                    openFaq === faq.q ? "bg-amber-500 text-white rotate-180" : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                  }`}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </button>
                 {openFaq === faq.q && (
-                  <div className="px-6 pb-5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium border-t border-slate-100 dark:border-slate-800 pt-3 animate-in slide-in-from-top-1 duration-200">
+                  <div className="px-6 pb-5 pt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed bg-amber-50/50 dark:bg-amber-950/10 border-t border-amber-100 dark:border-amber-900/30 animate-in slide-in-from-top-1 duration-200">
                     {faq.a}
                   </div>
                 )}
               </div>
             ))}
           </div>
+
+          {/* CTA below FAQ */}
+          <div className="mt-12 text-center p-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-100 dark:border-amber-900/30">
+            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-4">Still have questions? Our support team is here to help.</p>
+            <Link to="/contact" className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm hover:-translate-y-0.5">
+              Contact Support
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </Link>
+          </div>
         </div>
       </section>
 
-
-      <Footer />
     </div>
   );
 };

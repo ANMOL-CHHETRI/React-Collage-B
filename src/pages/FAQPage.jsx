@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import Footer from "../components/Footer";
 
 const faqs = [
   {
@@ -111,7 +110,6 @@ export default function FAQPage() {
         </div>
 
       </section>
-      <Footer />
     </div>
   );
 }

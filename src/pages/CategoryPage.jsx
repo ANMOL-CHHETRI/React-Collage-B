@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProducts } from "../context/ProductContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
-import Footer from "../components/Footer"
 
 import ProductCard from "../components/ProductCard"
 
@@ -179,7 +178,6 @@ const CategoryPage = () => {
           </div>
         )}
       </section>
-      <Footer />
     </div>
   )
 }

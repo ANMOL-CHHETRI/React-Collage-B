@@ -117,9 +117,11 @@ const Navbar = () => {
               )}
             </div>
 
-            <NavLink to="/contact" className={linkClass}>
-              Contact
-            </NavLink>
+            {user?.role !== "admin" && (
+              <NavLink to="/contact" className={linkClass}>
+                Contact
+              </NavLink>
+            )}
             <NavLink to="/delivery-coverage" className={linkClass}>
               Delivery Coverage
             </NavLink>

@@ -292,77 +292,77 @@ const NepalDeliveryMap = ({
         </span>
       </div>
 
-      {/* Map Container */}
-      <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-lg">
-        {/* Leaflet overrides — labels always white, clean background */}
-        <style>{`
-          :root {
-            --map-selected-color: #AF412F;
-          }
-          .dark {
-            --map-selected-color: #6F1D1B;
-          }
-          .nepal-province-label {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            font-size: 11px !important;
-            font-weight: 800 !important;
-            font-family: Inter, system-ui, sans-serif !important;
-            color: #ffffff !important;
-            text-shadow:
-              0 0 4px rgba(0,0,0,0.8),
-              0 1px 6px rgba(0,0,0,0.6) !important;
-            letter-spacing: 0.02em !important;
-            white-space: nowrap !important;
-            pointer-events: none !important;
-          }
-          .nepal-province-label::before {
-            border-top-color: transparent !important;
-          }
-          .pin-label {
-            background: #fff !important;
-            border: 2px solid var(--map-selected-color) !important;
-            border-radius: 8px !important;
-            padding: 4px 10px !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-            font-size: 11px !important;
-            font-weight: 700 !important;
-            font-family: Inter, system-ui, sans-serif !important;
-            color: #1e293b !important;
-            white-space: nowrap !important;
-            pointer-events: none !important;
-          }
-          .pin-label::before {
-            border-top-color: #fff !important;
-            border-bottom-color: var(--map-selected-color) !important;
-          }
-          .leaflet-container {
-            background: #f1f5f9 !important;
-            font-family: Inter, system-ui, sans-serif !important;
-            z-index: 0 !important;
-          }
-          .leaflet-control-zoom {
-            border: none !important;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.15) !important;
-          }
-          .leaflet-control-zoom a {
-            background: #fff !important;
-            color: #374151 !important;
-            font-weight: 700 !important;
-            border-color: #e5e7eb !important;
-          }
-          .leaflet-control-zoom a:hover {
-            background: var(--map-selected-color) !important;
-            color: #fff !important;
-          }
-        `}</style>
-        <div
-          ref={mapContainerRef}
-          id="nepal-leaflet-map"
-          style={{ width: "100%", height: compact ? 320 : 400 }}
-        />
+      {/* Map Container — Standard Flat 2D */}
+      <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md">
+          {/* Leaflet overrides — labels always white, clean background */}
+          <style>{`
+            :root {
+              --map-selected-color: #AF412F;
+            }
+            .dark {
+              --map-selected-color: #6F1D1B;
+            }
+            .nepal-province-label {
+              background: transparent !important;
+              border: none !important;
+              box-shadow: none !important;
+              padding: 0 !important;
+              font-size: 11px !important;
+              font-weight: 800 !important;
+              font-family: Inter, system-ui, sans-serif !important;
+              color: #ffffff !important;
+              text-shadow:
+                0 0 4px rgba(0,0,0,0.8),
+                0 1px 6px rgba(0,0,0,0.6) !important;
+              letter-spacing: 0.02em !important;
+              white-space: nowrap !important;
+              pointer-events: none !important;
+            }
+            .nepal-province-label::before {
+              border-top-color: transparent !important;
+            }
+            .pin-label {
+              background: #fff !important;
+              border: 2px solid var(--map-selected-color) !important;
+              border-radius: 8px !important;
+              padding: 4px 10px !important;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+              font-size: 11px !important;
+              font-weight: 700 !important;
+              font-family: Inter, system-ui, sans-serif !important;
+              color: #1e293b !important;
+              white-space: nowrap !important;
+              pointer-events: none !important;
+            }
+            .pin-label::before {
+              border-top-color: #fff !important;
+              border-bottom-color: var(--map-selected-color) !important;
+            }
+            .leaflet-container {
+              background: #f1f5f9 !important;
+              font-family: Inter, system-ui, sans-serif !important;
+              z-index: 0 !important;
+            }
+            .leaflet-control-zoom {
+              border: none !important;
+              box-shadow: 0 1px 6px rgba(0,0,0,0.15) !important;
+            }
+            .leaflet-control-zoom a {
+              background: #fff !important;
+              color: #374151 !important;
+              font-weight: 700 !important;
+              border-color: #e5e7eb !important;
+            }
+            .leaflet-control-zoom a:hover {
+              background: var(--map-selected-color) !important;
+              color: #fff !important;
+            }
+          `}</style>
+          <div
+            ref={mapContainerRef}
+            id="nepal-leaflet-map"
+            style={{ width: "100%", height: compact ? 320 : 400 }}
+          />
       </div>
 
       {/* Legend */}

@@ -572,64 +572,16 @@ const AdminDashboard = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-gray-900 dark:text-white">{regUser.name}</p>
-                            {regUser.banned && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">Banned</span>
-                            )}
-                            {regUser.role === "sub-admin" && !regUser.banned && (
+                            {regUser.role === "sub-admin" && (
                               <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 font-bold uppercase tracking-wider">Seller</span>
-                            )}
-                            {regUser.oneStarReviews > 50 && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 font-bold uppercase tracking-wider" title="More than 50 1-star reviews">Poor Ratings</span>
                             )}
                           </div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{regUser.email}</p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">Username: <span className="font-mono font-medium">{regUser.username}</span></p>
-                          {regUser.oneStarReviews !== undefined && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              1-Star Reviews: <strong className={regUser.oneStarReviews > 50 ? "text-red-600 dark:text-red-400" : "text-gray-900 dark:text-white"}>{regUser.oneStarReviews}</strong>
-                            </p>
-                          )}
                         </div>
                       </div>
                       
                       <div className="flex flex-wrap items-center gap-4">
-                        {/* Violations Counter */}
-                        <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
-                          <button
-                            onClick={() => updateUserViolations(regUser.username, -1)}
-                            className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
-                            title="Decrease violations"
-                          >
-                            -
-                          </button>
-                          <div className="flex items-center gap-1 px-1">
-                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">Violations:</span>
-                            <input
-                              type="number"
-                              min="0"
-                              value={regUser.violations}
-                              onChange={(e) => setExactUserViolations(regUser.username, parseInt(e.target.value, 10) || 0)}
-                              className="w-10 text-xs font-bold text-red-600 dark:text-red-400 bg-transparent border-none focus:ring-0 text-center p-0 outline-none"
-                            />
-                          </div>
-                          <button
-                            onClick={() => updateUserViolations(regUser.username, 1)}
-                            className="px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 font-bold rounded"
-                            title="Increase violations"
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        {/* Auto Violations Button */}
-                        <button
-                          onClick={() => autoCalculateViolations(regUser.username)}
-                          className="px-3 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-950/60 shadow-sm"
-                          title="Auto calculate violations based on 1-star reviews"
-                        >
-                          Auto Calc
-                        </button>
-
                         {/* Reset Password Button */}
                         <button
                           onClick={() => {
@@ -638,24 +590,10 @@ const AdminDashboard = () => {
                               success("Password reset to shopease123")
                             }
                           }}
-                          className="px-3 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-950/60 shadow-sm"
+                          className="px-4 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-950/60 shadow-sm"
                           title="Reset user password to default"
                         >
                           Reset Password
-                        </button>
-
-                        {/* Ban / Unban Button */}
-                        <button
-                          onClick={() => toggleUserBan(regUser.username)}
-                          className={`px-4 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer ${
-                            regUser.banned
-                              ? "bg-green-600 hover:bg-green-700 text-white shadow-sm"
-                              : regUser.oneStarReviews > 50
-                              ? "bg-red-600 hover:bg-red-700 text-white shadow-sm ring-2 ring-red-400 ring-offset-2 dark:ring-offset-slate-950 animate-pulse"
-                              : "bg-red-600 hover:bg-red-700 text-white shadow-sm"
-                          }`}
-                        >
-                          {regUser.banned ? "Unban User" : (regUser.oneStarReviews > 50 ? "Ban (Too Many 1-Stars)" : "Ban User")}
                         </button>
                       </div>
                     </div>

@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
-import Footer from "../components/Footer"
 
 const DeliveryCoveragePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
@@ -22,8 +21,11 @@ const DeliveryCoveragePage = () => {
             </svg>
             <span className="font-bold text-white">Delivery Coverage</span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">
-            🗺 Nepal Delivery Coverage
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight flex items-center gap-3">
+            <svg className="w-10 h-6 md:w-14 md:h-8 text-white shrink-0 drop-shadow" viewBox="0 0 100 50" fill="currentColor">
+              <path d="M5,25 L12,23 L22,25 L28,21 L35,24 L42,21 L48,22 L58,18 L68,20 L78,16 L88,18 L95,15 L93,22 L91,28 L86,32 L78,31 L70,35 L60,33 L50,37 L42,34 L32,38 L25,35 L18,36 L10,31 Z" />
+            </svg>
+            <span>Nepal Delivery Coverage</span>
           </h1>
           <p className="text-sm md:text-base text-white/90 max-w-2xl font-medium mt-2 leading-relaxed">
             We deliver to all 7 provinces of Nepal with Cash on Delivery. Click a province on the map
@@ -104,7 +106,6 @@ const DeliveryCoveragePage = () => {
           ))}
         </div>
       </section>
-      <Footer />
     </div>
   )
 }

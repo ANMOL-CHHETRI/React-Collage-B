@@ -1,6 +1,9 @@
 import { Link, NavLink } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 const Footer = () => {
+  const { user } = useAuth()
+  const isAdmin = user?.role === "admin"
 
   return (
     <>
@@ -94,26 +97,28 @@ const Footer = () => {
             </div>
 
             {/* Legal column */}
-            <div className="md:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">Legal</h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link to="/policy#privacy" className="hover:text-amber-500 transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/policy#terms" className="hover:text-amber-500 transition-colors">
-                    Terms of Use
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/policy#cod" className="hover:text-amber-500 transition-colors">
-                    COD Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            {!isAdmin && (
+              <div className="md:col-span-2 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white">Legal</h4>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    <Link to="/policy#privacy" className="hover:text-amber-500 transition-colors">
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/policy#terms" className="hover:text-amber-500 transition-colors">
+                      Terms of Use
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/policy#cod" className="hover:text-amber-500 transition-colors">
+                      COD Policy
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            )}
 
             {/* Office Address column */}
             <div className="md:col-span-2 space-y-3">
@@ -134,14 +139,16 @@ const Footer = () => {
           {/* Bottom Bar */}
           <div className="border-t border-slate-900 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 font-medium">
             <p>© 2026 ShopEase Nepal. All rights reserved.</p>
-            <div className="flex gap-4">
-              <Link to="/policy#privacy" className="hover:underline">
-                Privacy Policy
-              </Link>
-              <Link to="/policy#terms" className="hover:underline">
-                Terms of Service
-              </Link>
-            </div>
+            {!isAdmin && (
+              <div className="flex gap-4">
+                <Link to="/policy#privacy" className="hover:underline">
+                  Privacy Policy
+                </Link>
+                <Link to="/policy#terms" className="hover:underline">
+                  Terms of Service
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </footer>
