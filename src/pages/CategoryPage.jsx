@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProducts } from "../context/ProductContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
-import Footer from "../components/Footer"
+import Footer from "../components/footer"
 
 import ProductCard from "../components/ProductCard"
 
@@ -87,7 +87,7 @@ const CategoryPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* Category Banner */}
-      <section className={`relative py-16 text-white bg-gradient-to-r ${meta.gradient} overflow-hidden`}>
+      <section className={`relative py-16 text-white bg-linear-to-r ${meta.gradient} overflow-hidden`}>
         <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
         <div className="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-black/15 rounded-full blur-2xl" />

@@ -45,7 +45,7 @@ const UserProfilePage = () => {
   }
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 py-12">
+  <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-amber-50 py-12">
     <div className="max-w-2xl mx-auto px-4">
 
       <Link
@@ -71,7 +71,7 @@ const UserProfilePage = () => {
       <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-8 py-8 text-white">
+        <div className="bg-linear-to-r from-amber-500 to-orange-600 px-8 py-8 text-white">
           <h1 className="text-3xl font-bold">My Profile</h1>
           <p className="text-orange-100 mt-2">
             Manage your personal information and delivery details.
@@ -141,7 +141,7 @@ const UserProfilePage = () => {
 
             <button
               type="submit"
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               Save Changes
             </button>

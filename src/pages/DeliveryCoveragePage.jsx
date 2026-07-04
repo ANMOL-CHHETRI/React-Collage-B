@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import NepalDeliveryMap from "../components/NepalDeliveryMap"
-import Footer from "../components/Footer"
+import Footer from "../components/footer"
 
 const DeliveryCoveragePage = () => {
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
@@ -9,7 +9,7 @@ const DeliveryCoveragePage = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* Page Header Banner */}
-      <section className="relative py-14 text-white bg-gradient-to-r from-amber-500 to-orange-600 overflow-hidden">
+      <section className="relative py-14 text-white bg-linear-to-r from-amber-500 to-orange-600 overflow-hidden">
         <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
         <div className="absolute -top-10 -right-10 w-56 h-56 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-black/15 rounded-full blur-2xl" />

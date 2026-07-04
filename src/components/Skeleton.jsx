@@ -4,13 +4,13 @@ export const Skeleton = ({ className = "" }) => (
 
 export const Shimmer = ({ className = "" }) => (
   <div className={`relative overflow-hidden bg-slate-200 dark:bg-slate-800 rounded ${className}`}>
-    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-white/10" />
+    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-linear-to-r from-transparent via-white/20 to-transparent dark:via-white/10" />
   </div>
 )
 
 export const ProductCardSkeleton = () => (
   <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/60 dark:border-slate-800 overflow-hidden animate-pulse">
-    <div className="aspect-[4/5] bg-slate-200 dark:bg-slate-800" />
+    <div className="aspect-4/5 bg-slate-200 dark:bg-slate-800" />
     <div className="p-5 space-y-3">
       <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
       <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-full" />

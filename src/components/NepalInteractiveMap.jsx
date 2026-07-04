@@ -105,7 +105,7 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
           <path
             key={p.id}
             d={p.d}
-            className={`stroke-white dark:stroke-slate-700 stroke-[2] cursor-pointer transition-all duration-200 ${
+            className={`stroke-white dark:stroke-slate-700 stroke-2 cursor-pointer transition-all duration-200 ${
               selectedProvince === p.id
                 ? "fill-red-400 dark:fill-red-800"
                 : hoveredProvince === p.id
@@ -156,7 +156,7 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
                 height="22"
                 rx="11"
                 fill="#1E293B"
-                className="stroke-amber-500/50 stroke-[1]"
+                className="stroke-amber-500/50 stroke-1"
                 opacity="0.95"
               />
               {/* Province label text */}
