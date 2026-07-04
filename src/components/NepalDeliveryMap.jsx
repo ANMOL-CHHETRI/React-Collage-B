@@ -281,7 +281,7 @@ const NepalDeliveryMap = ({
   }, [selectedProvince])
 
   const mapBlock = (
-    <div className={`w-full ${compact ? "" : "max-w-[800px]"}`}>
+    <div className={`w-full ${compact ? "" : "max-w-200"}`}>
       {/* Header */}
       <div className="text-center mb-3">
         <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 block">
@@ -378,7 +378,7 @@ const NepalDeliveryMap = ({
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Hover</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-sm bg-[var(--map-selected-color)] inline-block" />
+            <span className="w-3.5 h-3.5 rounded-sm bg-(--map-selected-color) inline-block" />
             <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Selected</span>
           </div>
         </div>
@@ -402,7 +402,7 @@ const NepalDeliveryMap = ({
                 onClick={() => onSelectProvince(key)}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border transition-all duration-150 cursor-pointer ${
                   isSel
-                    ? "bg-[var(--map-selected-color)] text-white border-[var(--map-selected-color)] shadow-sm shadow-red-950/20 dark:shadow-red-950/30"
+                    ? "bg-(--map-selected-color) text-white border-(--map-selected-color) shadow-sm shadow-red-950/20 dark:shadow-red-950/30"
                     : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-[#0A100D] hover:text-white hover:border-[#0A100D]"
                 }`}
               >

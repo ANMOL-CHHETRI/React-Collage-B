@@ -704,7 +704,7 @@ const AdminDashboard = () => {
 
           {activeSection === "messages" && (
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 font-bold">Contact Messages</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Messages</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Review messages submitted by users through the Contact form.</p>
 
               {(!adminMessages || adminMessages.length === 0) ? (

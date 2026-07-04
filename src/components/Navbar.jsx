@@ -280,7 +280,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/user-login"
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-medium px-5 py-2 rounded-full hover:from-amber-600 hover:to-orange-700 transition-all duration-250 shadow-md shadow-amber-500/15 flex items-center gap-1.5 hover:shadow-lg group"
+                  className="bg-linear-to-r from-amber-500 to-orange-600 text-white text-sm font-medium px-5 py-2 rounded-full hover:from-amber-600 hover:to-orange-700 transition-all duration-250 shadow-md shadow-amber-500/15 flex items-center gap-1.5 hover:shadow-lg group"
                 >
                   Sign up
                   <svg
@@ -461,7 +461,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     to="/user-login"
-                    className="w-full text-center py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-medium rounded-xl hover:from-amber-600 hover:to-orange-700 shadow-md shadow-amber-500/10"
+                    className="w-full text-center py-2.5 bg-linear-to-r from-amber-500 to-orange-600 text-white font-medium rounded-xl hover:from-amber-600 hover:to-orange-700 shadow-md shadow-amber-500/10"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign up

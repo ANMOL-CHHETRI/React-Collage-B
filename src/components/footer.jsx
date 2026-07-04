@@ -14,7 +14,7 @@ const Footer = () => {
             {/* Brand column */}
             <div className="col-span-2 md:col-span-2 space-y-4">
               <Link to="/" className="flex items-center gap-2 group">
-                <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform">
+                <div className="bg-linear-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
