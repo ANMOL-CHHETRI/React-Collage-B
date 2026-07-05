@@ -5,8 +5,8 @@
 - **Anmol Chhetri** — Project Lead
 - **Sahil** — Backend
 - **Sarang** — Frontend
-- **Sanskarti** — UI Components
-- **Smriti** — QA & Testing
+- **Sanskarti & Smriti** — UI Components
+- **** — QA & Testing
 
 ## User Groups & Permissions
 
