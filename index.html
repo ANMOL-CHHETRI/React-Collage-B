@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShopEase - Ecommerce</title>
+    <meta name="description" content="ShopEase Nepal — Your premium destination for authentic Nepalese handicrafts, traditional apparel, organic tea & coffee, herbs and spices. Cash on Delivery across all 7 provinces." />
+    <meta name="theme-color" content="#f59e0b" />
+    <title>ShopEase Nepal — Authentic Nepalese Goods</title>
+    <!-- Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <script>
       (function() {
         const theme = localStorage.getItem('theme') || 'light';
@@ -13,9 +19,18 @@
         }
       })();
     </script>
+    <style>
+      *, *::before, *::after { font-family: 'Inter', system-ui, sans-serif; }
+      html { scroll-behavior: smooth; }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #f59e0b55; border-radius: 99px; }
+      ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+

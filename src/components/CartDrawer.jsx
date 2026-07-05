@@ -144,33 +144,45 @@ const CartDrawer = () => {
 
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
             <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right">
-              <div className="px-6 py-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                  {checkoutStep
-                    ? "Receiver Details (COD)"
-                    : `My Cart (${cartCount})`}
-                </h2>
-                <button
-                  onClick={() => {
-                    if (checkoutStep) setCheckoutStep(false);
-                    else setIsCartOpen(false);
-                  }}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition cursor-pointer"
-                >
-                  <svg
-                    className="w-5.5 h-5.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
+              <div className="px-6 py-4 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 border-b border-slate-700 dark:border-slate-800">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+                    <svg className="w-4.5 h-4.5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    {checkoutStep ? "Delivery Details" : `My Cart`}
+                    {!checkoutStep && cartCount > 0 && (
+                      <span className="bg-amber-500 text-slate-900 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>
+                    )}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      if (checkoutStep) setCheckoutStep(false);
+                      else setIsCartOpen(false);
+                    }}
+                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition cursor-pointer"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Progress steps */}
+                <div className="flex items-center gap-2">
+                  {[{label: "Cart", icon: "🛒"}, {label: "Delivery", icon: "🚚"}, {label: "Confirm", icon: "✅"}].map((step, i) => {
+                    const active = checkoutStep ? i <= 1 : i === 0;
+                    return (
+                      <div key={step.label} className="flex items-center gap-2 flex-1">
+                        <div className={`flex items-center gap-1 text-[10px] font-bold ${active ? "text-amber-400" : "text-slate-600"}`}>
+                          <span>{step.icon}</span>
+                          <span className="hidden sm:inline">{step.label}</span>
+                        </div>
+                        {i < 2 && <div className={`h-px flex-1 rounded-full ${active && i === 0 ? "bg-amber-500" : "bg-slate-700"}`} />}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto px-6 py-4">

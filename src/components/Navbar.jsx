@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -7,14 +7,23 @@ import { useWishlist } from "../context/WishlistContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const { cartCount, setIsCartOpen } = useCart();
   const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
   const { wishlistCount } = useWishlist();
+
   const linkClass = ({ isActive }) =>
-    `text-sm font-medium transition-colors duration-200 py-1.5 px-3 rounded-full dark:hover:text-slate-100  dark:hover:text-slate-100 hover:bg-slate-50${
+    `relative text-sm font-medium transition-all duration-200 py-1.5 px-3 rounded-full group ${
       isActive
-        ? "text-orange-600 dark:text-orange-400 bg-orange-50/50 dark:bg-orange-950/30 "
-        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 "
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/70"
     }`;
 
   const toggleDropdown = (name) => {
@@ -25,7 +34,11 @@ const Navbar = () => {
   const hasViolations = dbUser && dbUser.violations > 0;
 
   return (
-    <nav className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 text-slate-800 dark:text-slate-100">
+    <nav className={`sticky top-0 z-50 text-slate-800 dark:text-slate-100 transition-all duration-300 ${
+      scrolled
+        ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-slate-950/50 border-b border-slate-200/60 dark:border-slate-800/60"
+        : "bg-white/70 dark:bg-slate-950/70 backdrop-blur-md border-b border-slate-100/80 dark:border-slate-800/50"
+    }`}>
       {hasViolations && (
         <div className="bg-red-600 text-white text-center py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 animate-pulse">
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -38,7 +51,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform duration-200" />
+            <div className="relative">
+              <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-110 transition-transform duration-300" />
+              <div className="absolute inset-0 rounded-lg bg-amber-400/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+            </div>
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
           </Link>
 

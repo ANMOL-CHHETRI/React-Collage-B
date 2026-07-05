@@ -125,6 +125,32 @@ const faqs = [
   },
 ];
 
+// ── Trust Bar marquee ──
+const TrustBar = () => {
+  const items = [
+    "🚚 Free Delivery on Orders Over Rs. 1,500",
+    "💵 Cash on Delivery — Pay at Your Door",
+    "🌿 100% Authentic Nepalese Products",
+    "🗺️ Delivery Across All 7 Provinces",
+    "⭐ 4.9/5 Average Customer Rating",
+    "🔄 7-Day Easy Returns",
+    "🤝 Supporting Local Artisans & Farmers",
+  ];
+  return (
+    <div className="bg-amber-500 text-slate-900 py-2.5 overflow-hidden relative">
+      <div className="flex items-center" style={{ animation: "marquee 30s linear infinite", whiteSpace: "nowrap" }}>
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-2 text-xs font-bold px-8">
+            {item}
+            <span className="text-slate-900/30 font-light ml-4">|</span>
+          </span>
+        ))}
+      </div>
+      <style>{`@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}`}</style>
+    </div>
+  );
+};
+
 
 const HeroCarousel = ({ products, addToCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -349,8 +375,9 @@ const HomePage = () => {
 
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
+    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
       <HeroCarousel products={products} addToCart={addToCart} />
+      <TrustBar />
 
       <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
@@ -590,7 +617,7 @@ const HomePage = () => {
                   className={`w-full flex items-start justify-between gap-4 px-6 py-5 text-left text-sm cursor-pointer transition-all duration-200 ${
                     openFaq === faq.q
                       ? "bg-amber-50 dark:bg-amber-950/20 font-extrabold text-amber-700 dark:text-amber-400"
-                      : "bg-slate-50 dark:bg-slate-900 font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/70"
                   }`}
                 >
                   <span className="flex-1 leading-snug">{faq.q}</span>

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { useProducts } from "../context/ProductContext"
 import { ProductCardSkeleton } from "../components/Skeleton"
-
 import ProductCard from "../components/ProductCard"
 
 const CategoryPage = () => {
@@ -84,65 +83,92 @@ const CategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      {/* Category Banner */}
-      <section className={`relative py-16 text-white bg-gradient-to-r ${meta.gradient} overflow-hidden`}>
-        <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
-        <div className="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-black/15 rounded-full blur-2xl" />
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
+      {/* Category Banner — Full Bleed Immersive */}
+      <section className="relative py-20 md:py-28 text-white overflow-hidden">
+        {/* Blurred product image background */}
+        {categoryProducts[0]?.image && (
+          <img
+            src={categoryProducts[0].image}
+            referrerPolicy="no-referrer"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-25 dark:opacity-15"
+          />
+        )}
+        {/* Gradient overlay */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-90`} />
+        <div className="absolute inset-0 bg-black/20" />
+        {/* Glowing orbs */}
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-black/20 rounded-full blur-3xl" />
+        {/* Dot pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col gap-2">
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-xs text-white/80 font-medium">
-              <Link to="/" className="hover:text-white transition-colors">Home</Link>
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs text-white/70 font-medium mb-6">
+            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            <span className="text-white font-bold">{decodedCategory}</span>
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-3 drop-shadow-xl">{decodedCategory}</h1>
+          <p className="text-sm md:text-base text-white/85 max-w-2xl font-medium leading-relaxed mb-8">
+            {meta.description}
+          </p>
+
+          {/* Stat chips */}
+          <div className="flex flex-wrap gap-3">
+            <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-bold px-4 py-2 rounded-full">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z" /></svg>
+              {categoryProducts.length} Products
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-bold px-4 py-2 rounded-full">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              4.9 Avg Rating
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-bold px-4 py-2 rounded-full">
+              🚚 Free Delivery Available
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Catalog Controls — Sticky */}
+      <div className="sticky top-16 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="relative w-full sm:max-w-sm">
+              <input
+                type="text"
+                placeholder="Search in this category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full py-2 px-4 pl-10 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-slate-800 dark:text-slate-100 transition"
+              />
+              <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="font-bold text-white">{decodedCategory}</span>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mt-2">{decodedCategory}</h1>
-            <p className="text-sm md:text-base text-white/90 max-w-2xl font-medium mt-1 leading-relaxed">
-              {meta.description}
-            </p>
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <span className="text-xs text-slate-400 font-semibold">{filteredProducts.length} items</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full py-2 px-4 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 transition cursor-pointer"
+              >
+                <option value="name">Name (A–Z)</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+              </select>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Catalog Controls */}
-      <section className="py-8 max-w-7xl mx-auto px-6">
-        <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:max-w-xs">
-            <input
-              type="text"
-              placeholder="Search products in this category..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl py-2 px-4 pl-10 text-xs focus:outline-none focus:border-amber-500 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-950 transition"
-            />
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase shrink-0">Sort By</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl py-2 px-4 text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-amber-500 transition cursor-pointer"
-            >
-              <option value="name">Name (A-Z)</option>
-              <option value="price-asc">Price (Low to High)</option>
-              <option value="price-desc">Price (High to Low)</option>
-            </select>
-          </div>
-        </div>
-      </section>
+      </div>
 
       {/* Products Grid */}
-      <section className="pb-24 max-w-7xl mx-auto px-6">
+      <section className="py-12 pb-24 max-w-7xl mx-auto px-6">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
