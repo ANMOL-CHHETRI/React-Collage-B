@@ -175,7 +175,7 @@ const CartDrawer = () => {
 
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 {checkoutStep ? (
-                  <form onSubmit={handlePlaceOrder} className="space-y-4 pt-2">
+                  <form onSubmit={handlePlaceOrder} className="space-y-4 pt-2" noValidate>
                     <div className="bg-amber-50 border border-amber-100 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed font-medium mb-4">
                       <strong>Payment Mode: Cash on Delivery (COD)</strong>
                       <br />
