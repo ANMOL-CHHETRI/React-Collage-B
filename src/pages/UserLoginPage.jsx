@@ -215,34 +215,7 @@ const UserLoginPage = () => {
   return (
     <>
       {/* ─── Keyframes ─── */}
-      <style>{`
-        @keyframes storeOverlayFadeIn{from{opacity:0}to{opacity:1}}
-        @keyframes storeZoomIn{0%{transform:scale(.05) translateY(60px);opacity:0}40%{transform:scale(1.08) translateY(-6px);opacity:1}60%{transform:scale(.97) translateY(0)}80%{transform:scale(1.02)}100%{transform:scale(1)}}
-        @keyframes doorSlideLeft{0%{transform:scaleX(1);transform-origin:left}100%{transform:scaleX(0);transform-origin:left}}
-        @keyframes doorSlideRight{0%{transform:scaleX(1);transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
-        @keyframes welcomeRise{0%{opacity:0;transform:translateY(30px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
-        @keyframes sparkle{0%{opacity:0;transform:translateY(0) scale(0)}20%{opacity:1;transform:translateY(-30px) scale(1)}100%{opacity:0;transform:translateY(-120px) scale(.3)}}
-        @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-        @keyframes bounceIn{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.2) rotate(5deg)}80%{transform:scale(.9) rotate(-2deg)}100%{transform:scale(1) rotate(0deg)}}
-        @keyframes glowPulse{0%,100%{box-shadow:0 0 30px rgba(245,158,11,.4)}50%{box-shadow:0 0 80px rgba(245,158,11,.9),0 0 120px rgba(251,191,36,.4)}}
-        @keyframes groundGlow{0%{opacity:0;transform:scaleX(0)}100%{opacity:1;transform:scaleX(1)}}
-        @keyframes slideUpIn{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-        @keyframes slideDownOut{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:0}}
-        @keyframes bdIn{from{opacity:0}to{opacity:1}}
-        @keyframes bdOut{from{opacity:1}to{opacity:0}}
-        .store-building{animation:storeZoomIn .8s cubic-bezier(.22,1,.36,1) .2s both}
-        .door-left{animation:doorSlideLeft .6s ease-in-out 1.4s both}
-        .door-right{animation:doorSlideRight .6s ease-in-out 1.4s both}
-        .welcome-text{animation:welcomeRise .7s ease-out 1.8s both}
-        .store-glow{animation:glowPulse 1.2s ease-in-out .8s infinite}
-        .ground-glow{animation:groundGlow .8s ease-out .6s both}
-        .su-bd{animation:bdIn .3s ease both}
-        .su-bd.closing{animation:bdOut .36s ease both}
-        .su-sheet{animation:slideUpIn .38s cubic-bezier(.22,1,.36,1) both}
-        .su-sheet.closing{animation:slideDownOut .36s ease both}
-        @keyframes cornerPop{0%{transform:scale(1);opacity:.7}50%{transform:scale(1.8);opacity:1}100%{transform:scale(1);opacity:0}}
-        .corner-flash{animation:cornerPop .4s ease-out both}
-      `}</style>
+
 
       {/* ─── Sign-up Modal Drawer ─── */}
       {signupOpen && (
