@@ -517,7 +517,7 @@ const HomePage = () => {
             <h2 className="text-3xl font-extrabold text-white tracking-tight">
               What Our Customers Say
             </h2>
-            <p className="text-slate-400 text-sm mt-2">Real feedback from verified shoppers across Nepal</p>
+            <p className="text-slate-100 text-sm mt-2">Real feedback from verified shoppers across Nepal</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -536,7 +536,7 @@ const HomePage = () => {
                       </svg>
                     ))}
                   </div>
-                  <p className="text-sm text-slate-300 italic leading-relaxed mb-6">
+                  <p className="text-sm text-slate-100 italic leading-relaxed mb-6">
                     &ldquo;{t.text}&rdquo;
                   </p>
                 </div>
@@ -546,7 +546,7 @@ const HomePage = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">{t.name}</h4>
-                    <span className="text-xs text-slate-400">{t.location}, Nepal</span>
+                    <span className="text-xs text-slate-300">{t.location}, Nepal</span>
                   </div>
                 </div>
               </div>
