@@ -38,18 +38,18 @@ const Footer = () => {
 
               {/* Social Icons */}
               <div className="flex items-center gap-3">
-                {[
-                  { label: "Facebook", path: "M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" },
-                  { label: "Instagram", path: "M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" },
+              {[
+                  { label: "Facebook", href: "https://www.facebook.com/", path: "M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" },
+                  { label: "Instagram", href: "https://www.instagram.com/", path: "M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" },
                 ].map((s) => (
-                  <a key={s.label} href="#" aria-label={s.label} className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-amber-500/20 hover:text-amber-400 text-slate-500 flex items-center justify-center transition-all duration-200 hover:scale-110 border border-slate-800 hover:border-amber-500/30">
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-amber-500/20 hover:text-amber-400 text-slate-500 flex items-center justify-center transition-all duration-200 hover:scale-110 border border-slate-800 hover:border-amber-500/30">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d={s.path} />
                     </svg>
                   </a>
                 ))}
                 {/* TikTok */}
-                <a href="#" aria-label="TikTok" className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-amber-500/20 hover:text-amber-400 text-slate-500 flex items-center justify-center transition-all duration-200 hover:scale-110 border border-slate-800 hover:border-amber-500/30">
+                <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-amber-500/20 hover:text-amber-400 text-slate-500 flex items-center justify-center transition-all duration-200 hover:scale-110 border border-slate-800 hover:border-amber-500/30">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.28 8.28 0 004.84 1.54V7.05a4.85 4.85 0 01-1.07-.36z" />
                   </svg>
