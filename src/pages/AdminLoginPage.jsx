@@ -79,74 +79,91 @@ const AdminLoginPage = () => {
   }
 
  return (
-  <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-amber-50 to-orange-100 p-6">
-    <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex w-full max-w-6xl h-162.5">
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
-      {/* Left Side Image */}
-      <div className="hidden md:flex md:w-2/5 items-center justify-center bg-amber-50">
-        <img
-          referrerPolicy="no-referrer"
-          src="/login-banner.png"
-          alt="Admin Login Banner"
-          className="w-full h-full object-cover object-center"
-        />
-      </div>
+      {/* Top accent bar */}
+      <div className="h-1.5 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600" />
 
-      {/* Right Side Form */}
-      <div className="w-full md:w-3/5 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-            </div>
-
-            <h1 className="text-3xl font-bold text-gray-900">{recoveryMode ? "Account Locked" : "Admin Login"}</h1>
-            <p className="text-gray-500 mt-2">{recoveryMode ? "Verify your identity to unlock" : "Sign in to manage your store"}</p>
+      <div className="px-8 py-10">
+        {/* Icon + title */}
+        <div className="text-center mb-8">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-200 rotate-3">
+            <svg className="w-8 h-8 text-white -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
-            {recoveryMode ? (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Registered Email</label>
-                  <input type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" autoComplete="off" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Registered Phone</label>
-                  <input type="tel" required value={phone} onChange={(e) => { setPhone(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" autoComplete="off" />
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                  <input type="text" required value={username} onChange={(e) => { setUsername(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" autoComplete="off" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <input type="password" required value={password} onChange={(e) => { setPassword(e.target.value); setError("") }} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition" autoComplete="new-password" />
-                </div>
-              </>
-            )}
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-            <button type="submit" className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition cursor-pointer">
-              {recoveryMode ? "Verify Identity" : "Sign In"}
-            </button>
-          </form>
-          <p className="text-center text-sm text-gray-500 mt-6">
-            <Link to="/" className="text-amber-600 font-medium hover:underline">Back to store</Link>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {recoveryMode ? "Account Locked" : "Admin Portal"}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {recoveryMode
+              ? "Verify your identity to regain access"
+              : "Sign in to manage ShopEase"}
           </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+          {recoveryMode ? (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Registered Email</label>
+                <input type="email" required value={email}
+                  onChange={e=>{ setEmail(e.target.value); setError("") }}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm bg-gray-50 focus:bg-white"
+                  autoComplete="off" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Registered Phone</label>
+                <input type="tel" required value={phone}
+                  onChange={e=>{ setPhone(e.target.value); setError("") }}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm bg-gray-50 focus:bg-white"
+                  autoComplete="off" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" required value={username}
+                  onChange={e=>{ setUsername(e.target.value); setError("") }}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm bg-gray-50 focus:bg-white"
+                  autoComplete="off" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" required value={password}
+                  onChange={e=>{ setPassword(e.target.value); setError("") }}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition text-sm bg-gray-50 focus:bg-white"
+                  autoComplete="new-password" />
+              </div>
+            </>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
+              <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
+          <button type="submit"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg">
+            {recoveryMode ? "Verify Identity" : "Sign In"}
+          </button>
+        </form>
+
+        <div className="flex items-center justify-between mt-6">
+          <Link to="/" className="text-sm text-gray-400 hover:text-amber-600 hover:underline">
+            ← Back to store
+          </Link>
+          <Link to="/user-login" className="text-sm text-gray-400 hover:text-amber-600 hover:underline">
+            User login
+          </Link>
         </div>
       </div>
     </div>

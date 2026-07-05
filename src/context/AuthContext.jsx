@@ -242,9 +242,7 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(regularUser)
       localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-      if (typeof navigate === "function") {
-        navigate("/")
-      }
+      // Navigation is handled by UserLoginPage after the store-opening animation
       return true
     }
 

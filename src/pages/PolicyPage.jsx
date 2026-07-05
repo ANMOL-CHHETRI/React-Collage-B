@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useToast } from "../context/ToastContext"
+import { useAuth } from "../context/AuthContext"
 
 const PolicySection = ({ id, title, children }) => {
   const { success } = useToast()
@@ -63,31 +64,35 @@ const PolicySection = ({ id, title, children }) => {
 }
 
 const PolicyPage = () => {
+  const { user } = useAuth()
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Policies</h1>
 
-        <PolicySection id="privacy" title="Privacy Policy">
-          <p>At ShopEase Nepal, we take your privacy seriously. This policy describes how we collect, use, and protect your personal information.</p>
-          <h3 className="font-semibold text-gray-900 pt-2">Information We Collect</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Name, email address, phone number, and delivery address</li>
-            <li>Order history and preferences</li>
-            <li>Payment information (processed securely through third-party gateways)</li>
-            <li>Device and browsing data for analytics</li>
-          </ul>
-          <h3 className="font-semibold text-gray-900 pt-2">How We Use Your Information</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>To process and deliver your orders</li>
-            <li>To provide customer support</li>
-            <li>To improve our products and services</li>
-            <li>To send order updates and promotional offers (with consent)</li>
-          </ul>
-          <h3 className="font-semibold text-gray-900 pt-2">Data Security</h3>
-          <p>We implement industry-standard encryption and security measures to protect your data. We never share your personal information with third parties without your explicit consent, except as required by law.</p>
-          <p>You have the right to access, update, or delete your personal data at any time by contacting us at <a href="mailto:support@shopease.com.np" className="text-amber-600 hover:underline">support@shopease.com.np</a>.</p>
-        </PolicySection>
+        {user && (
+          <PolicySection id="privacy" title="Privacy Policy">
+            <p>At ShopEase Nepal, we take your privacy seriously. This policy describes how we collect, use, and protect your personal information.</p>
+            <h3 className="font-semibold text-gray-900 pt-2">Information We Collect</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Name, email address, phone number, and delivery address</li>
+              <li>Order history and preferences</li>
+              <li>Payment information (processed securely through third-party gateways)</li>
+              <li>Device and browsing data for analytics</li>
+            </ul>
+            <h3 className="font-semibold text-gray-900 pt-2">How We Use Your Information</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>To process and deliver your orders</li>
+              <li>To provide customer support</li>
+              <li>To improve our products and services</li>
+              <li>To send order updates and promotional offers (with consent)</li>
+            </ul>
+            <h3 className="font-semibold text-gray-900 pt-2">Data Security</h3>
+            <p>We implement industry-standard encryption and security measures to protect your data. We never share your personal information with third parties without your explicit consent, except as required by law.</p>
+            <p>You have the right to access, update, or delete your personal data at any time by contacting us at <a href="mailto:support@shopease.com.np" className="text-amber-600 hover:underline">support@shopease.com.np</a>.</p>
+          </PolicySection>
+        )}
 
         <PolicySection id="terms" title="Terms of Use">
           <p>By using ShopEase Nepal, you agree to the following terms and conditions.</p>

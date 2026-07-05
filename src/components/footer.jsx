@@ -101,11 +101,13 @@ const Footer = () => {
               <div className="md:col-span-2 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white">Legal</h4>
                 <ul className="space-y-2 text-xs">
-                  <li>
-                    <Link to="/policy#privacy" className="hover:text-amber-500 transition-colors">
-                      Privacy Policy
-                    </Link>
-                  </li>
+                  {user && (
+                    <li>
+                      <Link to="/policy#privacy" className="hover:text-amber-500 transition-colors">
+                        Privacy Policy
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link to="/policy#terms" className="hover:text-amber-500 transition-colors">
                       Terms of Use
@@ -141,9 +143,11 @@ const Footer = () => {
             <p>© 2026 ShopEase Nepal. All rights reserved.</p>
             {!isAdmin && (
               <div className="flex gap-4">
-                <Link to="/policy#privacy" className="hover:underline">
-                  Privacy Policy
-                </Link>
+                {user && (
+                  <Link to="/policy#privacy" className="hover:underline">
+                    Privacy Policy
+                  </Link>
+                )}
                 <Link to="/policy#terms" className="hover:underline">
                   Terms of Service
                 </Link>
