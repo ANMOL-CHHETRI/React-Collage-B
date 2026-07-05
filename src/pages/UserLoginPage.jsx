@@ -55,8 +55,6 @@ const UserLoginPage = () => {
   const [username, setUsername]           = useState("");
   const [password, setPassword]           = useState("");
   const [showLoginPw, setShowLoginPw]     = useState(false);
-  const [loginSuccess, setLoginSuccess]   = useState(false);
-  const [loginUserName, setLoginUserName] = useState("");
   const [failedAttempts, setFailedAttempts] = useState(
     () => parseInt(localStorage.getItem("shopease_failed_user_login") || "0", 10)
   );
@@ -197,14 +195,12 @@ const UserLoginPage = () => {
     } else {
       setUsername(""); setPassword(""); setFailedAttempts(0);
       localStorage.removeItem("shopease_failed_user_login");
-      setLoginUserName(cur);
-      setLoginSuccess(true);
-      setTimeout(() => navigate("/", { replace: true }), 2800);
+      navigate("/", { replace: true });
     }
   };
 
   /* ── Redirect guards ── */
-  if ((user?.role === "user" || user?.role === "sub-admin") && !loginSuccess) {
+  if (user?.role === "user" || user?.role === "sub-admin") {
     navigate("/", { replace: true }); return null;
   }
   if (user?.role === "admin") { navigate("/admin/dashboard", { replace: true }); return null; }
@@ -247,66 +243,6 @@ const UserLoginPage = () => {
         @keyframes cornerPop{0%{transform:scale(1);opacity:.7}50%{transform:scale(1.8);opacity:1}100%{transform:scale(1);opacity:0}}
         .corner-flash{animation:cornerPop .4s ease-out both}
       `}</style>
-
-      {/* ─── Login success overlay ─── */}
-      {loginSuccess && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
-          style={{ background:"linear-gradient(135deg,#1e1204 0%,#3d1f00 40%,#7c3a00 70%,#f59e0b 100%)", animation:"storeOverlayFadeIn .3s ease-out forwards" }}>
-          {[...Array(18)].map((_, i) => (
-            <div key={i} className="absolute rounded-full pointer-events-none" style={{
-              left:`${5+(i*5.5)%92}%`, top:`${20+(i*17)%60}%`,
-              width:`${4+(i%5)*3}px`, height:`${4+(i%5)*3}px`,
-              background:i%3===0?"#f59e0b":i%3===1?"#fbbf24":"#fff",
-              animation:`sparkle ${1.2+(i%4)*.3}s ease-out ${.6+(i%6)*.25}s both`
-            }} />
-          ))}
-          <div className="relative flex flex-col items-center select-none store-building">
-            <div className="mb-0 px-8 py-3 rounded-t-2xl text-center z-10"
-              style={{ background:"linear-gradient(135deg,#92400e,#f59e0b,#fbbf24,#f59e0b,#92400e)", backgroundSize:"300% auto", animation:"shimmer 2s linear 1s infinite", minWidth:"260px" }}>
-              <div style={{ animation:"bounceIn .6s cubic-bezier(.34,1.56,.64,1) .9s both" }}>
-                <div className="text-2xl font-extrabold tracking-tight text-amber-950 drop-shadow-sm">🏪 ShopEase Nepal</div>
-                <div className="text-xs font-semibold text-amber-800 mt-0.5 tracking-wide uppercase">Premium Ecommerce</div>
-              </div>
-            </div>
-            <div className="relative store-glow" style={{ width:"300px", background:"linear-gradient(180deg,#78350f 0%,#451a03 100%)", borderRadius:"0 0 8px 8px", border:"3px solid #92400e", borderTop:"none", overflow:"hidden" }}>
-              <div style={{ height:"22px", background:"repeating-linear-gradient(90deg,#f59e0b 0px,#f59e0b 18px,#92400e 18px,#92400e 36px)", borderBottom:"2px solid #78350f" }} />
-              <div className="flex justify-between px-4 pt-3 pb-2">
-                {[0,1].map(w=>(
-                  <div key={w} style={{ width:"64px", height:"44px", background:"linear-gradient(135deg,#fef9c3,#fde68a,#fef3c7)", border:"2px solid #78350f", borderRadius:"4px", position:"relative", overflow:"hidden", boxShadow:"inset 0 0 12px rgba(251,191,36,.5)" }}>
-                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:"2px", background:"#78350f", transform:"translateY(-50%)" }} />
-                    <div style={{ position:"absolute", left:"50%", top:0, bottom:0, width:"2px", background:"#78350f", transform:"translateX(-50%)" }} />
-                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(120deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%)", backgroundSize:"200% auto", animation:"shimmer 1.8s linear 1.2s infinite" }} />
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-center pb-4">
-                <div style={{ width:"100px", height:"70px", position:"relative", background:"#1e1204", border:"3px solid #92400e", borderRadius:"6px 6px 0 0", overflow:"hidden" }}>
-                  <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at center,rgba(251,191,36,.6) 0%,transparent 80%)", animation:"glowPulse 1s ease-in-out 1.4s infinite" }} />
-                  <div className="door-left" style={{ position:"absolute", left:0, top:0, bottom:0, width:"50%", background:"linear-gradient(90deg,#92400e,#b45309)", borderRight:"1px solid #78350f", transformOrigin:"left" }}>
-                    <div style={{ position:"absolute", right:"8px", top:"50%", transform:"translateY(-50%)", width:"5px", height:"5px", background:"#f59e0b", borderRadius:"50%" }} />
-                  </div>
-                  <div className="door-right" style={{ position:"absolute", right:0, top:0, bottom:0, width:"50%", background:"linear-gradient(270deg,#92400e,#b45309)", borderLeft:"1px solid #78350f", transformOrigin:"right" }}>
-                    <div style={{ position:"absolute", left:"8px", top:"50%", transform:"translateY(-50%)", width:"5px", height:"5px", background:"#f59e0b", borderRadius:"50%" }} />
-                  </div>
-                  <div style={{ position:"absolute", top:"-22px", left:"50%", transform:"translateX(-50%)", background:"#16a34a", color:"#fff", fontSize:"9px", fontWeight:"800", padding:"2px 8px", borderRadius:"3px", letterSpacing:"2px", animation:"bounceIn .5s ease 2s both", whiteSpace:"nowrap" }}>OPEN</div>
-                </div>
-              </div>
-            </div>
-            <div className="ground-glow" style={{ width:"320px", height:"6px", borderRadius:"50%", background:"radial-gradient(ellipse,rgba(245,158,11,.7) 0%,transparent 70%)" }} />
-            <div className="welcome-text mt-8 text-center">
-              <div style={{ fontSize:"28px", fontWeight:"800", color:"#fbbf24", textShadow:"0 0 20px rgba(251,191,36,.6)", letterSpacing:".02em" }}>
-                Welcome back{loginUserName ? `, ${loginUserName}` : ""}! 👋
-              </div>
-              <div style={{ color:"#d97706", fontSize:"14px", marginTop:"6px", fontWeight:"500" }}>Your store is ready for you…</div>
-              <div className="flex justify-center gap-2 mt-4">
-                {[0,1,2].map(d=>(
-                  <div key={d} style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#f59e0b", animation:`sparkle .8s ease-in-out ${d*.2}s infinite alternate` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ─── Sign-up Modal Drawer ─── */}
       {signupOpen && (

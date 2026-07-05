@@ -59,7 +59,7 @@ const CartDrawer = () => {
   const [fullName, setFullName] = useState(user?.name || "");
   const [phone, setPhone] = useState("");
   const [provinceValue, setProvinceValue] = useState("bagmati");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState(provincesData["bagmati"]?.cities?.[0] || "");
   const [address, setAddress] = useState("");
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -91,12 +91,6 @@ const CartDrawer = () => {
       return;
     }
 
-    const phoneRegex = /^(?:\+977[- ]?)?(?:98|97|96)\d{8}$/;
-    if (!phoneRegex.test(phone.replace(/\s+/g, ""))) {
-      setOrderError("Please enter a valid 10-digit Nepali mobile number.");
-      setIsPlacingOrder(false);
-      return;
-    }
 
     setTimeout(() => {
       const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
@@ -231,6 +225,7 @@ const CartDrawer = () => {
                         value={provinceValue}
                         onChange={(e) => {
                           setProvinceValue(e.target.value);
+                          setCity(provincesData[e.target.value]?.cities?.[0] || "");
                         }}
                         className="w-full text-xs border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition cursor-pointer"
                       >
