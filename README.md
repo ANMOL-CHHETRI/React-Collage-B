@@ -2,11 +2,11 @@
 
 ## Team
 
-- **Pritee Shah** — Project Lead (Project Oversight)
-- **Shishir Dangi** — Cart Backend
-- **Sahil Thapa** — Checkout UI
-- **Sichan Shrestha** — Payment Prep
-- **Menuka R. Chhetri** — QA & Testing
+- **Anmol Chhetri** — Project Lead
+- **Sahil** — Backend
+- **Sarang** — Frontend
+- **Sanskarti** — UI Components
+- **Smriti** — QA & Testing
 
 ## User Groups & Permissions
 
@@ -67,10 +67,10 @@ React 19 + Vite + Tailwind CSS v4 + react-router v8
 
 ## Development Team
 
-| Team Member       | Role / Focus Area | Task / Key Deliverables                                                                       |
-| ----------------- | ----------------- | --------------------------------------------------------------------------------------------- |
-| Pritee Shah       | Project Lead      | Reviewed the end-to-end checkout workflow logic; managed the transition to 87% completion.    |
-| Shishir Dangi     | Cart Backend      | Developed core session management logic for adding and calculating cart items.                |
-| Sahil Thapa       | Checkout UI       | Designed and implemented the UI for the Shipping Address and Order Summary pages.             |
-| Sichan Shrestha   | Payment Prep      | Mapped out data requirements for e-Sewa and Khalti API integration.                           |
-| Menuka R. Chhetri | QA & Testing      | Verified that cart totals and product details are accurately passed from frontend to checkout. |
+| Team Member        | Role                   | Task                                     |
+| ------------------ | ---------------------- | ---------------------------------------- |
+| Anmol Chhetri      | Project Lead           | Project coordination and team management |
+| Sahil Tuladhar     | Backend Developer      | Backend development                      |
+| Sarang Limbu       | Frontend Developer     | Frontend development                     |
+| Sanskriti Maharjan | UI Component Developer | UI component design and implementation   |
+| Smriti Tamang      | QA & Testing           | Testing and quality assurance            |

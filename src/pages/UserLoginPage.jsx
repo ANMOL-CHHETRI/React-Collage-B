@@ -61,6 +61,24 @@ const UserLoginPage = () => {
     () => parseInt(localStorage.getItem("shopease_failed_user_login") || "0", 10)
   );
 
+  /* ── Mobile Easter egg (10 clicks on icon) ── */
+  const [iconClicks, setIconClicks] = useState(0);
+  const iconResetRef = React.useRef(null);
+
+  const handleIconClick = () => {
+    if (iconResetRef.current) clearTimeout(iconResetRef.current);
+    iconResetRef.current = setTimeout(() => setIconClicks(0), 3000);
+    
+    setIconClicks(prev => {
+      const next = prev + 1;
+      if (next >= 10) {
+        navigate("/admin-login");
+        return 0;
+      }
+      return next;
+    });
+  };
+
   /* ── 4-corner Easter egg ── */
   const [cornersHit, setCornersHit] = useState(new Set());
   const [cornerFlash, setCornerFlash] = useState(null); // which corner is flashing
@@ -475,7 +493,10 @@ const UserLoginPage = () => {
 
               {/* Header */}
               <div className="text-center mb-8">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-500/25 rotate-3">
+                <div 
+                  onClick={handleIconClick}
+                  className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-500/25 rotate-3 cursor-pointer select-none"
+                >
                   <svg className="w-8 h-8 text-white -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {recoveryMode
                       ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
