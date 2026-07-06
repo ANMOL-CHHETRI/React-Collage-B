@@ -66,7 +66,7 @@ const CartPage = () => {
             <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <h2 className="text-xl font-bold text-slate-700 mb-2">Your cart is empty</h2>
+            <h2 className="text-xl font-bold text-slate-700 mb-2">Your cart is Empty</h2>
             <p className="text-sm text-slate-400 mb-6">Add some products to get started</p>
             <Link to="/" className="inline-block px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition">Browse Products</Link>
           </div>
