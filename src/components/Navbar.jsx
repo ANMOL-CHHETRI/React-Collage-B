@@ -292,13 +292,13 @@ const Navbar = () => {
                   to="/user-login"
                   className="bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white text-sm font-medium px-4.5 py-2 rounded-full hover:bg-slate-800 dark:hover:bg-slate-200 transition-all duration-250 hover:shadow-lg"
                 >
-                  Log in
+                  Login
                 </Link>
                 <Link
                   to="/user-login?signup=1"
                   className="bg-linear-to-r from-amber-500 to-orange-600 text-white text-sm font-medium px-5 py-2 rounded-full hover:from-amber-600 hover:to-orange-700 transition-all duration-250 shadow-md shadow-amber-500/15 flex items-center gap-1.5 hover:shadow-lg group"
                 >
-                  Sign up
+                  Signup
                   <svg
                     className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform duration-200"
                     fill="none"
@@ -480,14 +480,14 @@ const Navbar = () => {
                     className="w-full text-center py-2.5 text-slate-700 dark:text-slate-300 font-medium rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900"
                     onClick={() => setIsOpen(false)}
                   >
-                    Log in
+                    Login
                   </Link>
                   <Link
                     to="/user-login?signup=1"
                     className="w-full text-center py-2.5 bg-linear-to-r from-amber-500 to-orange-600 text-white font-medium rounded-xl hover:from-amber-600 hover:to-orange-700 shadow-md shadow-amber-500/10"
                     onClick={() => setIsOpen(false)}
                   >
-                    Sign up
+                    Signup
                   </Link>
                 </>
               )}
