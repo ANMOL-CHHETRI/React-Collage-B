@@ -381,7 +381,8 @@ const HomePage = () => {
 
       <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+          <div className="text-center space-y-2 mb-12">
+          {/* <div className="flex flex-col md:flex-row md:items-end justify-between mb-12"> */}
             <div>
               <span className="inline-flex items-center gap-2 text-xs font-extrabold text-amber-600 uppercase tracking-widest mb-2">
                 <span className="w-5 h-px bg-amber-500" />
