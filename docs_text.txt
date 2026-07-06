@@ -36,6 +36,8 @@ Table of Contents
 6.9  Admin Dashboard  ...............................................  13
 6.10  User Dashboard  ...............................................  13
 6.11  User Profile Page  ............................................  14
+6.12  Delivery Coverage Page  .......................................  14
+6.13  Coworking Space Page  .........................................  14
 7.  Components  .....................................................  15
 7.1  Navbar  ........................................................  15
 7.2  ProtectedRoute  ................................................  15
@@ -272,6 +274,13 @@ Delivery Map — interactive Nepal province map showing delivery coverage
 Settings — account settings panel
 6.11 User Profile Page  (/user/profile)
 Allows logged-in users to view and edit their profile details: full name, email address, phone number, and delivery address. Changes are saved to the current session via AuthContext.updateProfile().
+
+6.12 Delivery Coverage Page  (/delivery-coverage)
+A dedicated public page featuring the interactive SVG map of Nepal's 7 provinces, illustrating shipping fees, local contact hubs, and delivery tiers.
+
+6.13 Coworking Space Page  (/coworking)
+A premium workspace page outlining hot desking, meeting rooms, and office suites in Kathmandu. Includes gallery popups, structured specification arrays, and shopping cart booking pass integration.
+
 7. Components
 ────────────────────────────────────────────────────────────────────────
 7.1 Navbar
