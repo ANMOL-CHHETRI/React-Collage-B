@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";
 
 const WishlistPage = () => {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { success } = useToast();
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 flex-1 w-full">
@@ -164,29 +166,31 @@ const WishlistPage = () => {
               Clear Wishlist
             </button>
           </div>
+
           <div className="border-t border-slate-200 dark:border-slate-800 px-6 py-5">
-  <div className="flex items-center gap-3 flex-wrap">
-    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-      Your wishlist URL for sharing:
-    </span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Your wishlist URL for sharing:
+              </span>
 
-    <span className="text-sm text-emerald-500">
-      {window.location.origin}/wishlist
-    </span>
+              <span className="text-sm text-emerald-500">
+                {window.location.origin}/wishlist
+              </span>
 
-    <button
-      onClick={() => {
-        navigator.clipboard.writeText(
-          `${window.location.origin}/wishlist`
-        );
-      }}
-      className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
-    >
-      Copy Link
-    </button>
-  </div>
-</div>
-</div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/wishlist`,
+                  );
+                  success("Wishlist link copied successfully!");
+                }}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
+              >
+                Copy Link
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
