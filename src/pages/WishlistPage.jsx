@@ -159,12 +159,34 @@ const WishlistPage = () => {
 
             <button
               onClick={clearWishlist}
-              className="px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-600 transition font-medium"
+              className="px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-700 transition font-medium"
             >
               Clear Wishlist
             </button>
           </div>
-        </div>
+          <div className="border-t border-slate-200 dark:border-slate-800 px-6 py-5">
+  <div className="flex items-center gap-3 flex-wrap">
+    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+      Your wishlist URL for sharing:
+    </span>
+
+    <span className="text-sm text-emerald-500">
+      {window.location.origin}/wishlist
+    </span>
+
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(
+          `${window.location.origin}/wishlist`
+        );
+      }}
+      className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
+    >
+      Copy Link
+    </button>
+  </div>
+</div>
+</div>
       )}
     </div>
   );
