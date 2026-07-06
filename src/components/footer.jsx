@@ -60,11 +60,28 @@ const Footer = () => {
               <div className="space-y-2">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-slate-600">We Accept</p>
                 <div className="flex items-center gap-2">
-                  {["COD", "eSewa", "Khalti"].map((m) => (
-                    <span key={m} className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-slate-800 border border-slate-700 text-slate-400">
-                      {m}
-                    </span>
-                  ))}
+                  <Link
+                    to="/policy#cod"
+                    className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-slate-800 border border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-amber-400 hover:border-amber-500/30 transition-all duration-200 cursor-pointer"
+                  >
+                    COD
+                  </Link>
+                  <a
+                    href="https://esewa.com.np"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-slate-800 border border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-amber-400 hover:border-amber-500/30 transition-all duration-200 cursor-pointer"
+                  >
+                    eSewa
+                  </a>
+                  <a
+                    href="https://khalti.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-slate-800 border border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-amber-400 hover:border-amber-500/30 transition-all duration-200 cursor-pointer"
+                  >
+                    Khalti
+                  </a>
                 </div>
               </div>
             </div>
