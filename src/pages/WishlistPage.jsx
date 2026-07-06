@@ -68,8 +68,6 @@ const WishlistPage = () => {
           </Link>
         </div>
       ) : (
-
-
         /* Wishlist Table */
         <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
           {/* Table */}
@@ -85,69 +83,76 @@ const WishlistPage = () => {
 
             {/* Table Body */}
             <tbody>
-  {wishlist.map((product) => {
+              {wishlist.map((product) => {
+                return (
+                  <tr
+                    key={product.id}
+                    className="border-t border-slate-200 dark:border-slate-800"
+                  >
+                    {/* Product Column */}
+                    <td className="p-4">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-20 h-20 object-cover rounded-xl border"
+                        />
 
-    return (
-      <tr
-        key={product.id}
-        className="border-t border-slate-200 dark:border-slate-800"
-      >
-        {/* Product Column */}
-        <td className="p-4">
-          <div className="flex items-center gap-4">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-20 h-20 object-cover rounded-xl border"
-            />
+                        <div className="space-y-2">
+                          <h3 className="font-bold text-lg text-slate-900 dark:text-white">
+                            {product.name}
+                          </h3>
 
-            <div>
-              <h3 className="font-semibold text-slate-900 dark:text-white">
-                {product.name}
-              </h3>
+                          <p className="text-sm text-slate-500">
+                            {product.category}
+                          </p>
 
-              <p className="text-sm text-slate-500">
-                {product.category}
-              </p>
-            </div>
-          </div>
-        </td>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                            {product.description}
+                          </p>
 
-        {/* Price Column */}
-        <td className="text-center font-bold text-slate-800 dark:text-white">
-          Rs {product.price}
-        </td>
+                          <span className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-semibold">
+                            {product.badge}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
 
-        {/* Actions */}
-        <td className="text-center">
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={() => {
-                addToCart(product);
-                removeFromWishlist(product.id);
-              }}
-              className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600"
-            >
-              Add to Cart
-            </button>
+                    {/* Price Column */}
+                    <td className="text-center font-bold text-slate-800 dark:text-white">
+                      Rs {product.price}
+                    </td>
 
-            <button
-              onClick={() => removeFromWishlist(product.id)}
-              className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
-            >
-              Remove
-            </button>
-          </div>
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
+                    {/* Actions */}
+                    <td className="text-center">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            addToCart(product);
+                            removeFromWishlist(product.id);
+                          }}
+                          className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600"
+                        >
+                          Add to Cart
+                        </button>
+
+                        <button
+                          onClick={() => removeFromWishlist(product.id)}
+                          className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border-t border-slate-200 dark:border-slate-800">
             <Link
               to="/"
-              className="px-6 py-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900 transition font-medium"
+              className="px-6 py-3 rounded-lg border bg-gray-300 border-slate-300 dark:border-slate-700 hover:bg-slate-500 dark:hover:bg-slate-900 transition font-medium"
             >
               ← Continue Shopping
             </Link>
