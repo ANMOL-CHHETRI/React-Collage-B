@@ -8,7 +8,7 @@ export const defaultProducts = [
     images: ["https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg", "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"],
     badge: "Best Seller",
     category: "Traditional Apparel",
-    description: "Authentic hand-loomed Dhaka Topi from Palpa, representing Nepal's rich cultural heritage.",
+    description: "Authentic hand-loomed Dhaka Topi from Palpa, carefully woven by skilled artisans using traditional techniques. This iconic Nepali cap represents cultural pride and is perfect for festivals, formal occasions, and everyday traditional wear.",
     addedBy: "admin",
   },
   {
