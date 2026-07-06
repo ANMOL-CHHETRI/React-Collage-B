@@ -141,6 +141,9 @@ const Navbar = () => {
             <NavLink to="/delivery-coverage" className={linkClass}>
               Delivery Coverage
             </NavLink>
+            <NavLink to="/coworking" className={linkClass}>
+              Coworking Space
+            </NavLink>
             <NavLink to="/faq" className={linkClass}>
               FAQ
             </NavLink>
@@ -408,6 +411,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Delivery Coverage
+            </NavLink>
+            <NavLink
+              to="/coworking"
+              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
+              onClick={() => setIsOpen(false)}
+            >
+              Coworking Space
             </NavLink>
             <NavLink
               to="/faq"

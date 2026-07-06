@@ -23,6 +23,7 @@ import FAQPage from "./pages/FAQPage"
 import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import WishlistPage from "./pages/WishlistPage"
+import CoworkingPage from "./pages/CoworkingPage"
 
 const Router = () => {
   return (
@@ -41,6 +42,7 @@ const Router = () => {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/coworking" element={<CoworkingPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />

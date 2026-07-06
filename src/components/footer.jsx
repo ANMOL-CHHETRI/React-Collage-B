@@ -113,6 +113,7 @@ const Footer = () => {
                 {[
                   { label: "About Us", to: "/about" },
                   { label: "Delivery Coverage", to: "/delivery-coverage" },
+                  { label: "Coworking Space", to: "/coworking" },
                   { label: "FAQ", to: "/faq" },
                   { label: "Contact", to: "/contact" },
                   { label: "User Login", to: "/user-login" },
