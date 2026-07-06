@@ -118,7 +118,10 @@ const WishlistPage = () => {
                   <td className="text-center">
                     <div className="flex justify-center gap-3">
                       <button
-                        onClick={() => addToCart(product)}
+                        onClick={() => {
+                          addToCart(product);
+                          removeFromWishlist(product.id);
+                        }}
                         className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600"
                       >
                         Add to Cart
