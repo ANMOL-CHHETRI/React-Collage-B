@@ -224,3 +224,22 @@
 | **Smriti Tamang** | QA & Testing | Executed browser layout consistency checks on multiple screen configurations. |
 
 ---
+
+## Project Outlook & Remaining Tasks
+
+While the frontend and UI/UX flows are 100% complete, there are a few critical milestones left before the final launch of ShopEase Nepal:
+
+### 1. Database Architecture & Setup
+- Designing and provisioning the primary relational database (e.g., MySQL or PostgreSQL) to store users, products, orders, and wishlist data.
+- Establishing secure connections and data models mapping directly to the frontend schemas.
+
+### 2. Backend REST API Integration
+- Currently, the application relies on mock static data and local storage for authentication, cart, and product management. The next major phase will connect the frontend to a live backend database.
+- Endpoints to integrate include: User Auth, Admin Product CRUD, Order Processing, and Wishlist syncing.
+
+### 3. Payment Gateway Setup
+- Integrating Khalti and e-Sewa payment APIs to process real transactions during the checkout flow.
+
+### 4. Production Deployment
+- Configuring GitHub Pages or a dedicated hosting environment (like Vercel/Netlify) for public access.
+- Setting up automated CI/CD pipelines via GitHub Actions for continuous deployment.

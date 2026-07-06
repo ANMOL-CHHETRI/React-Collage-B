@@ -248,6 +248,21 @@ for w in weeks_data:
         md_lines.append(f"| **{name}** | {focus} | {deliv} |")
     md_lines.append("\n---\n")
 
+# Append remaining tasks
+md_lines.append("## Project Outlook & Remaining Tasks\n")
+md_lines.append("While the frontend and UI/UX flows are 100% complete, there are a few critical milestones left before the final launch of ShopEase Nepal:\n")
+md_lines.append("### 1. Database Architecture & Setup")
+md_lines.append("- Designing and provisioning the primary relational database (e.g., MySQL or PostgreSQL) to store users, products, orders, and wishlist data.")
+md_lines.append("- Establishing secure connections and data models mapping directly to the frontend schemas.\n")
+md_lines.append("### 2. Backend REST API Integration")
+md_lines.append("- Currently, the application relies on mock static data and local storage for authentication, cart, and product management. The next major phase will connect the frontend to a live backend database.")
+md_lines.append("- Endpoints to integrate include: User Auth, Admin Product CRUD, Order Processing, and Wishlist syncing.\n")
+md_lines.append("### 3. Payment Gateway Setup")
+md_lines.append("- Integrating Khalti and e-Sewa payment APIs to process real transactions during the checkout flow.\n")
+md_lines.append("### 4. Production Deployment")
+md_lines.append("- Configuring GitHub Pages or a dedicated hosting environment (like Vercel/Netlify) for public access.")
+md_lines.append("- Setting up automated CI/CD pipelines via GitHub Actions for continuous deployment.\n")
+
 with open("WEEKLY_PROGRESS_LOG.md", "w", encoding="utf-8") as f:
     f.write("\n".join(md_lines))
 print("Successfully generated WEEKLY_PROGRESS_LOG.md")
@@ -309,6 +324,26 @@ for idx, w in enumerate(weeks_data):
 
     if idx < len(weeks_data) - 1:
         log_doc.add_page_break()
+
+# Add remaining tasks section to the end of log docx
+log_doc.add_page_break()
+log_doc.add_heading('PROJECT OUTLOOK & REMAINING TASKS', 0)
+log_doc.add_paragraph('While the frontend and UI/UX flows are 100% complete, there are a few critical milestones left before the final launch of ShopEase Nepal:')
+
+log_doc.add_heading('1. Database Architecture & Setup', level=1)
+log_doc.add_paragraph('Designing and provisioning the primary relational database (e.g., MySQL or PostgreSQL) to store users, products, orders, and wishlist data.', style='List Bullet')
+log_doc.add_paragraph('Establishing secure connections and data models mapping directly to the frontend schemas.', style='List Bullet')
+
+log_doc.add_heading('2. Backend REST API Integration', level=1)
+log_doc.add_paragraph('Currently, the application relies on mock static data and local storage for authentication, cart, and product management. The next major phase will connect the frontend to a live backend database.', style='List Bullet')
+log_doc.add_paragraph('Endpoints to integrate include: User Auth, Admin Product CRUD, Order Processing, and Wishlist syncing.', style='List Bullet')
+
+log_doc.add_heading('3. Payment Gateway Setup', level=1)
+log_doc.add_paragraph('Integrating Khalti and e-Sewa payment APIs to process real transactions during the checkout flow.', style='List Bullet')
+
+log_doc.add_heading('4. Production Deployment', level=1)
+log_doc.add_paragraph('Configuring GitHub Pages or a dedicated hosting environment (like Vercel/Netlify) for public access.', style='List Bullet')
+log_doc.add_paragraph('Setting up automated CI/CD pipelines via GitHub Actions for continuous deployment.', style='List Bullet')
 
 log_doc.save("WEEKLY_PROGRESS_LOG.docx")
 print("Successfully generated WEEKLY_PROGRESS_LOG.docx")
