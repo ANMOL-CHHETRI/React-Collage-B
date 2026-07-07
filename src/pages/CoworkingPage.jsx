@@ -64,7 +64,7 @@ const CoworkingPage = () => {
       badge: "Day Pass",
       period: "day",
       category: "Co-Working Space",
-      image: "https://i.pinimg.com/736x/2b/9e/7b/2b9e7b2354c4146a8cd24d7db8f3cc3b.jpg",
+      image: "/nepal_coworking_open.png",
       description: "A comfortable seat in our open area. Perfect for working on your laptop and meeting other creative people.",
       features: [
         "Super fast WiFi internet",
@@ -80,7 +80,7 @@ const CoworkingPage = () => {
       badge: "Monthly Pass",
       period: "month",
       category: "Co-Working Space",
-      image: "https://i.pinimg.com/736x/8f/c9/7b/8fc97bcd7dc23c8a980ebc4abdfd5a23.jpg",
+      image: "/nepal_coworking_meeting.png",
       description: "Your own personal desk that belongs only to you. You can safely leave your computer and notes overnight.",
       features: [
         "Your own locked drawer",
@@ -96,7 +96,7 @@ const CoworkingPage = () => {
       badge: "Team Cabin",
       period: "month",
       category: "Co-Working Space",
-      image: "https://i.pinimg.com/736x/5e/5c/7e/5e5c7e0988e404b9e28f3cb29dfbfcd0.jpg",
+      image: "/nepal_coworking_lounge.png",
       description: "A private, lockable room for your team. Fits 4 to 6 people comfortably with access to all shared spaces.",
       features: [
         "Private room with lock and key",
@@ -202,17 +202,17 @@ const CoworkingPage = () => {
     {
       title: "Open Workspace",
       desc: "Bright open layouts designed with neutral colors, clean desk dividers, and natural lighting.",
-      img: "https://i.pinimg.com/736x/2b/9e/7b/2b9e7b2354c4146a8cd24d7db8f3cc3b.jpg",
+      img: "/nepal_coworking_open.png",
     },
     {
       title: "Meeting Pods",
       desc: "Acoustically soundproof boardrooms featuring premium conference systems for up to 8 team members.",
-      img: "https://i.pinimg.com/736x/8f/c9/7b/8fc97bcd7dc23c8a980ebc4abdfd5a23.jpg",
+      img: "/nepal_coworking_meeting.png",
     },
     {
       title: "Lounge & Cafe",
       desc: "A relaxed, breakout area with modular seating for networking, lunches, and premium coffee tastings.",
-      img: "https://i.pinimg.com/736x/5e/5c/7e/5e5c7e0988e404b9e28f3cb29dfbfcd0.jpg",
+      img: "/nepal_coworking_lounge.png",
     },
   ];
 
