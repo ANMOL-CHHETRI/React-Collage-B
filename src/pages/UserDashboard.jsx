@@ -40,31 +40,31 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
 const initialOrders = [
   {
     id: "#ORD-NP-92841",
-    storeName: "Universal Mobile Zone",
+    storeName: "Palpa Weaver Cooperatives",
     status: "Completed",
     date: "Jun 15, 2026",
     items: [
       {
-        name: "Vivo V23E 4G/5G / Vivo Y75 4G (Same Size) Transparent Bumper Cover Case - Non-yellowing Soft TPU",
-        attributes: "Compatibility By Model: Vivo V23e, Color Family: Black",
-        price: 223,
+        name: "Premium Dhaka Topi (Handwoven)",
+        attributes: "Size: Standard, Color: Traditional Red/Green",
+        price: 1200,
         qty: 1,
-        image: "https://i.pinimg.com/736x/3f/82/ff/3f82ff025c898c0d1279a557876a3e5c.jpg"
+        image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg"
       }
     ]
   },
   {
     id: "#ORD-NP-81724",
-    storeName: "Brothers Empire",
+    storeName: "Ilam Tea Gardens",
     status: "Completed",
     date: "Jun 10, 2026",
     items: [
       {
-        name: "MAIBO Original Fashion Canvas Backpack College Bag Unisex Large Capacity Travel",
-        attributes: "Color Family: Black",
-        price: 1950,
-        qty: 1,
-        image: "https://i.pinimg.com/736x/11/49/74/114974246fa4d567c9c05e54d8ecdb2f.jpg"
+        name: "Himalayan Orthodox Golden Tea",
+        attributes: "Package: 250g, Type: Organic Loose Leaf",
+        price: 850,
+        qty: 2,
+        image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
       }
     ]
   },
@@ -75,11 +75,11 @@ const initialOrders = [
     date: "Jun 20, 2026",
     items: [
       {
-        name: "Handmade Shakyamuni Buddha Statue (Gold Gilded)",
+        name: "Handmade Shakyamuni Buddha Statue",
         attributes: "Material: Copper, Finish: 24k Gold Gilded",
         price: 18500,
         qty: 1,
-        image: "https://i.pinimg.com/736x/8f/58/01/8f5801314672479768bada91c28c8dbb.jpg"
+        image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
       }
     ]
   }
@@ -137,13 +137,22 @@ const UserDashboard = () => {
         storeName: "ShopEase Official",
         status: o.status || "Processing",
         date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-        items: (Array.isArray(o.items) ? o.items : []).map(item => ({
-          name: item?.name || "Unknown Product",
-          attributes: "Qty: " + (item?.quantity || 1),
-          price: item?.price || 0,
-          qty: item?.quantity || 1,
-          image: item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-        }))
+        items: (Array.isArray(o.items) ? o.items : []).map(item => {
+          let img = item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg";
+          const itemName = (item?.name || "").toLowerCase();
+          if (itemName.includes("pashmina") || img.includes("c2/ae/03")) {
+            img = "/pashmina_shawl.png";
+          } else if (itemName.includes("buddha") || img.includes("8f/58/01")) {
+            img = "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg";
+          }
+          return {
+            name: item?.name || "Unknown Product",
+            attributes: "Qty: " + (item?.quantity || 1),
+            price: item?.price || 0,
+            qty: item?.quantity || 1,
+            image: img
+          };
+        })
       }))
       
       const baseOrders = user?.username === "user" ? initialOrders : []

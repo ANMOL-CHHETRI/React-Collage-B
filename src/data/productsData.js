@@ -52,8 +52,8 @@ export const defaultProducts = [
     name: "Pure Pashmina Cashmere Shawl",
     price: 9500,
     // Pashmina shawl — soft draped fabric
-    image: "https://i.pinimg.com/736x/c2/ae/03/c2ae03f4f7e39a4e5cba20da0abe3c4e.jpg",
-    images: ["https://i.pinimg.com/736x/c2/ae/03/c2ae03f4f7e39a4e5cba20da0abe3c4e.jpg", "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg"],
+    image: "/pashmina_shawl.png",
+    images: ["/pashmina_shawl.png"],
     badge: "Premium Quality",
     category: "Traditional Apparel",
     description: "Ultra-soft, warm, and authentic Chyangra Pashmina shawl hand-woven in Kathmandu Valley.",
@@ -224,7 +224,7 @@ const mergeSavedProducts = (saved) => {
 export const loadProducts = () => {
   try {
     // Version bump forces a refresh of cached products so new images apply
-    const DATA_VERSION = "v5-final-generated-images-3"
+    const DATA_VERSION = "v6-pashmina-update-4"
     const storedVersion = localStorage.getItem("shopease_data_version")
     if (storedVersion !== DATA_VERSION) {
       // Clear stale product cache so new default images are used
