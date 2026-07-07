@@ -114,6 +114,16 @@ const UserDashboard = () => {
   const [activeSection, setActiveSection] = useState("orders")
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
+  const [trackingOrderId, setTrackingOrderId] = useState(null)
+
+  const getActiveStep = (status) => {
+    const s = status ? status.toLowerCase() : "";
+    if (s === "processing" || s === "pending") return 0;
+    if (s === "to ship") return 1;
+    if (s === "shipped" || s === "to receive" || s === "out for delivery") return 2;
+    if (s === "completed" || s === "delivered") return 3;
+    return 0;
+  };
 
   const [rawOrders, setRawOrders] = useState([])
 
@@ -595,6 +605,62 @@ const UserDashboard = () => {
                     ))}
                   </div>
 
+                  {/* Collapsible Tracking Timeline */}
+                  {trackingOrderId === order.id && (
+                    <div className="mt-4 p-5 bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/80 rounded-2xl animate-fade-in no-print">
+                      <h5 className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-5 flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-orange-500 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        Order Tracker: {order.id}
+                      </h5>
+                      
+                      <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-4 mt-2">
+                        {/* Connector Line for Desktop */}
+                        <div className="absolute hidden md:block left-8 right-8 top-[18px] h-1 bg-slate-200 dark:bg-slate-800 -z-10 rounded-full" />
+                        <div 
+                          className="absolute hidden md:block left-8 top-[18px] h-1 bg-orange-500 -z-10 rounded-full transition-all duration-500"
+                          style={{ width: `${(getActiveStep(order.status) / 3) * 100}%`, maxWidth: 'calc(100% - 64px)' }}
+                        />
+
+                        {[
+                          { name: "Processing", desc: "Order details verified & packing" },
+                          { name: "Shipped", desc: "In transit to courier hub" },
+                          { name: "Out for Delivery", desc: "On its way to your address" },
+                          { name: "Delivered", desc: "Successfully received" }
+                        ].map((step, idx) => {
+                          const activeIdx = getActiveStep(order.status);
+                          const isCompleted = idx < activeIdx;
+                          const isActive = idx === activeIdx;
+                          
+                          return (
+                            <div key={idx} className="flex md:flex-col items-center md:items-center text-left md:text-center flex-1 relative gap-4 md:gap-2 w-full">
+                              <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs shrink-0 border-2 transition-all ${
+                                isCompleted 
+                                  ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/20" 
+                                  : isActive 
+                                    ? "bg-white dark:bg-slate-900 border-orange-500 text-orange-500 ring-4 ring-orange-500/10 scale-110" 
+                                    : "bg-white dark:bg-slate-955 border-slate-200 dark:border-slate-800 text-slate-400"
+                              }`}>
+                                {isCompleted ? (
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                ) : idx + 1}
+                              </div>
+                              <div className="space-y-0.5">
+                                <span className={`block text-xs font-bold ${isActive ? "text-orange-500" : isCompleted ? "text-slate-800 dark:text-slate-250" : "text-slate-400 dark:text-slate-600"}`}>
+                                  {step.name}
+                                </span>
+                                <span className="block text-[10px] text-slate-450 dark:text-slate-500 leading-normal max-w-[130px] md:mx-auto">
+                                  {step.desc}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button onClick={() => alert("Thank you for contacting us! Seller will contact you shortly.")} className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
                       Contact Seller
@@ -604,12 +670,20 @@ const UserDashboard = () => {
                         if (order.status === "Completed") {
                           handleBuyAgain(order.items)
                         } else {
-                          info(`Tracking order ${order.id}. Current status: ${order.status}`)
+                          setTrackingOrderId(trackingOrderId === order.id ? null : order.id)
                         }
                       }} 
-                      className="px-4 py-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-950 text-[11px] font-bold rounded-xl transition shadow shadow-slate-950/10 cursor-pointer"
+                      className={`px-4 py-2 text-[11px] font-bold rounded-xl transition shadow cursor-pointer ${
+                        trackingOrderId === order.id 
+                          ? "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-500/10" 
+                          : "bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-955 shadow-slate-955/10"
+                      }`}
                     >
-                      {order.status === "Completed" ? "Buy Again" : "Track Order"}
+                      {order.status === "Completed" 
+                        ? "Buy Again" 
+                        : trackingOrderId === order.id 
+                          ? "Hide Tracking" 
+                          : "Track Order"}
                     </button>
                   </div>
 

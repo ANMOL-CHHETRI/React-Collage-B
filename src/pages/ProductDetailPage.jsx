@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom"
 import { useProducts } from "../context/ProductContext"
 import { useCart } from "../context/CartContext"
 import { useWishlist } from "../context/WishlistContext"
+import { useAuth } from "../context/AuthContext"
 import { ProductDetailSkeleton } from "../components/Skeleton"
 import ProductCard from "../components/ProductCard"
 
@@ -133,7 +134,8 @@ const ReviewCard = ({ review }) => {
 }
 
 // ── Write-a-review form ─────────────────────────────────────────────────────
-const WriteReviewForm = ({ productName }) => {
+const WriteReviewForm = ({ productName, onAddReview }) => {
+  const { user } = useAuth()
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [title, setTitle] = useState("")
@@ -143,6 +145,23 @@ const WriteReviewForm = ({ productName }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (rating === 0 || !text.trim()) return
+    
+    const reviewerName = user ? (user.name || user.username) : "Guest User"
+    const initials = reviewerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    
+    const newReview = {
+      id: Date.now(),
+      name: reviewerName,
+      avatar: initials || "GU",
+      rating,
+      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      verified: !!user,
+      title: title.trim() || "Customer Review",
+      text: text.trim(),
+      helpful: 0
+    }
+    
+    onAddReview(newReview)
     setSubmitted(true)
   }
 
@@ -205,7 +224,7 @@ const WriteReviewForm = ({ productName }) => {
           onChange={(e) => setText(e.target.value)}
           rows={4}
           placeholder="Tell others what you think about this product..."
-          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 transition resize-none"
+          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-205 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 transition resize-none"
         />
       </div>
       <button
@@ -229,11 +248,27 @@ const ProductDetailPage = () => {
   const product = products.find((p) => p.id === Number(id))
   const [loading, setLoading] = useState(true)
   const [activeImgIndex, setActiveImgIndex] = useState(0)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (!product) return
+    const stored = localStorage.getItem(`shopease_reviews_${product.id}`)
+    if (stored) {
+      try {
+        setReviews(JSON.parse(stored))
+      } catch (e) {
+        setReviews(MOCK_REVIEWS)
+      }
+    } else {
+      setReviews(MOCK_REVIEWS)
+      localStorage.setItem(`shopease_reviews_${product.id}`, JSON.stringify(MOCK_REVIEWS))
+    }
+  }, [id, product])
 
   if (loading) return <ProductDetailSkeleton />
 
@@ -248,8 +283,16 @@ const ProductDetailPage = () => {
     )
   }
 
+  const handleAddReview = (newReview) => {
+    const updated = [newReview, ...reviews]
+    setReviews(updated)
+    localStorage.setItem(`shopease_reviews_${product.id}`, JSON.stringify(updated))
+  }
+
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
-  const avgRating = (MOCK_REVIEWS.reduce((s, r) => s + r.rating, 0) / MOCK_REVIEWS.length).toFixed(1)
+  const avgRating = reviews.length
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : "0.0"
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 py-12 transition-colors duration-300">
@@ -307,7 +350,7 @@ const ProductDetailPage = () => {
               <div className="flex items-center gap-2">
                 <Stars rating={Math.round(avgRating)} />
                 <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{avgRating}</span>
-                <span className="text-xs text-slate-400 dark:text-slate-500">({MOCK_REVIEWS.length} reviews)</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">({reviews.length} reviews)</span>
               </div>
 
               <p className="text-3xl font-bold text-amber-600">Rs. {product.price.toLocaleString()}</p>
@@ -362,18 +405,18 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Rating summary bars */}
-          <RatingSummary reviews={MOCK_REVIEWS} />
+          <RatingSummary reviews={reviews} />
 
           {/* Review cards */}
           <div className="mt-6 space-y-4">
-            {MOCK_REVIEWS.map((review) => (
+            {reviews.map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}
           </div>
 
           {/* Write a review */}
           <div className="mt-8">
-            <WriteReviewForm productName={product.name} />
+            <WriteReviewForm productName={product.name} onAddReview={handleAddReview} />
           </div>
         </div>
 
