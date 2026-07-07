@@ -251,7 +251,7 @@ const CoworkingPage = () => {
           <div className="lg:col-span-6 w-full max-w-lg mx-auto">
             <div className="rounded-2xl overflow-hidden aspect-[4/3] border border-slate-200 dark:border-slate-800 shadow-xl bg-slate-50 dark:bg-slate-900">
               <ImageWithSkeleton 
-                src="https://i.pinimg.com/736x/2b/9e/7b/2b9e7b2354c4146a8cd24d7db8f3cc3b.jpg" 
+                src="/nepal_coworking_hero.png" 
                 alt="Kathmandu Office Interior" 
                 className="w-full h-full object-cover" 
               />
