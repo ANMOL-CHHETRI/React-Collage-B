@@ -137,6 +137,23 @@ const AdminDashboard = () => {
     return { avg: "4.4", count: 3 }
   }
 
+  const handleUpdateOrderStatus = (orderId, newStatus) => {
+    let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"))
+    if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
+      currentOrders = [...recentOrders]
+    }
+    const updated = currentOrders.map(order => {
+      const id = order.orderId || order.id
+      if (id === orderId) {
+        return { ...order, status: newStatus }
+      }
+      return order
+    })
+    localStorage.setItem("shopease_orders", JSON.stringify(updated))
+    setAdminOrders(updated)
+    success(`Order ${orderId} updated to ${newStatus}`)
+  }
+
 
 
   const handleChangePassword = (e) => {
@@ -349,20 +366,26 @@ const AdminDashboard = () => {
                           <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
                           <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                           <td className="px-6 py-4">
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                order.status === "Delivered"
-                                  ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400"
-                                  : order.status === "Processing"
-                                    ? "bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400"
-                                    : order.status === "Shipped"
-                                      ? "bg-yellow-100 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400"
-                                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                              }`}
-                            >
-                              {order.status}
-                            </span>
-                          </td>
+                           <select
+                             value={order.status}
+                             onChange={(e) => handleUpdateOrderStatus(orderId, e.target.value)}
+                             className={`px-2.5 py-1 rounded-full text-xs font-semibold outline-none cursor-pointer border border-transparent transition-all duration-200
+                               ${
+                                 order.status === "Delivered"
+                                   ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 hover:border-green-300"
+                                   : order.status === "Processing"
+                                     ? "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 hover:border-blue-300"
+                                     : order.status === "Shipped"
+                                       ? "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 hover:border-yellow-300"
+                                       : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                               }`}
+                           >
+                             <option value="Pending" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Pending</option>
+                             <option value="Processing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Processing</option>
+                             <option value="Shipped" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Shipped</option>
+                             <option value="Delivered" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Delivered</option>
+                           </select>
+                         </td>
                         </tr>
                       )})}
                     </tbody>
