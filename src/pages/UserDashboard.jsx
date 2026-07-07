@@ -561,14 +561,38 @@ const UserDashboard = () => {
                       </div>
                     </div>
 
-                    <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
-                      order.status === "Completed" 
-                        ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30" 
-                        : "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30"
-                    }`}>
-                      {order.status}
-                    </span>
-                  </div>
+                     <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border ${
+                       order.status === "Delivered" || order.status === "Completed"
+                         ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-900/30" 
+                         : order.status === "Processing"
+                           ? "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/30"
+                           : order.status === "Shipped"
+                             ? "bg-amber-50 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/30"
+                             : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200/50 dark:border-slate-800/45"
+                     }`}>
+                       {order.status}
+                     </span>
+                   </div>
+
+                   {/* Status message details */}
+                   <div className="mt-3 text-xs bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-900 flex items-center gap-2.5">
+                     <div className={`w-2 h-2 rounded-full shrink-0 animate-pulse ${
+                       order.status === "Delivered" || order.status === "Completed"
+                         ? "bg-green-500"
+                         : order.status === "Processing"
+                           ? "bg-blue-500"
+                           : order.status === "Shipped"
+                             ? "bg-amber-500"
+                             : "bg-slate-400"
+                     }`} />
+                     <p className="text-slate-600 dark:text-slate-400 font-medium">
+                       {order.status === "Pending" && "Your order is pending confirmation from ShopEase."}
+                       {order.status === "Processing" && "We are processing and packaging your order at our warehouse."}
+                       {order.status === "Shipped" && "Your order has been shipped and is in transit to your district."}
+                       {(order.status === "Delivered" || order.status === "Completed") && "Your package has been successfully delivered! Thank you for shopping with us."}
+                       {!["Pending", "Processing", "Shipped", "Delivered", "Completed"].includes(order.status) && "Your order status is being updated."}
+                     </p>
+                   </div>
 
                   <div className="space-y-4">
                     {order.items.map((item, idx) => (
