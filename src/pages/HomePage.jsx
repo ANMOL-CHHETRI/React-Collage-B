@@ -128,21 +128,21 @@ const faqs = [
 // ── Trust Bar marquee ──
 const TrustBar = () => {
   const items = [
-    "🚚 Free Delivery on Orders Over Rs. 1,500",
-    "💵 Cash on Delivery — Pay at Your Door",
-    "🌿 100% Authentic Nepalese Products",
-    "🗺️ Delivery Across All 7 Provinces",
-    "⭐ 4.9/5 Average Customer Rating",
-    "🔄 7-Day Easy Returns",
-    "🤝 Supporting Local Artisans & Farmers",
+    "Free Delivery on Orders Over Rs. 1,500",
+    "Cash on Delivery Across Nepal",
+    "100% Authentic Nepalese Products",
+    "Delivery Across All 7 Provinces",
+    "4.9/5 Average Customer Rating",
+    "7-Day Easy Returns Policy",
+    "Supporting Local Artisans & Farmers",
   ];
   return (
-    <div className="bg-amber-500 text-slate-900 py-2.5 overflow-hidden relative">
-      <div className="flex items-center" style={{ animation: "marquee 30s linear infinite", whiteSpace: "nowrap" }}>
+    <div className="bg-slate-900 dark:bg-black border-y border-slate-850 py-3.5 overflow-hidden relative no-print">
+      <div className="flex items-center" style={{ animation: "marquee 35s linear infinite", whiteSpace: "nowrap" }}>
         {[...items, ...items].map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-2 text-xs font-bold px-8">
-            {item}
-            <span className="text-slate-900/30 font-light ml-4">|</span>
+          <span key={i} className="inline-flex items-center gap-4 text-[10px] font-extrabold tracking-widest uppercase text-amber-100/90 dark:text-amber-200/80 px-8">
+            <span>{item}</span>
+            <span className="text-amber-500/40 text-[9px] ml-4">✦</span>
           </span>
         ))}
       </div>
