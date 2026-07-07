@@ -420,13 +420,9 @@ const ProductDetailPage = () => {
             {!user ? (
               <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
                 <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">Please log in to write a review for this product.</p>
-                <div className="flex items-center justify-center gap-3">
-                  <Link to="/user-login" className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition shadow-md shadow-amber-500/10">
-                    User Login
-                  </Link>
-                  <span className="text-xs text-slate-400 font-medium">or</span>
-                  <Link to="/admin-login" className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm transition bg-white dark:bg-slate-950">
-                    Admin Login
+                <div className="flex items-center justify-center">
+                  <Link to="/user-login" className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition shadow-md shadow-amber-500/10">
+                    Log In to Review
                   </Link>
                 </div>
               </div>
