@@ -430,10 +430,10 @@ const ProductDetailPage = () => {
                   </Link>
                 </div>
               </div>
-            ) : user.role === "admin" && product.addedBy !== "admin" && product.addedBy !== user.username ? (
-              <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-950/30 p-6 text-center text-red-700 dark:text-red-400">
+            ) : (product.addedBy === user.username || (user.role === "admin" && product.addedBy === "admin")) ? (
+              <div className="bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-100 dark:border-amber-950/30 p-6 text-center text-amber-800 dark:text-amber-400">
                 <p className="text-sm font-medium">
-                  Admins can only write reviews for products they have added themselves.
+                  You cannot write a review for a product you have added yourself.
                 </p>
               </div>
             ) : (
