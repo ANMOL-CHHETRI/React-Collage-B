@@ -98,6 +98,7 @@ const AdminDashboard = () => {
   // Dynamic Data state
   const [adminOrders, setAdminOrders] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
+  const [viewingOrder, setViewingOrder] = useState(null)
 
   useEffect(() => {
     try {
@@ -553,6 +554,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-3 font-medium">Product</th>
                       <th className="px-6 py-3 font-medium">Amount</th>
                       <th className="px-6 py-3 font-medium">Status</th>
+                      <th className="px-6 py-3 font-medium text-right">Details</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -569,19 +571,33 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
                         <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                         <td className="px-6 py-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.status === "Delivered"
-                                ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400"
-                                : order.status === "Processing"
-                                  ? "bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400"
-                                  : order.status === "Shipped"
-                                    ? "bg-yellow-100 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                            }`}
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateOrderStatus(orderId, e.target.value)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-semibold outline-none cursor-pointer border border-transparent transition-all duration-200
+                              ${
+                                order.status === "Delivered"
+                                  ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 hover:border-green-300"
+                                  : order.status === "Processing"
+                                    ? "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 hover:border-blue-300"
+                                    : order.status === "Shipped"
+                                      ? "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 hover:border-yellow-300"
+                                      : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                              }`}
                           >
-                            {order.status}
-                          </span>
+                            <option value="Pending" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Pending</option>
+                            <option value="Processing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Processing</option>
+                            <option value="Shipped" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Shipped</option>
+                            <option value="Delivered" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Delivered</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => setViewingOrder(order)}
+                            className="px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition cursor-pointer"
+                          >
+                            View details
+                          </button>
                         </td>
                       </tr>
                     )})}
@@ -798,6 +814,105 @@ const AdminDashboard = () => {
           )}
         </main>
       </div>
+
+      {viewingOrder && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setViewingOrder(null)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Order Details</span>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">
+                  {viewingOrder.orderId || viewingOrder.id}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setViewingOrder(null)} 
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+              {/* Customer & Delivery */}
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl space-y-3">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Shipping Details</h4>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Recipient</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.fullName || viewingOrder.customer || "N/A"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Phone Number</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.phone || "N/A"}
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Address</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.address ? `${viewingOrder.address}, ${viewingOrder.city || ""}, ${viewingOrder.provinceName || ""}` : "N/A"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Items List */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ordered Items</h4>
+                <div className="space-y-2">
+                  {viewingOrder.items && Array.isArray(viewingOrder.items) && viewingOrder.items.length > 0 ? (
+                    viewingOrder.items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-xs border-b border-slate-100 dark:border-slate-850 pb-2">
+                        <div>
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">{item.name}</p>
+                          <p className="text-slate-400 dark:text-slate-500 text-[10px]">Qty: {item.quantity || 1} × Rs. {item.price}</p>
+                        </div>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
+                          Rs. {((item.quantity || 1) * item.price).toLocaleString()}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-600 dark:text-slate-400">
+                        {viewingOrder.product || "Demo Product"}
+                      </span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {viewingOrder.amount}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Total Summary */}
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">Total Amount</span>
+                <span className="text-lg font-black text-amber-600 dark:text-amber-400">
+                  {viewingOrder.total ? `Rs. ${viewingOrder.total.toLocaleString()}` : viewingOrder.amount}
+                </span>
+              </div>
+            </div>
+
+            {/* Footer buttons */}
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+              <button 
+                onClick={() => setViewingOrder(null)} 
+                className="w-full py-2.5 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+              >
+                Close Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
