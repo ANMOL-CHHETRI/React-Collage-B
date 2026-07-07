@@ -115,6 +115,9 @@ const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [trackingOrderId, setTrackingOrderId] = useState(null)
+  const [showContactModal, setShowContactModal] = useState(null)
+  const [contactSubject, setContactSubject] = useState("")
+  const [contactMessage, setContactMessage] = useState("")
 
   const getActiveStep = (status) => {
     const s = status ? status.toLowerCase() : "";
@@ -321,6 +324,33 @@ const UserDashboard = () => {
       setConfirmPassword("")
     } else {
       setPasswordMessage({ type: "error", text: result.message })
+    }
+  }
+
+  const handleSendContactMessage = (e) => {
+    e.preventDefault()
+    if (!contactSubject || !contactMessage) {
+      toastError("Please fill out all fields.")
+      return
+    }
+    const newMessage = {
+      id: "MSG-" + Math.floor(100000 + Math.random() * 900000),
+      name: user?.name || "Customer",
+      email: user?.email || "customer@shopease.com",
+      subject: contactSubject,
+      message: contactMessage,
+      date: new Date().toISOString()
+    }
+    try {
+      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
+      const messages = Array.isArray(rawMessages) ? rawMessages : []
+      localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...messages]))
+      success("Message sent successfully to the admin!")
+      setShowContactModal(null)
+      setContactSubject("")
+      setContactMessage("")
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -582,6 +612,18 @@ const UserDashboard = () => {
                        {order.status}
                      </span>
                    </div>
+                    {/* Admin message alert / notification */}
+                    {order.adminMessage && (
+                      <div className="mt-3 text-xs bg-amber-500/10 dark:bg-amber-500/5 text-amber-800 dark:text-amber-300 p-3.5 rounded-2xl border border-amber-500/20 dark:border-amber-500/10 flex items-start gap-2.5">
+                        <svg className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-[10px] uppercase tracking-wider block text-amber-700 dark:text-amber-400">Message from ShopEase Support:</span>
+                          <p className="font-medium">{order.adminMessage}</p>
+                        </div>
+                      </div>
+                    )}
 
                    {/* Status message details */}
                    <div className="mt-3 text-xs bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-900 flex items-center gap-2.5">
@@ -695,7 +737,14 @@ const UserDashboard = () => {
                   )}
 
                   <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button onClick={() => alert("Thank you for contacting us! Seller will contact you shortly.")} className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                    <button 
+                      onClick={() => {
+                        setShowContactModal(order);
+                        setContactSubject(`Inquiry regarding Order ${order.id}`);
+                        setContactMessage("");
+                      }} 
+                      className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer"
+                    >
                       Contact Seller
                     </button>
                     <button 
@@ -1386,6 +1435,68 @@ const UserDashboard = () => {
             </div>
           )}
         </main>
+      )}
+
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowContactModal(null)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest">Inquiry Support</span>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">Contact Seller / Admin</h3>
+              </div>
+              <button 
+                onClick={() => setShowContactModal(null)} 
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleSendContactMessage} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Subject</label>
+                <input
+                  type="text"
+                  value={contactSubject}
+                  onChange={(e) => setContactSubject(e.target.value)}
+                  className="w-full text-sm px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Message Description</label>
+                <textarea
+                  rows="4"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  placeholder="Describe your issue, query, or customized product request..."
+                  className="w-full text-sm px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowContactModal(null)}
+                  className="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition cursor-pointer"
+                >
+                  Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       </div>

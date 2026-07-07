@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 
 const Navbar = () => {
+  const location = useLocation();
+  const isDashboard = location.pathname.includes("/dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -227,45 +229,49 @@ const Navbar = () => {
               )}
             </button>
 
-            <Link
-              to={
-                user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
-              }
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200"
-              title={
-                user?.role === "admin" ? "Admin Dashboard" : "Account Dashboard"
-              }
-            >
-              <svg
-                className="w-5.5 h-5.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+            {!isDashboard && (
+              <Link
+                to={
+                  user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
+                }
+                className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200"
+                title={
+                  user?.role === "admin" ? "Admin Dashboard" : "Account Dashboard"
+                }
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </Link>
+                <svg
+                  className="w-5.5 h-5.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </Link>
+            )}
 
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm text-slate-600 dark:text-slate-400">
                   Hi, {user.name}
                 </span>
-                <Link
-                  to={
-                    user.role === "admin"
-                      ? "/admin/dashboard"
-                      : "/user/dashboard"
-                  }
-                  className="text-sm text-amber-600 font-medium hover:underline"
-                >
-                  {user.role === "admin" ? "Admin Panel" : "My Account"}
-                </Link>
+                {!isDashboard && (
+                  <Link
+                    to={
+                      user.role === "admin"
+                        ? "/admin/dashboard"
+                        : "/user/dashboard"
+                    }
+                    className="text-sm text-amber-600 font-medium hover:underline"
+                  >
+                    {user.role === "admin" ? "Admin Panel" : "My Account"}
+                  </Link>
+                )}
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-3 py-2 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200 cursor-pointer"
@@ -441,15 +447,17 @@ const Navbar = () => {
               </span>
             </button>
 
-            <Link
-              to={
-                user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
-              }
-              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              {user?.role === "admin" ? "Admin Panel" : "My Account"}
-            </Link>
+            {!isDashboard && (
+              <Link
+                to={
+                  user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
+                }
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
+                onClick={() => setIsOpen(false)}
+              >
+                {user?.role === "admin" ? "Admin Panel" : "My Account"}
+              </Link>
+            )}
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               {/* Theme Mode Toggle for Mobile */}

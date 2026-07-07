@@ -99,6 +99,7 @@ const AdminDashboard = () => {
   const [adminOrders, setAdminOrders] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
   const [viewingOrder, setViewingOrder] = useState(null)
+  const [adminNote, setAdminNote] = useState("")
 
   useEffect(() => {
     try {
@@ -593,7 +594,7 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <button
-                            onClick={() => setViewingOrder(order)}
+                            onClick={() => { setViewingOrder(order); setAdminNote(order.adminMessage || ""); }}
                             className="px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition cursor-pointer"
                           >
                             View details
@@ -887,6 +888,54 @@ const AdminDashboard = () => {
                       <span className="font-bold text-slate-800 dark:text-slate-200">
                         {viewingOrder.amount}
                       </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Admin message to customer */}
+              <div className="bg-amber-50/40 dark:bg-amber-950/10 p-4 rounded-2xl border border-amber-100/50 dark:border-amber-900/20 space-y-3">
+                <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Message to Customer
+                </h4>
+                <div className="space-y-2">
+                  <textarea
+                    rows="2"
+                    placeholder="Type order updates, delivery notes, or support messages..."
+                    value={adminNote}
+                    onChange={(e) => setAdminNote(e.target.value)}
+                    className="w-full text-xs px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-slate-950 text-gray-800 dark:text-gray-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = viewingOrder.orderId || viewingOrder.id;
+                      let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+                      if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
+                        currentOrders = [...recentOrders];
+                      }
+                      const updated = currentOrders.map(order => {
+                        const oid = order.orderId || order.id;
+                        if (oid === id) {
+                          return { ...order, adminMessage: adminNote };
+                        }
+                        return order;
+                      });
+                      localStorage.setItem("shopease_orders", JSON.stringify(updated));
+                      setAdminOrders(updated);
+                      setViewingOrder({ ...viewingOrder, adminMessage: adminNote });
+                      success("Message updated and sent to customer!");
+                    }}
+                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer"
+                  >
+                    Update & Send Message
+                  </button>
+                  {viewingOrder.adminMessage && (
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                      <span className="font-bold">Sent Message:</span> "{viewingOrder.adminMessage}"
                     </div>
                   )}
                 </div>
