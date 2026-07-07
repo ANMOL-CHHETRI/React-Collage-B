@@ -244,6 +244,7 @@ const ProductDetailPage = () => {
   const { products } = useProducts()
   const { addToCart } = useCart()
   const { toggleWishlist, isInWishlist } = useWishlist()
+  const { user } = useAuth()
 
   const product = products.find((p) => p.id === Number(id))
   const [loading, setLoading] = useState(true)
@@ -416,7 +417,28 @@ const ProductDetailPage = () => {
 
           {/* Write a review */}
           <div className="mt-8">
-            <WriteReviewForm productName={product.name} onAddReview={handleAddReview} />
+            {!user ? (
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
+                <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">Please log in to write a review for this product.</p>
+                <div className="flex items-center justify-center gap-3">
+                  <Link to="/user-login" className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition shadow-md shadow-amber-500/10">
+                    User Login
+                  </Link>
+                  <span className="text-xs text-slate-400 font-medium">or</span>
+                  <Link to="/admin-login" className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm transition bg-white dark:bg-slate-950">
+                    Admin Login
+                  </Link>
+                </div>
+              </div>
+            ) : user.role === "admin" && product.addedBy !== "admin" && product.addedBy !== user.username ? (
+              <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-950/30 p-6 text-center text-red-700 dark:text-red-400">
+                <p className="text-sm font-medium">
+                  Admins can only write reviews for products they have added themselves.
+                </p>
+              </div>
+            ) : (
+              <WriteReviewForm productName={product.name} onAddReview={handleAddReview} />
+            )}
           </div>
         </div>
 

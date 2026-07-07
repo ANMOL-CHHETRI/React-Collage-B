@@ -60,57 +60,57 @@ const CoworkingPage = () => {
     {
       id: 1001,
       name: "Shared Hot Desk",
-      price: 999,
-      badge: "Flex Pass",
+      price: 250,
+      badge: "Day Pass",
       period: "day",
       category: "Co-Working Space",
       image: "https://i.pinimg.com/736x/2b/9e/7b/2b9e7b2354c4146a8cd24d7db8f3cc3b.jpg",
-      description: "Access our shared desks and premium lounges. Perfect for freelancers, digital nomads, and visiting builders.",
+      description: "A comfortable seat in our open area. Perfect for working on your laptop and meeting other creative people.",
       features: [
-        "Uncapped fiber internet access",
-        "Free artisan Himalayan coffee",
-        "Modern lounge access",
-        "Dual network backup lines",
+        "Super fast WiFi internet",
+        "Free warm Himalayan coffee",
+        "Cozy sofas and common areas",
+        "Power backup during outages",
       ],
     },
     {
       id: 1002,
       name: "Dedicated Desk",
-      price: 14999,
+      price: 4999,
       badge: "Monthly Pass",
       period: "month",
       category: "Co-Working Space",
       image: "https://i.pinimg.com/736x/8f/c9/7b/8fc97bcd7dc23c8a980ebc4abdfd5a23.jpg",
-      description: "A permanent desk space assigned exclusively to you. Leave your display, tools, and accessories secure overnight.",
+      description: "Your own personal desk that belongs only to you. You can safely leave your computer and notes overnight.",
       features: [
-        "Personal lockable file drawer",
-        "Includes 5 hours meeting room credits",
-        "Ergonomic steelcase chair",
-        "Mailing address & receptionist support",
+        "Your own locked drawer",
+        "Free meeting room use (5 hours)",
+        "Comfortable chair for long days",
+        "Receive letters and packages here",
       ],
     },
     {
       id: 1003,
       name: "Private Office Suite",
-      price: 49999,
+      price: 14999,
       badge: "Team Cabin",
       period: "month",
       category: "Co-Working Space",
       image: "https://i.pinimg.com/736x/5e/5c/7e/5e5c7e0988e404b9e28f3cb29dfbfcd0.jpg",
-      description: "Furnished glass cabins tailored for teams of 4 to 6 people. Complete corporate privacy with access to shared amenities.",
+      description: "A private, lockable room for your team. Fits 4 to 6 people comfortably with access to all shared spaces.",
       features: [
-        "Secure keycard lockable private suite",
-        "Unlimited smart meeting room credits",
-        "Complimentary corporate print hub access",
-        "Option to customize layout branding",
+        "Private room with lock and key",
+        "Unlimited meeting room bookings",
+        "Free printing and scanning",
+        "Set up the desks anyway you like",
       ],
     },
   ];
 
   const amenities = [
     {
-      title: "Redundant Fiber WiFi",
-      desc: "Gigabit-grade fiber connection with dual network backup lines to ensure continuous uptime.",
+      title: "Fast & Reliable WiFi",
+      desc: "High-speed internet with backup lines so your connection never drops.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856a9.75 9.75 0 0113.788 0M1.924 8.674a14.25 14.25 0 0120.152 0M12 18.75h.008v.008H12v-.008z" />
@@ -118,8 +118,8 @@ const CoworkingPage = () => {
       ),
     },
     {
-      title: "Artisan Coffee Bar",
-      desc: "Single-origin Arabica beans sourced from local plantations and brewed fresh daily.",
+      title: "Fresh Local Coffee",
+      desc: "Warm Nepalese coffee brewed fresh daily to keep you energized.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -127,8 +127,8 @@ const CoworkingPage = () => {
       ),
     },
     {
-      title: "Focus & Phone Cabins",
-      desc: "Acoustically soundproof focus booths for private Zoom calls, virtual meetings, or silent work.",
+      title: "Private Work Booths",
+      desc: "Quiet, soundproof booths for making phone calls or focus work.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
@@ -136,8 +136,8 @@ const CoworkingPage = () => {
       ),
     },
     {
-      title: "Smart Meeting Rooms",
-      desc: "Equipped with large displays, wireless presentation hubs, and dedicated high-res conferencing cameras.",
+      title: "Team Meeting Rooms",
+      desc: "Clean rooms with TV screens and video cameras for meeting your team.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
@@ -145,8 +145,8 @@ const CoworkingPage = () => {
       ),
     },
     {
-      title: "Uninterrupted Power Backup",
-      desc: "Full automatic backup generator setup protecting your hardware from local electrical loadshedding.",
+      title: "Power Backup",
+      desc: "Continuous electricity backup so your work never gets interrupted by power cuts.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -154,8 +154,8 @@ const CoworkingPage = () => {
       ),
     },
     {
-      title: "Print & Tech Hub",
-      desc: "Access to laser monochrome printers, high-volume scanners, and secure tech recycling services.",
+      title: "Printing & Scanning",
+      desc: "Easy printing and scanning services whenever you need them.",
       icon: (
         <svg className="w-5 h-5 text-slate-800 dark:text-slate-200" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.82l-.24 2.25H5.25m3-.75l-.24 2.25H6.75M9 13.5l-.24 2.25H7.5m3-.75l-.24 2.25H9m3-1.5l-.24 2.25h-1.5m3-.75l-.24 2.25H12m3-1.5l-.24 2.25h-1.5m3-.75l-.24 2.25H15M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -226,16 +226,16 @@ const CoworkingPage = () => {
           <div className="lg:col-span-6 space-y-6 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
               <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                Office Spaces
+                Our Workspaces
               </span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-none text-slate-900 dark:text-white">
-              Sleek workspaces for remote execution.
+              Why a Coworking Space?
             </h1>
             
             <p className="text-slate-500 dark:text-slate-400 text-base leading-relaxed max-w-xl">
-              Elevate your business routine. Discover high-end hot desking, fixed office setups, and tech-equipped boardrooms in Kathmandu. Features redundant fiber WiFi, power backup, and fresh estate coffee.
+              We believe in helping local creators grow. We built a friendly workspace in Kathmandu where freelancers, craftsmakers, and small teams can work, share ideas, and enjoy fresh local coffee under one roof.
             </p>
 
             <div className="pt-4 flex items-center gap-4">
@@ -264,10 +264,10 @@ const CoworkingPage = () => {
       <section className="bg-slate-50 dark:bg-slate-900/50 py-4 border-b border-slate-100 dark:border-slate-900 overflow-hidden relative">
         <div className="flex items-center" style={{ animation: "marquee 35s linear infinite", whiteSpace: "nowrap" }}>
           {Array.from({ length: 4 }).flatMap(() => [
-            "Redundant Gigabit Fiber WiFi Network",
-            "Estate Arabica Beans Fresh Brewed",
-            "Automatic Dual Load Generator Backup",
-            "Smart Videoconferencing Meeting Rooms",
+            "Fast & Reliable WiFi Internet",
+            "Fresh Nepalese Coffee Everyday",
+            "Power Backup for Continuous Work",
+            "Private Meeting Rooms for Teams",
           ]).map((item, i) => (
             <span key={i} className="inline-flex items-center gap-2 text-xs font-semibold px-8 text-slate-500 dark:text-slate-400">
               {item}
