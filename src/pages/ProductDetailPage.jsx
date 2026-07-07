@@ -174,7 +174,7 @@ const WriteReviewForm = ({ productName, onAddReview }) => {
           </svg>
         </div>
         <h4 className="text-base font-bold text-green-800 dark:text-green-300">Thank you for your review!</h4>
-        <p className="text-sm text-green-600 dark:text-green-400 mt-1">Your feedback helps other customers make better decisions.</p>
+        <p className="text-sm text-green-600 dark:text-green-400 mt-1">Your feedback helps other Customers make better decisions.</p>
       </div>
     )
   }
