@@ -6,6 +6,11 @@ const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
+  // Stores the product that was just added so the popup can display it
+  const [wishlistPopupProduct, setWishlistPopupProduct] = useState(null);
+  // Controls whether the wishlist popup is visible
+  const [showWishlistPopup, setShowWishlistPopup] = useState(false);
+
     try {
       const saved = localStorage.getItem("shopease_wishlist");
       const parsed = saved ? JSON.parse(saved) : [];
