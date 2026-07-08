@@ -412,7 +412,7 @@ const ProductDetailPage = () => {
     phone: "",
     message: "",
   });
-  
+  const [contactModal, setContactModal] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
