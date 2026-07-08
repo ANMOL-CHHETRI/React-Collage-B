@@ -12,6 +12,10 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
+  const { cartCount, setIsCartOpen } = useCart();
+  const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
+  const { wishlistCount } = useWishlist();
+
   const [readNotifications, setReadNotifications] = useState(() => {
     try {
       const saved = localStorage.getItem("shopease_read_notifications");
@@ -91,10 +95,6 @@ const Navbar = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  const { cartCount, setIsCartOpen } = useCart();
-  const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
-  const { wishlistCount } = useWishlist();
 
   const linkClass = ({ isActive }) =>
     `relative text-sm font-medium transition-all duration-200 py-1.5 px-3 rounded-full group ${
