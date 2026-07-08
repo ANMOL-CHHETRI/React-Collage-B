@@ -441,13 +441,18 @@ const UserDashboard = () => {
               <li>
                 <button 
                   onClick={() => setActiveSection("orders")} 
-                  className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
+                  className={`w-full text-left font-medium flex items-center justify-between transition duration-200 cursor-pointer ${
                     activeSection === "orders" 
                       ? "text-orange-600 dark:text-orange-400 font-bold" 
                       : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
                   }`}
                 >
-                  My Orders
+                  <span>My Orders</span>
+                  {rawOrders.filter(o => o.adminMessage).length > 0 && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-amber-500 text-white rounded-full leading-none mr-2">
+                      {rawOrders.filter(o => o.adminMessage).length}
+                    </span>
+                  )}
                 </button>
               </li>
             </ul>
