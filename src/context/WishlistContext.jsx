@@ -6,11 +6,6 @@ const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
-    // Stores the product that was just added so the popup can display it
-    const [wishlistPopupProduct, setWishlistPopupProduct] = useState(null);
-    // Controls whether the wishlist popup is visible
-    const [showWishlistPopup, setShowWishlistPopup] = useState(false);
-
     try {
       const saved = localStorage.getItem("shopease_wishlist");
       const parsed = saved ? JSON.parse(saved) : [];
@@ -18,6 +13,12 @@ export const WishlistProvider = ({ children }) => {
     } catch {
       return [];
     }
+  });
+
+  // Stores information for the wishlist popup
+  const [wishlistModal, setWishlistModal] = useState({
+    open: false,
+    product: null,
   });
 
   const { success } = useToast();
@@ -34,13 +35,6 @@ export const WishlistProvider = ({ children }) => {
         return prev.filter((item) => item.id !== product.id);
       } else {
         success(`Added ${product.name} to wishlist`);
-
-        // Save the added product so popup can display its details
-        setWishlistPopupProduct(product);
-
-        // Open popup
-        setShowWishlistPopup(true);
-
         return [...prev, product];
       }
     });
@@ -64,13 +58,11 @@ export const WishlistProvider = ({ children }) => {
         wishlist,
         wishlistCount: wishlist.length,
         toggleWishlist,
-        isInWishlist,
         removeFromWishlist,
         clearWishlist,
-
-        wishlistPopupProduct,
-        showWishlistPopup,
-        setShowWishlistPopup,
+        isInWishlist,
+        wishlistModal,
+        setWishlistModal,
       }}
     >
       {children}
