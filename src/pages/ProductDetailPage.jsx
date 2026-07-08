@@ -603,7 +603,7 @@ const ProductDetailPage = () => {
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
                   >
-                    −
+                  −
                   </button>
 
                   {/* Current quantity */}
