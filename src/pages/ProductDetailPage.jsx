@@ -404,6 +404,8 @@ const ProductDetailPage = () => {
   const [reviews, setReviews] = useState([]);
   // Quantity selected by the customer
   const [quantity, setQuantity] = useState(1);
+  // Active tab on product details page
+  const [activeTab, setActiveTab] = useState("description")
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
@@ -595,6 +597,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
+
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-10 bg-slate-200">
@@ -667,6 +670,48 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
+
+{/* Product Tabs */}
+<div className="mt-12 border-b border-slate-200 dark:border-slate-700">
+
+  <div className="flex gap-8">
+
+    <button
+      onClick={() => setActiveTab("description")}
+      className={`pb-3 text-sm font-semibold transition ${
+        activeTab === "description"
+          ? "text-amber-600 border-b-2 border-amber-600"
+          : "text-slate-500"
+      }`}
+    >
+      DESCRIPTION
+    </button>
+
+    <button
+      onClick={() => setActiveTab("reviews")}
+      className={`pb-3 text-sm font-semibold transition ${
+        activeTab === "reviews"
+          ? "text-amber-600 border-b-2 border-amber-600"
+          : "text-slate-500"
+      }`}
+    >
+      REVIEWS
+    </button>
+
+    <button
+      onClick={() => setActiveTab("contact")}
+      className={`pb-3 text-sm font-semibold transition ${
+        activeTab === "contact"
+          ? "text-amber-600 border-b-2 border-amber-600"
+          : "text-slate-500"
+      }`}
+    >
+      CONTACT US
+    </button>
+
+  </div>
+
+</div>
 
         {/* ── Reviews Section ──────────────────────────────────────────────── */}
         <div className="mt-14">
