@@ -308,13 +308,14 @@ const ProductDetailPage = () => {
         {/* ── Product Card ─────────────────────────────────────────────── */}
         <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+
             {/* Images */}
             <div className="flex flex-col gap-4">
-              <div className="aspect-square rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+              <div className="aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
                 <ImageWithSkeleton
                   src={product.images ? product.images[activeImgIndex] : product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110 cursor-zoom-in"
                 />
               </div>
               {product.images && product.images.length > 1 && (
@@ -323,7 +324,8 @@ const ProductDetailPage = () => {
                     <button
                       key={idx}
                       onClick={() => setActiveImgIndex(idx)}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${activeImgIndex === idx ? "border-amber-500 opacity-100" : "border-transparent opacity-60 hover:opacity-100"}`}
+                      className={`aspect-square rounded-xl overflow-hidden border-2 shadow-sm transition-all duration-300 cursor-pointer ${
+                        activeImgIndex === idx ? "border-amber-500 ring-2 ring-amber-300 scale-105 opacity-100" : "border-transparent opacity-60 hover:opacity-100"}`}
                     >
                       <ImageWithSkeleton src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                     </button>
