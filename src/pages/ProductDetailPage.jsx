@@ -406,6 +406,12 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   // Active tab on product details page
   const [activeTab, setActiveTab] = useState("description");
+  const [contactForm, setContactForm] = useState({
+    email: "",
+    name: "",
+    phone: "",
+    message: "",
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
@@ -429,6 +435,24 @@ const ProductDetailPage = () => {
       );
     }
   }, [id, product]);
+  const handleContactChange = (e) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+
+    alert("Your message has been sent successfully!");
+
+    setContactForm({
+      email: "",
+      name: "",
+      phone: "",
+      message: "",
+    });
+  };
 
   if (loading) return <ProductDetailSkeleton />;
 
@@ -710,47 +734,11 @@ const ProductDetailPage = () => {
 
         {/* Description Tab Content */}
         {activeTab === "description" && (
-          <div className="mt-8">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
-              {/* Product Description */}
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-                Product Description
-              </h2>
-
-              <p className="text-slate-600 dark:text-slate-300 leading-8 mb-8">
-                {product.description}
+          <div className="mt-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg min-h-[200px] p-8">
+              <p className="text-slate-700 dark:text-slate-300 leading-8 text-justify">
+                {product.longDescription || product.description}
               </p>
-
-              {/* Divider */}
-              <hr className="border-slate-200 dark:border-slate-700 my-6" />
-
-              {/* Product Specifications */}
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-                Product Specifications
-              </h2>
-
-              <div className="grid grid-cols-2 gap-y-5 text-sm">
-                <span className="font-medium text-slate-500">Material</span>
-                <span className="font-semibold">
-                  {product.material || "Premium Handmade"}
-                </span>
-
-                <span className="font-medium text-slate-500">Origin</span>
-                <span className="font-semibold">
-                  {product.origin || "Nepal"}
-                </span>
-
-                <span className="font-medium text-slate-500">Weight</span>
-                <span className="font-semibold">
-                  {product.weight || "Approx. 500 g"}
-                </span>
-
-                <span className="font-medium text-slate-500">Category</span>
-                <span className="font-semibold">{product.category}</span>
-
-                <span className="font-medium text-slate-500">Condition</span>
-                <span className="text-green-600 font-semibold">New</span>
-              </div>
             </div>
           </div>
         )}
@@ -816,6 +804,90 @@ const ProductDetailPage = () => {
                   onAddReview={handleAddReview}
                 />
               )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "contact" && (
+          <div className="mt-8">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-8">
+              <form onSubmit={handleContactSubmit}>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Email */}
+                  <div>
+                    <label className="block mb-2 font-medium">
+                      Email address <span className="text-red-500">*</span>
+                    </label>
+
+                    <input
+                      type="email"
+                      name="email"
+                      value={contactForm.email}
+                      onChange={handleContactChange}
+                      placeholder="Enter your email address"
+                      required
+                      className="w-full border rounded-lg px-4 py-3"
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <div>
+                    <label className="block mb-2 font-medium">
+                      Name <span className="text-red-500">*</span>
+                    </label>
+
+                    <input
+                      type="text"
+                      name="name"
+                      value={contactForm.name}
+                      onChange={handleContactChange}
+                      placeholder="Name"
+                      required
+                      className="w-full border rounded-lg px-4 py-3"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block mb-2 font-medium">Phone</label>
+
+                    <input
+                      type="text"
+                      name="phone"
+                      value={contactForm.phone}
+                      onChange={handleContactChange}
+                      placeholder="Phone"
+                      className="w-full border rounded-lg px-4 py-3"
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label className="block mb-2 font-medium">
+                      Message <span className="text-red-500">*</span>
+                    </label>
+
+                    <textarea
+                      rows="4"
+                      name="message"
+                      value={contactForm.message}
+                      onChange={handleContactChange}
+                      placeholder="Enter message"
+                      required
+                      className="w-full border rounded-lg px-4 py-3 resize-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-8">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
