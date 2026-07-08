@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
+import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
 
 // ── Skeleton image loader ───────────────────────────────────────────────────
