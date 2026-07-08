@@ -402,6 +402,8 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [reviews, setReviews] = useState([]);
+  // Quantity selected by the customer
+  const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
