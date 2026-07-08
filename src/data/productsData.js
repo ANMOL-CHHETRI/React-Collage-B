@@ -223,12 +223,13 @@ const mergeSavedProducts = (saved) => {
 
 export const loadProducts = () => {
   try {
-    // Version bump forces a refresh of cached products so new images apply
-    const DATA_VERSION = "v6-pashmina-update-4"
+    // Version bump forces a refresh of cached products and clears old user sessions
+    const DATA_VERSION = "v6-pashmina-update-5"
     const storedVersion = localStorage.getItem("shopease_data_version")
     if (storedVersion !== DATA_VERSION) {
       // Clear stale product cache so new default images are used
       localStorage.removeItem("shopease_products")
+      localStorage.removeItem("shopease_user") // Force log out on deploy/version bump
       localStorage.setItem("shopease_data_version", DATA_VERSION)
       return defaultProducts
     }
