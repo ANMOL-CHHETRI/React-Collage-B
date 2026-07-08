@@ -35,6 +35,13 @@ export const WishlistProvider = ({ children }) => {
         return prev.filter((item) => item.id !== product.id);
       } else {
         success(`Added ${product.name} to wishlist`);
+
+        // Open the wishlist popup
+        setWishlistModal({
+          open: true,
+          product: product,
+        });
+
         return [...prev, product];
       }
     });
