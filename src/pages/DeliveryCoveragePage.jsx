@@ -27,10 +27,6 @@ const DeliveryCoveragePage = () => {
             </svg>
             <span>Nepal Delivery Coverage</span>
           </h1>
-          <p className="text-sm md:text-base text-white/90 max-w-2xl font-medium mt-2 leading-relaxed">
-            We deliver to all 7 provinces of Nepal with Cash on Delivery. Click a province on the map
-            to check delivery speed, shipping fees, and logistics hubs in your region.
-          </p>
         </div>
       </section>
 
