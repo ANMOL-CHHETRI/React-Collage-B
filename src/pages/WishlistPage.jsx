@@ -144,6 +144,7 @@ const WishlistPage = () => {
                         >
                           Remove
                         </button>
+
                       </div>
                     </td>
                   </tr>
