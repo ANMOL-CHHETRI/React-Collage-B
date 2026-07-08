@@ -412,6 +412,7 @@ const ProductDetailPage = () => {
     phone: "",
     message: "",
   });
+  
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
