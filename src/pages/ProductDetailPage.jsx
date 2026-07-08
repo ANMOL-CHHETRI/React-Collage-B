@@ -446,7 +446,7 @@ const ProductDetailPage = () => {
   const handleContactSubmit = (e) => {
     e.preventDefault();
 
-    alert("Your message has been sent successfully!");
+    setContactModal(true);
 
     setContactForm({
       email: "",
