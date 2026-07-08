@@ -594,34 +594,26 @@ const ProductDetailPage = () => {
                   <span>100% Secure Checkout</span>
                 </div>
               </div>
-
+              
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden">
-                  {/* Decrease quantity */}
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                  >
+                <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-10 bg-slate-200">
+                  <button className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100">
                     −
                   </button>
 
-                  {/* Current quantity */}
-                  <span className="px-5 font-semibold">{quantity}</span>
+                  <span className="w-7 text-center text-sm font-medium">
+                    {quantity}
+                  </span>
 
-                  {/* Increase quantity */}
-                  <button
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                  >
+                  <button className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100">
                     +
                   </button>
                 </div>
-
-                //Add to cart button
+                {/*Add to cart button*/}
                 <button
                   onClick={() => addToCart(product)}
-                  className="flex-1 px-8 py-3.5 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-2.5 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -638,10 +630,10 @@ const ProductDetailPage = () => {
                   </svg>
                   Add to Cart
                 </button>
-//wishlist button
+                {/*wishlist button*/}
                 <button
                   onClick={() => toggleWishlist(product)}
-                  className={`px-8 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
+                  className={`px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
                     isInWishlist(product.id)
                       ? "bg-red-50 text-red-500 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:border-red-900"
                       : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800"
