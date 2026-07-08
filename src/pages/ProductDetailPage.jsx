@@ -405,7 +405,7 @@ const ProductDetailPage = () => {
   // Quantity selected by the customer
   const [quantity, setQuantity] = useState(1);
   // Active tab on product details page
-  const [activeTab, setActiveTab] = useState("description")
+  const [activeTab, setActiveTab] = useState("description");
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
@@ -597,7 +597,6 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-10 bg-slate-200">
@@ -606,7 +605,7 @@ const ProductDetailPage = () => {
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
                   >
-                  −
+                    −
                   </button>
 
                   {/* Current quantity */}
@@ -671,110 +670,155 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-{/* Product Tabs */}
-<div className="mt-12 border-b border-slate-200 dark:border-slate-700">
+        {/* Product Tabs */}
+        <div className="mt-12 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex gap-8">
+            <button
+              onClick={() => setActiveTab("description")}
+              className={`pb-3 text-sm font-semibold transition ${
+                activeTab === "description"
+                  ? "text-amber-600 border-b-2 border-amber-600"
+                  : "text-slate-500"
+              }`}
+            >
+              DESCRIPTION
+            </button>
 
-  <div className="flex gap-8">
+            <button
+              onClick={() => setActiveTab("reviews")}
+              className={`pb-3 text-sm font-semibold transition ${
+                activeTab === "reviews"
+                  ? "text-amber-600 border-b-2 border-amber-600"
+                  : "text-slate-500"
+              }`}
+            >
+              REVIEWS
+            </button>
 
-    <button
-      onClick={() => setActiveTab("description")}
-      className={`pb-3 text-sm font-semibold transition ${
-        activeTab === "description"
-          ? "text-amber-600 border-b-2 border-amber-600"
-          : "text-slate-500"
-      }`}
-    >
-      DESCRIPTION
-    </button>
-
-    <button
-      onClick={() => setActiveTab("reviews")}
-      className={`pb-3 text-sm font-semibold transition ${
-        activeTab === "reviews"
-          ? "text-amber-600 border-b-2 border-amber-600"
-          : "text-slate-500"
-      }`}
-    >
-      REVIEWS
-    </button>
-
-    <button
-      onClick={() => setActiveTab("contact")}
-      className={`pb-3 text-sm font-semibold transition ${
-        activeTab === "contact"
-          ? "text-amber-600 border-b-2 border-amber-600"
-          : "text-slate-500"
-      }`}
-    >
-      CONTACT US
-    </button>
-
-  </div>
-
-</div>
-
-        {/* ── Reviews Section ──────────────────────────────────────────────── */}
-        <div className="mt-14">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                Customer Reviews
-              </h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                Real feedback from verified buyers
-              </p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-xl">
-              <Stars rating={Math.round(avgRating)} size="w-4 h-4" />
-              <span className="text-sm font-extrabold text-amber-700 dark:text-amber-400">
-                {avgRating} / 5
-              </span>
-            </div>
-          </div>
-
-          {/* Rating summary bars */}
-          <RatingSummary reviews={reviews} />
-
-          {/* Review cards */}
-          <div className="mt-6 space-y-4">
-            {reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-          </div>
-
-          {/* Write a review */}
-          <div className="mt-8">
-            {!user ? (
-              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
-                <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">
-                  Please log in to write a review for this product.
-                </p>
-                <div className="flex items-center justify-center">
-                  <Link
-                    to="/user-login"
-                    className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition shadow-md shadow-amber-500/10"
-                  >
-                    Log In to Review
-                  </Link>
-                </div>
-              </div>
-            ) : product.addedBy === user.username ||
-              (user.role === "admin" && product.addedBy === "admin") ? (
-              <div className="bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-100 dark:border-amber-950/30 p-6 text-center text-amber-800 dark:text-amber-400">
-                <p className="text-sm font-medium">
-                  You cannot write a review for a product you have added
-                  yourself.
-                </p>
-              </div>
-            ) : (
-              <WriteReviewForm
-                productName={product.name}
-                onAddReview={handleAddReview}
-              />
-            )}
+            <button
+              onClick={() => setActiveTab("contact")}
+              className={`pb-3 text-sm font-semibold transition ${
+                activeTab === "contact"
+                  ? "text-amber-600 border-b-2 border-amber-600"
+                  : "text-slate-500"
+              }`}
+            >
+              CONTACT US
+            </button>
           </div>
         </div>
+
+        {/* Description Tab Content */}
+        {activeTab === "description" && (
+          <div className="mt-8">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
+              {/* Product Description */}
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                Product Description
+              </h2>
+
+              <p className="text-slate-600 dark:text-slate-300 leading-8 mb-8">
+                {product.description}
+              </p>
+
+              {/* Divider */}
+              <hr className="border-slate-200 dark:border-slate-700 my-6" />
+
+              {/* Product Specifications */}
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                Product Specifications
+              </h2>
+
+              <div className="grid grid-cols-2 gap-y-5 text-sm">
+                <span className="font-medium text-slate-500">Material</span>
+                <span className="font-semibold">
+                  {product.material || "Premium Handmade"}
+                </span>
+
+                <span className="font-medium text-slate-500">Origin</span>
+                <span className="font-semibold">
+                  {product.origin || "Nepal"}
+                </span>
+
+                <span className="font-medium text-slate-500">Weight</span>
+                <span className="font-semibold">
+                  {product.weight || "Approx. 500 g"}
+                </span>
+
+                <span className="font-medium text-slate-500">Category</span>
+                <span className="font-semibold">{product.category}</span>
+
+                <span className="font-medium text-slate-500">Condition</span>
+                <span className="text-green-600 font-semibold">New</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reviews Tab Content */}
+        {activeTab === "reviews" && (
+          <div className="mt-14">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                  Customer Reviews
+                </h2>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  Real feedback from verified buyers
+                </p>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-xl">
+                <Stars rating={Math.round(avgRating)} size="w-4 h-4" />
+                <span className="text-sm font-extrabold text-amber-700 dark:text-amber-400">
+                  {avgRating} / 5
+                </span>
+              </div>
+            </div>
+
+            {/* Rating summary bars */}
+            <RatingSummary reviews={reviews} />
+
+            {/* Review cards */}
+            <div className="mt-6 space-y-4">
+              {reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
+
+            {/* Write a review */}
+            <div className="mt-8">
+              {!user ? (
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-4">
+                    Please log in to write a review for this product.
+                  </p>
+                  <div className="flex items-center justify-center">
+                    <Link
+                      to="/user-login"
+                      className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition shadow-md shadow-amber-500/10"
+                    >
+                      Log In to Review
+                    </Link>
+                  </div>
+                </div>
+              ) : product.addedBy === user.username ||
+                (user.role === "admin" && product.addedBy === "admin") ? (
+                <div className="bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-100 dark:border-amber-950/30 p-6 text-center text-amber-800 dark:text-amber-400">
+                  <p className="text-sm font-medium">
+                    You cannot write a review for a product you have added
+                    yourself.
+                  </p>
+                </div>
+              ) : (
+                <WriteReviewForm
+                  productName={product.name}
+                  onAddReview={handleAddReview}
+                />
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── Related Products ─────────────────────────────────────────────── */}
         {related.length > 0 && (
