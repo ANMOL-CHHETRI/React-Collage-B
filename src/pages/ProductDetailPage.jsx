@@ -594,25 +594,34 @@ const ProductDetailPage = () => {
                   <span>100% Secure Checkout</span>
                 </div>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-10 bg-slate-200">
-                  <button className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100">
+                  {/* Decrease quantity */}
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
+                  >
                     −
                   </button>
 
+                  {/* Current quantity */}
                   <span className="w-7 text-center text-sm font-medium">
                     {quantity}
                   </span>
 
-                  <button className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100">
+                  {/* Increase quantity */}
+                  <button
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
+                  >
                     +
                   </button>
                 </div>
                 {/*Add to cart button*/}
                 <button
-                  onClick={() => addToCart(product)}
+                  onClick={() => addToCart(product, quantity)}
                   className="flex-1 px-6 py-2.5 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <svg
