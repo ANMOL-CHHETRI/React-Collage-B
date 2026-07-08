@@ -10,6 +10,81 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  const [readNotifications, setReadNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem("shopease_read_notifications");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const getNotifications = () => {
+    if (!user) return [];
+    try {
+      const raw = localStorage.getItem("shopease_orders");
+      const orders = Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : [];
+
+      const userOrders = orders.filter(
+        (o) =>
+          o &&
+          (o.username === user.username ||
+            o.fullName === user.name ||
+            user.role === "admin" ||
+            user.username === "user")
+      );
+
+      const list = [];
+      userOrders.forEach((o) => {
+        const orderId = o.orderId || o.id;
+        if (o.adminMessage) {
+          list.push({
+            id: `msg-${orderId}-${o.adminMessage.substring(0, 10)}`,
+            orderId,
+            type: "message",
+            title: "Support Message",
+            description: `Order ${orderId}: "${o.adminMessage}"`,
+            date: o.date || new Date().toISOString(),
+          });
+        }
+        if (o.status && o.status !== "Pending") {
+          list.push({
+            id: `status-${orderId}-${o.status}`,
+            orderId,
+            type: "status",
+            title: "Order Status Update",
+            description: `Order ${orderId} is now "${o.status}".`,
+            date: o.date || new Date().toISOString(),
+          });
+        }
+      });
+      return list.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } catch {
+      return [];
+    }
+  };
+
+  const allNotifications = getNotifications();
+  const unreadCount = allNotifications.filter((n) => !readNotifications.includes(n.id)).length;
+
+  const markAsRead = (id) => {
+    setReadNotifications((prev) => {
+      const next = prev.includes(id) ? prev : [...prev, id];
+      localStorage.setItem("shopease_read_notifications", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const markAllAsRead = (notifications) => {
+    const ids = notifications.map((n) => n.id);
+    setReadNotifications((prev) => {
+      const next = Array.from(new Set([...prev, ...ids]));
+      localStorage.setItem("shopease_read_notifications", JSON.stringify(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -229,6 +304,117 @@ const Navbar = () => {
               )}
             </button>
 
+            {/* Desktop Notification Bell */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setNotificationsOpen(!notificationsOpen);
+                    setOpenDropdown(null);
+                  }}
+                  className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer"
+                  title="Notifications"
+                >
+                  <svg
+                    className="w-5.5 h-5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notificationsOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setNotificationsOpen(false)}
+                    />
+                    <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-3.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
+                        <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+                          Notifications
+                        </span>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={() => markAllAsRead(allNotifications)}
+                            className="text-[10px] text-amber-600 dark:text-amber-400 font-bold hover:underline cursor-pointer"
+                          >
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+                        {allNotifications.length === 0 ? (
+                          <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
+                            No notifications yet
+                          </div>
+                        ) : (
+                          allNotifications.map((notif) => {
+                            const isUnread = !readNotifications.includes(notif.id);
+                            return (
+                              <div
+                                key={notif.id}
+                                onClick={() => {
+                                  markAsRead(notif.id);
+                                  setNotificationsOpen(false);
+                                }}
+                                className={`p-2.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-2.5 ${
+                                  isUnread
+                                    ? "bg-amber-50/50 dark:bg-amber-950/10 border-amber-100/50 dark:border-amber-900/30"
+                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850"
+                                }`}
+                              >
+                                <div className="mt-0.5">
+                                  {notif.type === "message" ? (
+                                    <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <div className="flex-1 space-y-0.5">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-bold text-slate-800 dark:text-white">
+                                      {notif.title}
+                                    </span>
+                                    {isUnread && (
+                                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0" />
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                    {notif.description}
+                                  </p>
+                                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-semibold">
+                                    {new Date(notif.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             {!isDashboard && (
               <Link
                 to={
@@ -260,18 +446,6 @@ const Navbar = () => {
                 <span className="text-sm text-slate-600 dark:text-slate-400">
                   Hi, {user.name}
                 </span>
-                {!isDashboard && (
-                  <Link
-                    to={
-                      user.role === "admin"
-                        ? "/admin/dashboard"
-                        : "/user/dashboard"
-                    }
-                    className="text-sm text-amber-600 font-medium hover:underline"
-                  >
-                    {user.role === "admin" ? "Admin Panel" : "My Account"}
-                  </Link>
-                )}
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-3 py-2 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200 cursor-pointer"
@@ -323,41 +497,172 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-50 cursor-pointer"
-          >
-            {isOpen ? (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+          {/* Mobile Actions and Toggle */}
+          <div className="flex md:hidden items-center gap-1.5 relative">
+            {/* Mobile Notification Bell */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setNotificationsOpen(!notificationsOpen);
+                    setIsOpen(false);
+                  }}
+                  className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer"
+                  title="Notifications"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notificationsOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setNotificationsOpen(false)}
+                    />
+                    <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2.5rem)] sm:w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-3.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
+                        <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">
+                          Notifications
+                        </span>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={() => markAllAsRead(allNotifications)}
+                            className="text-[10px] text-amber-600 dark:text-amber-400 font-bold hover:underline cursor-pointer"
+                          >
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+                        {allNotifications.length === 0 ? (
+                          <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
+                            No notifications yet
+                          </div>
+                        ) : (
+                          allNotifications.map((notif) => {
+                            const isUnread = !readNotifications.includes(notif.id);
+                            return (
+                              <div
+                                key={notif.id}
+                                onClick={() => {
+                                  markAsRead(notif.id);
+                                  setNotificationsOpen(false);
+                                }}
+                                className={`p-2.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-2.5 ${
+                                  isUnread
+                                    ? "bg-amber-50/50 dark:bg-amber-950/10 border-amber-100/50 dark:border-amber-900/30"
+                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850"
+                                }`}
+                              >
+                                <div className="mt-0.5">
+                                  {notif.type === "message" ? (
+                                    <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <div className="flex-1 space-y-0.5">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-bold text-slate-800 dark:text-white">
+                                      {notif.title}
+                                    </span>
+                                    {isUnread && (
+                                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0" />
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                    {notif.description}
+                                  </p>
+                                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-semibold">
+                                    {new Date(notif.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
-          </button>
+
+            {/* Mobile Profile Icon */}
+            {user && (
+              <Link
+                to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
+                className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer"
+                title="Account Dashboard"
+                onClick={() => setIsOpen(false)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </Link>
+            )}
+
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => {
+                setIsOpen(!isOpen);
+                setNotificationsOpen(false);
+              }}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
+            >
+              {isOpen ? (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
@@ -447,17 +752,7 @@ const Navbar = () => {
               </span>
             </button>
 
-            {!isDashboard && (
-              <Link
-                to={
-                  user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
-                }
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-                onClick={() => setIsOpen(false)}
-              >
-                {user?.role === "admin" ? "Admin Panel" : "My Account"}
-              </Link>
-            )}
+
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               {/* Theme Mode Toggle for Mobile */}
