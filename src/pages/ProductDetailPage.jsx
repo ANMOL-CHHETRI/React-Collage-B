@@ -908,6 +908,11 @@ const ProductDetailPage = () => {
           </div>
         )}
       </div>
+      <ContactSuccessModal
+        open={contactModal}
+        product={product}
+        onClose={() => setContactModal(false)}
+      />
     </div>
   );
 };
