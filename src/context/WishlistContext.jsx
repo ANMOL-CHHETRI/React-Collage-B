@@ -6,10 +6,10 @@ const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
-  // Stores the product that was just added so the popup can display it
-  const [wishlistPopupProduct, setWishlistPopupProduct] = useState(null);
-  // Controls whether the wishlist popup is visible
-  const [showWishlistPopup, setShowWishlistPopup] = useState(false);
+    // Stores the product that was just added so the popup can display it
+    const [wishlistPopupProduct, setWishlistPopupProduct] = useState(null);
+    // Controls whether the wishlist popup is visible
+    const [showWishlistPopup, setShowWishlistPopup] = useState(false);
 
     try {
       const saved = localStorage.getItem("shopease_wishlist");
@@ -34,18 +34,25 @@ export const WishlistProvider = ({ children }) => {
         return prev.filter((item) => item.id !== product.id);
       } else {
         success(`Added ${product.name} to wishlist`);
+
+        // Save the added product so popup can display its details
+        setWishlistPopupProduct(product);
+
+        // Open popup
+        setShowWishlistPopup(true);
+
         return [...prev, product];
       }
     });
   };
 
   const removeFromWishlist = (productId) => {
-  setWishlist((prev) => prev.filter((item) => item.id !== productId));
-};
+    setWishlist((prev) => prev.filter((item) => item.id !== productId));
+  };
 
-const clearWishlist = () => {
-  setWishlist([]);
-};
+  const clearWishlist = () => {
+    setWishlist([]);
+  };
 
   const isInWishlist = (productId) => {
     return wishlist.some((item) => item.id === productId);
@@ -57,10 +64,14 @@ const clearWishlist = () => {
         wishlist,
         wishlistCount: wishlist.length,
         toggleWishlist,
+        isInWishlist,
         removeFromWishlist,
         clearWishlist,
-        isInWishlist,
-}}
+
+        wishlistPopupProduct,
+        showWishlistPopup,
+        setShowWishlistPopup,
+      }}
     >
       {children}
     </WishlistContext.Provider>
