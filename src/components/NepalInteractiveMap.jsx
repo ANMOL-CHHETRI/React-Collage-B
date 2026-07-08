@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 // Realistic Nepal province SVG paths — viewBox 0 0 800 330
 const PROVINCE_PATHS = [
@@ -82,6 +82,8 @@ const PROVINCE_PATHS = [
 
 export default function NepalInteractiveMap({ selectedProvince, onSelectProvince }) {
   const [hoveredProvince, setHoveredProvince] = useState(null)
+  const [clickCoords, setClickCoords] = useState(null)
+  const svgRef = useRef(null)
 
   const selectedPath = selectedProvince
     ? PROVINCE_PATHS.find((p) => p.id === selectedProvince)
@@ -90,11 +92,32 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
   const handleClick = (e, id) => {
     e.stopPropagation() // Prevent click from bubbling to Add to Cart buttons
     if (onSelectProvince) onSelectProvince(id)
+
+    if (svgRef.current) {
+      const svg = svgRef.current
+      const point = svg.createSVGPoint()
+      point.x = e.clientX
+      point.y = e.clientY
+      const ctm = svg.getScreenCTM()
+      if (ctm) {
+        const svgPoint = point.matrixTransform(ctm.inverse())
+        setClickCoords({ provinceId: id, x: svgPoint.x, y: svgPoint.y })
+      }
+    }
   }
+
+  const pinX = clickCoords && clickCoords.provinceId === selectedProvince
+    ? clickCoords.x
+    : selectedPath?.cx
+
+  const pinY = clickCoords && clickCoords.provinceId === selectedProvince
+    ? clickCoords.y
+    : selectedPath?.cy
 
   return (
     <div className="flex flex-col items-center justify-center p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm w-full relative">
       <svg
+        ref={svgRef}
         viewBox="0 0 800 330"
         className="w-full h-auto drop-shadow-md select-none"
         xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +132,7 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
               selectedProvince === p.id
                 ? "fill-red-400 dark:fill-red-800"
                 : hoveredProvince === p.id
-                ? "fill-red-300 dark:fill-red-900/50"
+                ? "fill-red-300 dark:fill-red-900/40"
                 : "fill-slate-300 dark:fill-slate-700"
             }`}
             onClick={(e) => handleClick(e, p.id)}
@@ -119,8 +142,8 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
         ))}
 
         {/* Selected province pin + name label */}
-        {selectedPath && (
-          <g transform={`translate(${selectedPath.cx}, ${selectedPath.cy})`} className="pointer-events-none">
+        {selectedPath && pinX !== undefined && pinY !== undefined && (
+          <g transform={`translate(${pinX}, ${pinY})`} className="pointer-events-none">
             {/* Bounce animation for pin */}
             <style dangerouslySetInnerHTML={{__html: `
               @keyframes bouncePin {
@@ -148,24 +171,23 @@ export default function NepalInteractiveMap({ selectedProvince, onSelectProvince
             
             {/* Province label badge */}
             <g transform="translate(0, 8)">
-              {/* Text background bubble */}
+              {/* Text background bubble - Clean translucent glassmorphic style (replaces the black box) */}
               <rect
                 x="-70"
                 y="0"
                 width="140"
                 height="22"
-                rx="11"
-                fill="#1E293B"
-                className="stroke-amber-500/50 stroke-1"
-                opacity="0.95"
+                rx="8"
+                fill="currentColor"
+                className="text-white/95 dark:text-slate-900/95 stroke-amber-500 stroke-1 drop-shadow-sm"
               />
               {/* Province label text */}
               <text
                 x="0"
                 y="14"
-                fill="#FFFFFF"
+                className="fill-slate-800 dark:fill-slate-100"
                 fontSize="10"
-                fontWeight="bold"
+                fontWeight="extrabold"
                 textAnchor="middle"
               >
                 {selectedPath.label}
