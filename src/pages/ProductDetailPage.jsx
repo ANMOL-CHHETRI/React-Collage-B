@@ -403,7 +403,7 @@ const ProductDetailPage = () => {
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [reviews, setReviews] = useState([]);
   // Quantity selected by the customer
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
@@ -595,7 +595,30 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <div className="flex flex-wrap items-center gap-4 pt-4">
+                {/* Quantity Selector */}
+                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden">
+                  {/* Decrease quantity */}
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  >
+                    −
+                  </button>
+
+                  {/* Current quantity */}
+                  <span className="px-5 font-semibold">{quantity}</span>
+
+                  {/* Increase quantity */}
+                  <button
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  >
+                    +
+                  </button>
+                </div>
+
+                //Add to cart button
                 <button
                   onClick={() => addToCart(product)}
                   className="flex-1 px-8 py-3.5 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
@@ -615,6 +638,7 @@ const ProductDetailPage = () => {
                   </svg>
                   Add to Cart
                 </button>
+//wishlist button
                 <button
                   onClick={() => toggleWishlist(product)}
                   className={`px-8 py-3.5 rounded-xl font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
