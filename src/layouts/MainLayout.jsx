@@ -1,7 +1,9 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
 import CartDrawer from "../components/CartDrawer";
+import WishlistModal from "../components/WishlistModal";
 import { Outlet } from "react-router-dom";
+
 
 const MainLayout = () => {
   return (
@@ -10,6 +12,7 @@ const MainLayout = () => {
       <main className="grow flex flex-col">
         <Outlet />
       </main>
+      <WishlistModal />
       <Footer />
       <CartDrawer />
     </div>
