@@ -1,5 +1,22 @@
 export const defaultProducts = [
   {
+  id: 1,
+  name: "Premium Dhaka Topi (Handwoven)",
+  price: 1200,
+  image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+  images: [
+    "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+    "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
+  ],
+  badge: "Best Seller",
+  category: "Traditional Apparel",
+  description:
+    "Authentic hand-loomed Dhaka Topi from Palpa, carefully woven by skilled artisans using traditional techniques.",
+  longDescription:
+    "Celebrate Nepalese heritage with this authentic handwoven Dhaka Topi, crafted by skilled artisans in Palpa using traditional weaving techniques passed down through generations. Made from premium-quality Dhaka fabric, this iconic cap is lightweight, comfortable, and durable. It is a perfect choice for festivals, weddings, formal events, cultural celebrations, or everyday traditional wear. Every purchase supports local craftsmen while helping preserve Nepal's rich textile traditions.",
+  addedBy: "admin",
+},
+  {
   id: 2,
   name: "Himalayan Orthodox Golden Tea",
   price: 850,
@@ -251,7 +268,7 @@ const mergeSavedProducts = (saved) => {
       existing.image.includes("80/7e/61") || 
       existing.image.includes("43/e7/70")
     const image = isOldOrBroken ? def.image : existing.image
-    return { ...existing, image }
+    return { ...existing, image, longDescription: def.longDescription }
   })
   
   // 2. Preserve any user-added products (id > 8)
@@ -263,7 +280,7 @@ const mergeSavedProducts = (saved) => {
 export const loadProducts = () => {
   try {
     // Version bump forces a refresh of cached products and clears old user sessions
-    const DATA_VERSION = "v6-pashmina-update-5"
+    const DATA_VERSION = "v7-long-description"
     const storedVersion = localStorage.getItem("shopease_data_version")
     if (storedVersion !== DATA_VERSION) {
       // Clear stale product cache so new default images are used
