@@ -29,12 +29,12 @@ const PwField = ({ label, value, onChange, show, onToggle, dark }) => (
         autoComplete="new-password"
         className={`w-full px-4 py-2.5 rounded-xl border outline-none transition text-sm pr-11
           ${dark
-            ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-            : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-red-500"
           }`}
       />
       <button type="button" onClick={onToggle}
-        className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-amber-400" : "text-gray-400 hover:text-amber-600"}`}>
+        className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-red-400" : "text-gray-400 hover:text-red-600"}`}>
         <EyeIcon show={show} />
       </button>
     </div>
@@ -208,8 +208,8 @@ const UserLoginPage = () => {
   /* ─────────── Shared input class ─────────── */
   const inputCls = `w-full px-4 py-2.5 rounded-xl border outline-none transition text-sm
     ${dark
-      ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-      : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"}`;
+      ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+      : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-red-500"}`;
 
   /* ══════════════════════════════════ RENDER ══════════════════════════════════ */
   return (
@@ -229,7 +229,7 @@ const UserLoginPage = () => {
             style={{ maxHeight:"92vh" }}>
 
             {/* Modal header */}
-            <div className="relative bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-6 py-5 rounded-t-3xl flex-shrink-0">
+            <div className="relative bg-gradient-to-r from-red-500 via-red-600 to-red-700 px-6 py-5 rounded-t-3xl flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +238,7 @@ const UserLoginPage = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white">Create New Account</h2>
-                  <p className="text-amber-100 text-xs mt-0.5">Join ShopEase Nepal — it's free forever</p>
+                  <p className="text-red-100 text-xs mt-0.5">Join ShopEase Nepal — it's free forever</p>
                 </div>
               </div>
               <button onClick={closeSignup} aria-label="Close"
@@ -309,7 +309,7 @@ const UserLoginPage = () => {
                 )}
 
                 <button type="submit"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer mt-1 flex items-center justify-center gap-2">
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer mt-1 flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
@@ -317,7 +317,7 @@ const UserLoginPage = () => {
                 </button>
                 <p className={`text-center text-xs pb-1 ${dark ? "text-slate-500" : "text-gray-400"}`}>
                   Already have an account?{" "}
-                  <button type="button" onClick={closeSignup} className="text-amber-500 font-semibold hover:underline cursor-pointer">
+                  <button type="button" onClick={closeSignup} className="text-red-500 font-semibold hover:underline cursor-pointer">
                     Sign in instead
                   </button>
                 </p>
@@ -329,9 +329,9 @@ const UserLoginPage = () => {
 
       {/* ─── Main Login Page ─── */}
       <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300
-        ${dark ? "bg-slate-950" : "bg-gradient-to-br from-amber-50 to-orange-100"}`}>
+        ${dark ? "bg-slate-950" : "bg-white"}`}>
         <div className={`rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl min-h-[580px] md:h-[620px] max-h-[95vh]
-          ${dark ? "bg-slate-900 shadow-slate-900/80" : "bg-white"}`}>
+          ${dark ? "bg-slate-900 border border-slate-800 shadow-slate-900/80" : "bg-white border border-slate-200"}`}>
 
           {/* ── Left banner with 4-corner Easter egg ── */}
           <div className={`hidden md:block md:w-2/5 relative overflow-hidden ${dark ? "bg-slate-800" : "bg-amber-50"}`}>
@@ -377,7 +377,7 @@ const UserLoginPage = () => {
                     width: 10,
                     height: 10,
                     borderRadius: "50%",
-                    background: "#f59e0b",
+                    background: "#ef4444",
                     opacity: cornersHit.has(id) && cornerFlash !== id ? 0.55 : 0,
                     /* position dot toward inner corner */
                     top:    id.startsWith("t") ? 12 : "auto",
@@ -385,7 +385,7 @@ const UserLoginPage = () => {
                     left:   id.endsWith("l")   ? 12 : "auto",
                     right:  id.endsWith("r")   ? 12 : "auto",
                     transition: "opacity .3s",
-                    boxShadow: "0 0 6px 2px rgba(245,158,11,.6)",
+                    boxShadow: "0 0 6px 2px rgba(239,68,68,.6)",
                     pointerEvents: "none",
                   }}
                 />
@@ -404,7 +404,7 @@ const UserLoginPage = () => {
               <div className="text-center mb-8">
                 <div 
                   onClick={handleIconClick}
-                  className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-500/25 rotate-3 cursor-pointer select-none"
+                  className="mx-auto w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-red-500/25 rotate-3 cursor-pointer select-none"
                 >
                   <svg className="w-8 h-8 text-white -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {recoveryMode
@@ -470,13 +470,13 @@ const UserLoginPage = () => {
                           className={`${inputCls} pr-11`}
                           autoComplete="current-password" />
                         <button type="button" onClick={()=>setShowLoginPw(p=>!p)}
-                          className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-amber-400" : "text-gray-400 hover:text-amber-600"}`}>
+                          className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-red-400" : "text-gray-400 hover:text-red-600"}`}>
                           <EyeIcon show={showLoginPw} />
                         </button>
                       </div>
                       <div className="flex justify-end mt-1">
                         <button type="button" onClick={()=>{setRecoveryMode(true);setError("");}}
-                          className="text-xs text-amber-500 hover:underline cursor-pointer">
+                          className="text-xs text-red-500 hover:underline cursor-pointer">
                           Forgot Password?
                         </button>
                       </div>
@@ -498,9 +498,9 @@ const UserLoginPage = () => {
                 {/* Sign up link */}
                 <div className="flex items-center">
                   <button type="button" onClick={openSignup}
-                    className="flex items-center gap-1.5 text-sm text-amber-500 hover:text-amber-600 font-medium hover:underline cursor-pointer group">
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center transition ${dark ? "bg-amber-900/40 group-hover:bg-amber-800/50" : "bg-amber-100 group-hover:bg-amber-200"}`}>
-                      <svg className="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-medium hover:underline cursor-pointer group">
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center transition ${dark ? "bg-red-900/40 group-hover:bg-red-800/50" : "bg-red-100 group-hover:bg-red-200"}`}>
+                      <svg className="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                       </svg>
                     </span>
@@ -510,13 +510,13 @@ const UserLoginPage = () => {
 
                 {/* Submit */}
                 <button type="submit"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg shadow-amber-500/20">
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg shadow-red-500/20">
                   {recoveryMode ? (identityVerified ? "Reset Password" : "Verify Identity") : "Sign In"}
                 </button>
               </form>
 
               <p className="text-center text-sm mt-6">
-                <Link to="/" className="text-amber-500 font-medium hover:underline">← Back to store</Link>
+                <Link to="/" className="text-red-500 font-medium hover:underline">← Back to store</Link>
               </p>
             </div>
           </div>

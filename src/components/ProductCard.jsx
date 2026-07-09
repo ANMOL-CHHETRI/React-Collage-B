@@ -54,6 +54,7 @@ const ProductCard = ({ product }) => {
   };
 
   const getBadge = () => {
+    if (product.stock === 0) return { label: "Out of Stock", cls: "bg-red-600 text-white border border-red-700/50" };
     if (product.id === 1) return { label: "👑 Most Sold", cls: "bg-amber-400 text-slate-900" };
     if (product.badge === "Hot Deal") return { label: "🔥 Hot Deal", cls: "bg-red-500 text-white" };
     if (product.badge === "New") return { label: "✨ New", cls: "bg-emerald-500 text-white" };
@@ -72,7 +73,7 @@ const ProductCard = ({ product }) => {
           <ImageWithSkeleton
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+            className={`w-full h-full object-cover transition-transform duration-700 ease-out ${product.stock === 0 ? "grayscale opacity-80" : "group-hover:scale-110"}`}
           />
         </Link>
 
@@ -103,14 +104,19 @@ const ProductCard = ({ product }) => {
         {/* Hover overlay CTA */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out p-3">
           <button
-            onClick={handleAddToCart}
-            className={`w-full font-bold py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
-              added
-                ? "bg-green-500 text-white"
-                : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-amber-600 dark:hover:bg-amber-500 dark:hover:text-white"
+            onClick={product.stock === 0 ? undefined : handleAddToCart}
+            disabled={product.stock === 0}
+            className={`w-full font-bold py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
+              product.stock === 0
+                ? "bg-slate-800/90 backdrop-blur-md text-white cursor-not-allowed"
+                : added
+                ? "bg-green-500 text-white cursor-pointer"
+                : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-amber-600 dark:hover:bg-amber-500 dark:hover:text-white cursor-pointer"
             }`}
           >
-            {added ? (
+            {product.stock === 0 ? (
+              "Out of Stock"
+            ) : added ? (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
@@ -159,14 +165,17 @@ const ProductCard = ({ product }) => {
             </span>
           </div>
           <button
-            onClick={handleAddToCart}
-            className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer ${
-              added
-                ? "bg-green-50 text-green-600 dark:bg-green-950/30 dark:text-green-400"
-                : "bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-500 text-amber-700 dark:text-amber-400 hover:text-white flex items-center gap-1"
+            onClick={product.stock === 0 ? undefined : handleAddToCart}
+            disabled={product.stock === 0}
+            className={`text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 active:scale-95 ${
+              product.stock === 0
+                ? "bg-gray-100 dark:bg-slate-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : added
+                ? "bg-green-50 text-green-600 dark:bg-green-950/30 dark:text-green-400 cursor-pointer"
+                : "bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-500 text-amber-700 dark:text-amber-400 hover:text-white flex items-center gap-1 cursor-pointer"
             }`}
           >
-            {added ? "✓ Added" : (
+            {product.stock === 0 ? "Out" : added ? "✓ Added" : (
               <>
                 <svg className="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

@@ -50,8 +50,8 @@ const Router = () => {
           </Route>
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />
-          <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/user-login" element={<UserLoginPage />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/user/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
           <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfilePage /></ProtectedRoute>} />
           {/* /dashboard/crud route removed — product CRUD is now in /admin/dashboard Products section */}

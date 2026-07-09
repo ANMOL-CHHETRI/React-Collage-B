@@ -59,7 +59,7 @@ const sidebarItems = [
   { id: "settings", label: "Settings" },
 ]
 
-const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
+const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "", stock: "0" }
 
 const AdminDashboard = () => {
   const { 
@@ -205,8 +205,14 @@ const AdminDashboard = () => {
       toastError("Please enter a valid price.")
       return
     }
+    
+    const parsedStock = parseInt(form.stock, 10)
+    if (isNaN(parsedStock) || parsedStock < 0) {
+      toastError("Please enter a valid stock quantity.")
+      return
+    }
 
-    const payload = { ...form, price: parsedPrice }
+    const payload = { ...form, price: parsedPrice, stock: parsedStock }
     if (editing) {
       updateProduct(editing.id, payload)
       success("Product updated successfully")
@@ -220,7 +226,7 @@ const AdminDashboard = () => {
   }
 
   const handleEdit = (product) => {
-    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "" })
+    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "", stock: String(product.stock || 0) })
     setEditing(product)
     setShowForm(true)
   }
@@ -431,6 +437,10 @@ const AdminDashboard = () => {
                           <input type="number" step="0.01" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
                         </div>
                         <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
+                          <input type="number" min="0" required value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
+                        </div>
+                        <div className="flex-1">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
                           <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
                             <option>Traditional Apparel</option>
@@ -474,6 +484,7 @@ const AdminDashboard = () => {
                         <th className="px-4 py-3 font-medium">Name</th>
                         <th className="px-4 py-3 font-medium">Category</th>
                         <th className="px-4 py-3 font-medium">Price</th>
+                        <th className="px-4 py-3 font-medium">Stock</th>
                         <th className="px-4 py-3 font-medium">Added By</th>
                         <th className="px-4 py-3 font-medium">Rating</th>
                         <th className="px-4 py-3 font-medium text-right">Actions</th>
@@ -504,6 +515,13 @@ const AdminDashboard = () => {
                               <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{product.name}</td>
                               <td className="px-4 py-3"><span className="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-md text-xs">{product.category}</span></td>
                               <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">₨{product.price}</td>
+                              <td className="px-4 py-3">
+                                {product.stock === 0 ? (
+                                  <span className="px-2 py-1 bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 rounded-md text-xs font-bold whitespace-nowrap">Out of Stock</span>
+                                ) : (
+                                  <span className="text-gray-700 dark:text-gray-300 font-medium">{product.stock || 0}</span>
+                                )}
+                              </td>
                               <td className="px-4 py-3">
                                 <span className={`text-xs font-medium ${product.addedBy === "admin" ? "text-amber-600 dark:text-amber-400" : "text-blue-600 dark:text-blue-400"}`}>{product.addedBy}</span>
                               </td>
