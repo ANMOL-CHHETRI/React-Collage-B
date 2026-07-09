@@ -62,9 +62,41 @@ const CartDrawer = () => {
   const [city, setCity] = useState(provincesData["bagmati"]?.cities?.[0] || "");
   const [address, setAddress] = useState("");
 
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [promoError, setPromoError] = useState("");
+
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(null);
+
+  const handleApplyPromo = () => {
+    if (!promoCode.trim()) return;
+    const rawCoupons = localStorage.getItem("shopease_coupons");
+    const coupons = rawCoupons ? JSON.parse(rawCoupons) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+    
+    const found = coupons.find(c => c.code === promoCode.trim().toUpperCase());
+    if (found) {
+      setAppliedCoupon(found);
+      setPromoError("");
+    } else {
+      setAppliedCoupon(null);
+      setPromoError("Invalid promo code");
+    }
+  };
+
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+    let totalDiscount = 0;
+    cartItems.forEach(item => {
+      if (appliedCoupon.creator === "admin" || item.addedBy === appliedCoupon.creator) {
+        totalDiscount += (item.price * item.quantity) * (appliedCoupon.percent / 100);
+      }
+    });
+    return Math.floor(totalDiscount);
+  };
+
+  const discountAmount = calculateDiscount();
 
   const [prevUser, setPrevUser] = useState(user);
   if (user !== prevUser) {
@@ -96,7 +128,7 @@ const CartDrawer = () => {
       const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
       const estDays = provincesData[provinceValue]?.estDelivery || "2-4 Days";
       const shippingFee = provincesData[provinceValue]?.shippingFee || 0;
-      const grandTotal = cartSubtotal + shippingFee;
+      const grandTotal = cartSubtotal + shippingFee - discountAmount;
 
       const simulatedOrder = {
         orderId,
@@ -108,6 +140,7 @@ const CartDrawer = () => {
         provinceName: provincesData[provinceValue]?.name || "Bagmati",
         items: [...cartItems],
         subtotal: cartSubtotal,
+        discount: discountAmount,
         shipping: shippingFee,
         total: grandTotal,
         estDays,
@@ -220,13 +253,20 @@ const CartDrawer = () => {
                         Phone Number (Nepal)
                       </label>
                       <input
-                        type="tel"
+                        type="text"
                         required
+                        maxLength={10}
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setPhone(val);
+                        }}
                         placeholder="98XXXXXXXX"
-                        className="w-full text-xs border border-slate-200 rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 bg-slate-50 focus:bg-white transition"
+                        className={`w-full text-xs border ${phone && phone.length > 0 && phone.length < 10 ? 'border-red-500' : 'border-slate-200'} rounded-xl py-2.5 px-3 focus:outline-none focus:border-amber-500 text-slate-700 bg-slate-50 focus:bg-white transition`}
                       />
+                      {phone && phone.length > 0 && phone.length < 10 && (
+                        <p className="text-red-500 text-[10px] mt-0.5">Phone number must be exactly 10 digits.</p>
+                      )}
                     </div>
 
                     <div className="space-y-1">
@@ -295,8 +335,8 @@ const CartDrawer = () => {
 
                     <button
                       type="submit"
-                      disabled={isPlacingOrder}
-                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-6 cursor-pointer disabled:opacity-70 flex items-center justify-center"
+                      disabled={isPlacingOrder || (phone.length > 0 && phone.length < 10)}
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                       {isPlacingOrder ? (
                         <>
@@ -401,6 +441,30 @@ const CartDrawer = () => {
                       Rs. {cartSubtotal.toLocaleString()}
                     </span>
                   </div>
+
+                  {/* Promo Code Input */}
+                  <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Promo Code (Optional)</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        value={promoCode}
+                        onChange={e => { setPromoCode(e.target.value); setPromoError(""); }}
+                        className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white uppercase text-xs" 
+                        placeholder="Enter coupon code"
+                      />
+                      <button 
+                        onClick={handleApplyPromo}
+                        className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-lg transition cursor-pointer text-xs"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {promoError && <p className="text-red-500 text-[10px] mt-1 font-bold">{promoError}</p>}
+                    {appliedCoupon && discountAmount > 0 && <p className="text-emerald-600 text-[10px] mt-1 font-bold">Promo code applied!</p>}
+                    {appliedCoupon && discountAmount === 0 && <p className="text-orange-500 text-[10px] mt-1 font-bold">Coupon doesn't apply to these items.</p>}
+                  </div>
+
                   <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
                     <span>
                       Shipping calculated at checkout. Delivery across Nepal.
@@ -438,6 +502,16 @@ const CartDrawer = () => {
                       Rs. {cartSubtotal.toLocaleString()}
                     </span>
                   </div>
+                  {appliedCoupon && discountAmount > 0 && (
+                    <div className="flex justify-between text-emerald-600">
+                      <span className="font-bold">
+                        Discount ({appliedCoupon.percent}%):
+                      </span>
+                      <span className="font-bold">
+                        - Rs. {discountAmount.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400 font-medium">
                       Shipping ({provincesData[provinceValue].name}):
@@ -453,7 +527,7 @@ const CartDrawer = () => {
                     <span className="text-amber-600 dark:text-amber-400 font-extrabold">
                       Rs.{" "}
                       {(
-                        cartSubtotal + provincesData[provinceValue].shippingFee
+                        cartSubtotal + provincesData[provinceValue].shippingFee - discountAmount
                       ).toLocaleString()}
                     </span>
                   </div>

@@ -30,12 +30,26 @@ const UserProfilePage = () => {
   const [saved, setSaved] = useState(false)
 
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value })
-    setSaved(false)
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      // Only allow digits and slice to 10
+      const val = value.replace(/\D/g, '').slice(0, 10);
+      setProfile({ ...profile, phone: val });
+    } else {
+      setProfile({ ...profile, [name]: value });
+    }
+    setSaved(false);
   }
 
   const handleSave = (e) => {
     e.preventDefault()
+    
+    // Validate phone number before saving
+    if (profile.phone && !/^\d{10}$/.test(profile.phone)) {
+      alert("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
     if (updateProfile) {
       updateProfile(profile)
@@ -114,13 +128,17 @@ const UserProfilePage = () => {
               Phone Number
             </label>
             <input
-              type="tel"
+              type="text"
               name="phone"
+              maxLength={10}
               value={profile.phone}
               onChange={handleChange}
               placeholder="98XXXXXXXX"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition"
+              className={`w-full px-4 py-3 rounded-xl border ${profile.phone && profile.phone.length > 0 && profile.phone.length < 10 ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : 'border-gray-300 focus:border-amber-500 focus:ring-amber-100'} focus:ring-4 outline-none transition`}
             />
+            {profile.phone && profile.phone.length > 0 && profile.phone.length < 10 && (
+              <p className="text-red-500 text-xs mt-1 font-medium">Phone number must be exactly 10 digits.</p>
+            )}
           </div>
 
           <div>

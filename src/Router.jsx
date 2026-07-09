@@ -24,6 +24,7 @@ import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import WishlistPage from "./pages/WishlistPage"
 import CoworkingPage from "./pages/CoworkingPage"
+import SearchPage from "./pages/SearchPage"
 
 const Router = () => {
   return (
@@ -45,6 +46,7 @@ const Router = () => {
           <Route path="/coworking" element={<CoworkingPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />
           <Route path="*" element={<NotFoundPage />} />
           </Route>

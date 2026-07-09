@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProducts } from "../context/ProductContext";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
 import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
+import CheckoutModal from "../components/CheckoutModal";
 
 // ── Skeleton image loader ───────────────────────────────────────────────────
 const ImageWithSkeleton = ({ src, alt, className }) => {
@@ -414,6 +416,39 @@ const ProductDetailPage = () => {
     message: "",
   });
   const [contactModal, setContactModal] = useState(false);
+  
+  // Quick Buy state
+  const [quickPhone, setQuickPhone] = useState("");
+  const [quickPromo, setQuickPromo] = useState("");
+  const [quickPromoError, setQuickPromoError] = useState("");
+  const [appliedQuickPromo, setAppliedQuickPromo] = useState(null);
+  const [quickCheckoutModal, setQuickCheckoutModal] = useState(false);
+  const { error: toastError } = useToast();
+  const navigate = useNavigate();
+
+  const handleApplyQuickPromo = () => {
+    if (!quickPromo.trim()) return;
+    const rawCoupons = localStorage.getItem("shopease_coupons");
+    const coupons = rawCoupons ? JSON.parse(rawCoupons) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+    const found = coupons.find(c => c.code === quickPromo.trim().toUpperCase());
+    if (found) {
+      if (found.creator === "admin" || product.addedBy === found.creator) {
+        setAppliedQuickPromo(found);
+        setQuickPromoError("");
+      } else {
+        setAppliedQuickPromo(null);
+        setQuickPromoError("Coupon doesn't apply to this product.");
+      }
+    } else {
+      setAppliedQuickPromo(null);
+      setQuickPromoError("Invalid promo code.");
+    }
+  };
+
+  const calculateQuickDiscount = () => {
+    if (!appliedQuickPromo) return 0;
+    return Math.floor((product.price * quantity) * (appliedQuickPromo.percent / 100));
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
@@ -625,24 +660,24 @@ const ProductDetailPage = () => {
 
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-10 bg-slate-200">
+                <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-11 bg-slate-200">
                   {/* Decrease quantity */}
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
+                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 cursor-pointer"
                   >
                     −
                   </button>
 
                   {/* Current quantity */}
-                  <span className="w-7 text-center text-sm font-medium">
+                  <span className="w-10 text-center font-bold">
                     {quantity}
                   </span>
 
                   {/* Increase quantity */}
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-6 h-8 flex items-center justify-center text-sm hover:bg-slate-100"
+                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 cursor-pointer"
                   >
                     +
                   </button>
@@ -650,7 +685,7 @@ const ProductDetailPage = () => {
                 {/*Add to cart button*/}
                 <button
                   onClick={() => addToCart(product, quantity)}
-                  className="flex-1 px-6 py-2.5 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 h-11 px-6 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -670,7 +705,7 @@ const ProductDetailPage = () => {
                 {/*wishlist button*/}
                 <button
                   onClick={() => toggleWishlist(product)}
-                  className={`px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
+                  className={`h-11 px-6 rounded-xl font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
                     isInWishlist(product.id)
                       ? "bg-red-50 text-red-500 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:border-red-900"
                       : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800"
@@ -690,6 +725,68 @@ const ProductDetailPage = () => {
                     />
                   </svg>
                   {isInWishlist(product.id) ? "Wishlisted" : "Wishlist"}
+                </button>
+              </div>
+
+              {/* Quick Buy directly on Product Page */}
+              <div className="mt-8 p-5 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/30 rounded-2xl space-y-4 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z"/></svg>
+                </div>
+                <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-2 relative z-10">
+                  <svg className="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                  Buy It Now
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">Phone (Required)</label>
+                    <input 
+                      type="text" 
+                      maxLength={10} 
+                      placeholder="98XXXXXXXX" 
+                      value={quickPhone}
+                      onChange={(e) => setQuickPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      className={`w-full px-4 py-2.5 bg-white dark:bg-slate-950 border ${quickPhone && quickPhone.length > 0 && quickPhone.length < 10 ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-800 focus:ring-orange-500'} rounded-xl focus:ring-2 outline-none text-sm font-bold text-slate-900 dark:text-white transition-all`}
+                    />
+                    {quickPhone && quickPhone.length > 0 && quickPhone.length < 10 && <p className="text-red-500 text-[10px] mt-1 font-bold">Exactly 10 digits required.</p>}
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">Coupon (Optional)</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="CODE" 
+                        value={quickPromo}
+                        onChange={(e) => { setQuickPromo(e.target.value.toUpperCase()); setQuickPromoError(""); }}
+                        className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm font-bold text-slate-900 dark:text-white uppercase transition-all"
+                      />
+                      <button onClick={handleApplyQuickPromo} className="px-3 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl font-bold text-xs transition cursor-pointer">
+                        Apply
+                      </button>
+                    </div>
+                    {quickPromoError && <p className="text-red-500 text-[10px] mt-1 font-bold">{quickPromoError}</p>}
+                    {appliedQuickPromo && calculateQuickDiscount() > 0 && <p className="text-emerald-600 dark:text-emerald-400 text-[10px] mt-1 font-bold">Applied: -Rs. {calculateQuickDiscount()}</p>}
+                  </div>
+                </div>
+                <button 
+                  onClick={() => {
+                    if (!user) {
+                      toastError("Please log in to buy this product.");
+                      navigate("/user-login");
+                      return;
+                    }
+                    if (!quickPhone || quickPhone.length < 10) {
+                      toastError("Please enter a valid 10-digit phone number.");
+                      return;
+                    }
+                    // Temporarily store quick checkout info in session for the modal
+                    sessionStorage.setItem("shopease_quick_checkout_phone", quickPhone);
+                    setQuickCheckoutModal(true);
+                  }}
+                  disabled={!quickPhone || quickPhone.length < 10}
+                  className="w-full h-12 bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 relative z-10"
+                >
+                  Confirm Quick Purchase (Rs. {((product.price * quantity) - calculateQuickDiscount()).toLocaleString()})
                 </button>
               </div>
             </div>
@@ -810,81 +907,51 @@ const ProductDetailPage = () => {
           </div>
         )}
 
+        {/* Contact Us Tab Content */}
         {activeTab === "contact" && (
-          <div className="mt-8">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-8">
-              <form onSubmit={handleContactSubmit}>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Email */}
+          <div className="mt-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-8 space-y-6">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                Contact the Seller
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Have questions about {product.name}? Need custom sizing or bulk
+                orders? Send a message directly to the seller.
+              </p>
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 font-medium">
-                      Email address <span className="text-red-500">*</span>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                      Name
                     </label>
-
                     <input
-                      type="email"
-                      name="email"
-                      value={contactForm.email}
-                      onChange={handleContactChange}
-                      placeholder="Enter your email address"
                       required
-                      className="w-full border rounded-lg px-4 py-3"
-                    />
-                  </div>
-
-                  {/* Name */}
-                  <div>
-                    <label className="block mb-2 font-medium">
-                      Name <span className="text-red-500">*</span>
-                    </label>
-
-                    <input
                       type="text"
                       name="name"
                       value={contactForm.name}
                       onChange={handleContactChange}
-                      placeholder="Name"
-                      required
-                      className="w-full border rounded-lg px-4 py-3"
+                      className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
-
-                  {/* Phone */}
                   <div>
-                    <label className="block mb-2 font-medium">Phone</label>
-
-                    <input
-                      type="text"
-                      name="phone"
-                      value={contactForm.phone}
-                      onChange={handleContactChange}
-                      placeholder="Phone"
-                      className="w-full border rounded-lg px-4 py-3"
-                    />
-                  </div>
-
-                  {/* Message */}
-                  <div>
-                    <label className="block mb-2 font-medium">
-                      Message <span className="text-red-500">*</span>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                      Email
                     </label>
-
-                    <textarea
-                      rows="4"
-                      name="message"
-                      value={contactForm.message}
-                      onChange={handleContactChange}
-                      placeholder="Enter message"
+                    <input
                       required
-                      className="w-full border rounded-lg px-4 py-3 resize-none"
+                      type="email"
+                      name="email"
+                      value={contactForm.email}
+                      onChange={handleContactChange}
+                      className="w-full border rounded-lg px-4 py-3"
                     />
                   </div>
                 </div>
-
-                <div className="flex justify-end mt-8">
+                
+                <div className="flex justify-end mt-4">
                   <button
                     type="submit"
-                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition"
+                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition cursor-pointer"
                   >
                     Send Message
                   </button>
@@ -913,7 +980,40 @@ const ProductDetailPage = () => {
         product={product}
         onClose={() => setContactModal(false)}
       />
+
+      {/* Quick Buy Checkout Modal Wrapper */}
+      {quickCheckoutModal && (
+        <QuickCheckoutWrapper 
+          isOpen={quickCheckoutModal} 
+          onClose={() => {
+            setQuickCheckoutModal(false);
+            sessionStorage.removeItem("shopease_quick_checkout_phone");
+          }} 
+          product={product}
+          quantity={quantity}
+          appliedQuickPromo={appliedQuickPromo}
+          calculateQuickDiscount={calculateQuickDiscount}
+        />
+      )}
     </div>
+  );
+};
+
+// Wrapper component to render CheckoutModal for a single product bypassing the cart context
+const QuickCheckoutWrapper = ({ isOpen, onClose, product, quantity, appliedQuickPromo, calculateQuickDiscount }) => {
+  const quickTotal = product.price * quantity;
+  const quickDiscount = calculateQuickDiscount();
+
+  return (
+    <CheckoutModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      grandTotal={quickTotal}
+      discountAmount={quickDiscount}
+      discountPercent={appliedQuickPromo?.percent || 0}
+      promoCode={appliedQuickPromo?.code || ""}
+      singleProduct={{...product, quantity}}
+    />
   );
 };
 

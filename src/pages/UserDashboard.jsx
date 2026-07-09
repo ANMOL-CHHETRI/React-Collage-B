@@ -129,6 +129,8 @@ const UserDashboard = () => {
   };
 
   const [rawOrders, setRawOrders] = useState([])
+  const [coupons, setCoupons] = useState([])
+  const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
     try {
@@ -160,8 +162,13 @@ const UserDashboard = () => {
       
       const baseOrders = user?.username === "user" ? initialOrders : []
       const orders = [...formattedDynamicOrders, ...baseOrders]
+      
+      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
+      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
+
       const timer = setTimeout(() => {
         setRawOrders(orders)
+        setCoupons(loadedCoupons)
       }, 0)
       return () => clearTimeout(timer)
     } catch (e) {
@@ -297,12 +304,25 @@ const UserDashboard = () => {
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
-    updateProfile({
+    
+    // Validate phone number before saving
+    if (profilePhone && !/^\d{10}$/.test(profilePhone)) {
+      toastError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
+    const updatedProfile = {
       name: profileName,
       email: profileEmail,
       phone: profilePhone,
-      address: profileAddress,
-    })
+      address: profileAddress
+    }
+    localStorage.setItem("shopease_profile", JSON.stringify(updatedProfile))
+    
+    if (updateProfile) {
+      updateProfile(updatedProfile)
+    }
+    
     setProfileSaved(true)
     setTimeout(() => setProfileSaved(false), 3000)
   }
@@ -829,12 +849,19 @@ const UserDashboard = () => {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Phone Number (Nepal)</label>
                   <input
-                    type="tel"
+                    type="text"
                     required
+                    maxLength={10}
                     value={profilePhone}
-                    onChange={(e) => setProfilePhone(e.target.value)}
-                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setProfilePhone(val);
+                    }}
+                    className={`w-full text-sm border ${profilePhone && profilePhone.length > 0 && profilePhone.length < 10 ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition`}
                   />
+                  {profilePhone && profilePhone.length > 0 && profilePhone.length < 10 && (
+                    <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Default Delivery Address</label>
@@ -1052,13 +1079,20 @@ const UserDashboard = () => {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Business Phone</label>
                     <input
-                      type="tel"
+                      type="text"
                       required
+                      maxLength={10}
                       placeholder="e.g. 98XXXXXXXX"
                       value={contactNumber}
-                      onChange={(e) => setContactNumber(e.target.value)}
-                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setContactNumber(val);
+                      }}
+                      className={`w-full text-sm border ${contactNumber && contactNumber.length > 0 && contactNumber.length < 10 ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition`}
                     />
+                    {contactNumber && contactNumber.length > 0 && contactNumber.length < 10 && (
+                      <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
+                    )}
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Business Address</label>
@@ -1143,6 +1177,16 @@ const UserDashboard = () => {
                   }`}
                 >
                   Customers
+                </button>
+                <button
+                  onClick={() => setSellerTab("coupons")}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
+                    sellerTab === "coupons" 
+                      ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow" 
+                      : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  Coupons
                 </button>
               </div>
 
@@ -1403,6 +1447,111 @@ const UserDashboard = () => {
             )}
           </div>
             </>
+          ) : sellerTab === "coupons" ? (
+            <div className="max-w-4xl space-y-6">
+              <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Create New Coupon</h3>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!couponForm.code.trim() || !couponForm.percent) return;
+                    
+                    const code = couponForm.code.trim().toUpperCase();
+                    if (coupons.some(c => c.code === code)) {
+                      toastError("Coupon code already exists!");
+                      return;
+                    }
+                    
+                    const percent = parseInt(couponForm.percent, 10);
+                    if (percent <= 0 || percent > 100) {
+                      toastError("Percentage must be between 1 and 100");
+                      return;
+                    }
+
+                    const newCoupon = {
+                      code,
+                      percent,
+                      creator: user?.username || "user"
+                    };
+
+                    const updatedCoupons = [...coupons, newCoupon];
+                    setCoupons(updatedCoupons);
+                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                    setCouponForm({ code: "", percent: "" });
+                    success("Coupon created successfully!");
+                  }}
+                  className="flex flex-wrap items-end gap-4"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Coupon Code</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={couponForm.code} 
+                      onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })} 
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition" 
+                      placeholder="e.g. SUMMER50"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Discount (%)</label>
+                    <input 
+                      type="number" 
+                      min="1" max="100"
+                      required
+                      value={couponForm.percent} 
+                      onChange={(e) => setCouponForm({ ...couponForm, percent: e.target.value })} 
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition" 
+                      placeholder="e.g. 20"
+                    />
+                  </div>
+                  <button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition cursor-pointer shadow h-[42px]">
+                    + Create Coupon
+                  </button>
+                </form>
+              </div>
+
+              <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">My Active Coupons</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-slate-900 text-slate-400 uppercase tracking-wider font-bold">
+                        <th className="py-3 px-4">Code</th>
+                        <th className="py-3 px-4">Discount</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-900">
+                      {coupons.filter(c => c.creator === user?.username).map((coupon) => (
+                        <tr key={coupon.code} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
+                          <td className="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">{coupon.code}</td>
+                          <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold">{coupon.percent}%</td>
+                          <td className="py-3 px-4 text-right space-x-2 shrink-0">
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete coupon ${coupon.code}?`)) {
+                                  const updated = coupons.filter(c => c.code !== coupon.code);
+                                  setCoupons(updated);
+                                  localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                  success("Coupon deleted.");
+                                }
+                              }}
+                              className="bg-red-50 dark:bg-red-950/20 hover:bg-red-100 text-red-700 dark:text-red-400 font-bold py-1.5 px-3 rounded-lg transition cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {coupons.filter(c => c.creator === user?.username).length === 0 && (
+                        <tr><td colSpan="3" className="py-8 text-center text-slate-500">You haven't created any coupons yet.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Your Customers</h3>

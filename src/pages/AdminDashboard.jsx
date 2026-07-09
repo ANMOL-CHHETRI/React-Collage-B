@@ -55,6 +55,7 @@ const sidebarItems = [
   { id: "products", label: "Products" },
   { id: "orders", label: "Orders" },
   { id: "users", label: "Users" },
+  { id: "coupons", label: "Coupons" },
   { id: "messages", label: "Messages" },
   { id: "settings", label: "Settings" },
 ]
@@ -100,6 +101,10 @@ const AdminDashboard = () => {
   const [adminMessages, setAdminMessages] = useState([])
   const [viewingOrder, setViewingOrder] = useState(null)
   const [adminNote, setAdminNote] = useState("")
+  
+  // Coupons state
+  const [coupons, setCoupons] = useState([])
+  const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
     try {
@@ -107,10 +112,13 @@ const AdminDashboard = () => {
       const orders = Array.isArray(rawOrders) ? rawOrders : []
       const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
       const messages = Array.isArray(rawMessages) ? rawMessages : []
+      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
+      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
       
       const timer = setTimeout(() => {
         setAdminOrders(orders)
         setAdminMessages(messages)
+        setCoupons(loadedCoupons)
       }, 0)
       return () => clearTimeout(timer)
     } catch (e) {
@@ -243,6 +251,7 @@ const AdminDashboard = () => {
     products: "Products",
     orders: "Orders",
     users: "Users",
+    coupons: "Coupons",
     messages: "Messages",
     settings: "Settings",
   }
@@ -681,6 +690,131 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== COUPONS SECTION ===== */}
+          {activeSection === "coupons" && (
+            <div className="max-w-4xl space-y-6">
+              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Coupon</h3>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!couponForm.code.trim() || !couponForm.percent) return;
+                    
+                    const code = couponForm.code.trim().toUpperCase();
+                    if (coupons.some(c => c.code === code)) {
+                      toastError("Coupon code already exists!");
+                      return;
+                    }
+                    
+                    const percent = parseInt(couponForm.percent, 10);
+                    if (percent <= 0 || percent > 100) {
+                      toastError("Percentage must be between 1 and 100");
+                      return;
+                    }
+
+                    const newCoupon = {
+                      code,
+                      percent,
+                      creator: user?.username || "admin"
+                    };
+
+                    const updatedCoupons = [...coupons, newCoupon];
+                    setCoupons(updatedCoupons);
+                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                    setCouponForm({ code: "", percent: "" });
+                    success("Coupon created successfully!");
+                  }}
+                  className="flex flex-wrap items-end gap-4"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Coupon Code</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={couponForm.code} 
+                      onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })} 
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" 
+                      placeholder="e.g. SUMMER50"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discount (%)</label>
+                    <input 
+                      type="number" 
+                      min="1" max="100"
+                      required
+                      value={couponForm.percent} 
+                      onChange={(e) => setCouponForm({ ...couponForm, percent: e.target.value })} 
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" 
+                      placeholder="e.g. 20"
+                    />
+                  </div>
+                  <button type="submit" className="bg-amber-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition cursor-pointer">
+                    + Create Coupon
+                  </button>
+                </form>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Coupons</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-950">
+                        <th className="px-6 py-3 font-medium">Code</th>
+                        <th className="px-6 py-3 font-medium">Discount</th>
+                        <th className="px-6 py-3 font-medium">Created By</th>
+                        <th className="px-6 py-3 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {coupons.map((coupon) => {
+                        const isOwner = isAdmin || coupon.creator === user?.username;
+                        return (
+                          <tr key={coupon.code} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
+                            <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{coupon.code}</td>
+                            <td className="px-6 py-4 text-emerald-600 dark:text-emerald-400 font-bold">{coupon.percent}%</td>
+                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
+                              {coupon.creator === "admin" ? (
+                                <span className="text-amber-600 dark:text-amber-400 font-medium">Admin</span>
+                              ) : (
+                                <span className="text-blue-600 dark:text-blue-400 font-medium">{coupon.creator}</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              {isOwner ? (
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Delete coupon ${coupon.code}?`)) {
+                                      const updated = coupons.filter(c => c.code !== coupon.code);
+                                      setCoupons(updated);
+                                      localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                      success("Coupon deleted.");
+                                    }
+                                  }}
+                                  className="px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 transition cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              ) : (
+                                <span className="text-xs text-gray-400">Read Only</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {coupons.length === 0 && (
+                        <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">No active coupons found.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

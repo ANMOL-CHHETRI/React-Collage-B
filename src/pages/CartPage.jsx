@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import CheckoutModal from "../components/CheckoutModal"
 
+
   const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
   const { user } = useAuth()
@@ -16,8 +17,27 @@ import CheckoutModal from "../components/CheckoutModal"
   const [loading, setLoading] = useState(true)
   const [checkoutModal, setCheckoutModal] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
+  
+  const [promoCode, setPromoCode] = useState("")
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [promoError, setPromoError] = useState("")
+
   const { error: toastError } = useToast()
   const navigate = useNavigate()
+
+  const handleApplyPromo = () => {
+    const rawCoupons = localStorage.getItem("shopease_coupons");
+    const coupons = rawCoupons ? JSON.parse(rawCoupons) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+    
+    const found = coupons.find(c => c.code === promoCode.trim().toUpperCase());
+    if (found) {
+      setAppliedCoupon(found);
+      setPromoError("");
+    } else {
+      setAppliedCoupon(null);
+      setPromoError("Invalid or expired promo code.");
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500)
@@ -25,6 +45,19 @@ import CheckoutModal from "../components/CheckoutModal"
   }, [])
 
   const shipping = provincesData[selectedProvince]?.shippingFee || 0
+  
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+    let totalDiscount = 0;
+    cartItems.forEach(item => {
+      if (appliedCoupon.creator === "admin" || item.addedBy === appliedCoupon.creator) {
+        totalDiscount += (item.price * item.quantity) * (appliedCoupon.percent / 100);
+      }
+    });
+    return Math.floor(totalDiscount);
+  }
+  
+  const discountAmount = calculateDiscount();
   const grandTotal = cartSubtotal + shipping
   const handleDecrease = (item) => {
   if (item.quantity === 1) {
@@ -140,13 +173,42 @@ const handleClearCart = () => {
                     <span>Shipping</span>
                     <span>Rs. {shipping.toLocaleString()}</span>
                   </div>
+                  {appliedCoupon && discountAmount > 0 && (
+                    <div className="flex justify-between text-emerald-600 font-bold">
+                      <span>Discount ({appliedCoupon.percent}%)</span>
+                      <span>- Rs. {discountAmount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <hr className="border-slate-100" />
                   <div className="flex justify-between font-bold text-slate-900 text-base">
                     <span>Total</span>
-                    <span>Rs. {grandTotal.toLocaleString()}</span>
+                    <span>Rs. {(grandTotal - discountAmount).toLocaleString()}</span>
                   </div>
                 </div>
-                <button 
+
+                <div className="pt-2">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Promo Code</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={promoCode}
+                      onChange={e => { setPromoCode(e.target.value); setPromoError(""); }}
+                      className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 uppercase text-sm" 
+                      placeholder="Code"
+                    />
+                    <button 
+                      onClick={handleApplyPromo}
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-lg transition cursor-pointer text-sm"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {promoError && <p className="text-red-500 text-xs mt-1">{promoError}</p>}
+                  {appliedCoupon && discountAmount > 0 && <p className="text-emerald-600 text-xs mt-1 font-bold">Promo code applied!</p>}
+                  {appliedCoupon && discountAmount === 0 && <p className="text-orange-500 text-xs mt-1 font-bold">Coupon doesn't apply to these items.</p>}
+                </div>
+
+                <button  
                   onClick={() => {
                     if (!user) {
                       toastError("Please log in to proceed to checkout.")
@@ -175,7 +237,10 @@ const handleClearCart = () => {
       <CheckoutModal 
         isOpen={checkoutModal} 
         onClose={() => setCheckoutModal(false)} 
-        grandTotal={grandTotal} 
+        grandTotal={grandTotal}
+        discountAmount={discountAmount}
+        discountPercent={appliedCoupon?.percent || 0}
+        promoCode={appliedCoupon?.code || ""}
       />
     </div>
   )

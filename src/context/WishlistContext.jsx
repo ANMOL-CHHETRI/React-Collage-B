@@ -36,11 +36,11 @@ export const WishlistProvider = ({ children }) => {
       } else {
         success(`Added ${product.name} to wishlist`);
 
-        // Open the wishlist popup
-        setWishlistModal({
-          open: true,
-          product: product,
-        });
+        // Open the wishlist popup (Disabled as per request)
+        // setWishlistModal({
+        //   open: true,
+        //   product: product,
+        // });
 
         return [...prev, product];
       }
@@ -49,10 +49,6 @@ export const WishlistProvider = ({ children }) => {
 
   const removeFromWishlist = (productId) => {
     setWishlist((prev) => prev.filter((item) => item.id !== productId));
-  };
-
-  const clearWishlist = () => {
-    setWishlist([]);
   };
 
   const isInWishlist = (productId) => {
@@ -66,7 +62,6 @@ export const WishlistProvider = ({ children }) => {
         wishlistCount: wishlist.length,
         toggleWishlist,
         removeFromWishlist,
-        clearWishlist,
         isInWishlist,
         wishlistModal,
         setWishlistModal,
