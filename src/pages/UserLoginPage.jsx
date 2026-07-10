@@ -404,7 +404,7 @@ const UserLoginPage = () => {
               <div className="text-center mb-8">
                 <div 
                   onClick={handleIconClick}
-                  className="mx-auto w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-red-500/25 rotate-3 cursor-pointer select-none"
+                  className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-amber-500/25 rotate-3 cursor-pointer select-none"
                 >
                   <svg className="w-8 h-8 text-white -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {recoveryMode
@@ -457,26 +457,26 @@ const UserLoginPage = () => {
                   /* Normal login */
                   <>
                     <div>
-                      <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-700"}`}>Username</label>
+                      <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-900"}`}>Username</label>
                       <input type="text" required value={username}
                         onChange={e=>{setUsername(e.target.value);setError("");}}
                         className={inputCls} autoComplete="off" />
                     </div>
                     <div>
-                      <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-700"}`}>Password</label>
+                      <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-900"}`}>Password</label>
                       <div className="relative">
                         <input type={showLoginPw ? "text" : "password"} required value={password}
                           onChange={e=>{setPassword(e.target.value);setError("");}}
                           className={`${inputCls} pr-11`}
                           autoComplete="current-password" />
                         <button type="button" onClick={()=>setShowLoginPw(p=>!p)}
-                          className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-red-400" : "text-gray-400 hover:text-red-600"}`}>
+                          className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${dark ? "text-slate-400 hover:text-amber-400" : "text-gray-400 hover:text-amber-600"}`}>
                           <EyeIcon show={showLoginPw} />
                         </button>
                       </div>
                       <div className="flex justify-end mt-1">
                         <button type="button" onClick={()=>{setRecoveryMode(true);setError("");}}
-                          className="text-xs text-red-500 hover:underline cursor-pointer">
+                          className="text-xs text-amber-500 hover:underline cursor-pointer">
                           Forgot Password?
                         </button>
                       </div>
@@ -498,9 +498,9 @@ const UserLoginPage = () => {
                 {/* Sign up link */}
                 <div className="flex items-center">
                   <button type="button" onClick={openSignup}
-                    className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-medium hover:underline cursor-pointer group">
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center transition ${dark ? "bg-red-900/40 group-hover:bg-red-800/50" : "bg-red-100 group-hover:bg-red-200"}`}>
-                      <svg className="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    className="flex items-center gap-1.5 text-sm text-amber-500 hover:text-amber-600 font-medium hover:underline cursor-pointer group">
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center transition ${dark ? "bg-amber-900/40 group-hover:bg-amber-800/50" : "bg-amber-100 group-hover:bg-amber-200"}`}>
+                      <svg className="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                       </svg>
                     </span>
@@ -510,13 +510,13 @@ const UserLoginPage = () => {
 
                 {/* Submit */}
                 <button type="submit"
-                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg shadow-red-500/20">
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg shadow-amber-500/20">
                   {recoveryMode ? (identityVerified ? "Reset Password" : "Verify Identity") : "Sign In"}
                 </button>
               </form>
 
               <p className="text-center text-sm mt-6">
-                <Link to="/" className="text-red-500 font-medium hover:underline">← Back to store</Link>
+                <Link to="/" className="text-amber-500 font-medium hover:underline">← Back to store</Link>
               </p>
             </div>
           </div>
