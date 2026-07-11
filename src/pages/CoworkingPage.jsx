@@ -369,7 +369,7 @@ const CoworkingPage = () => {
 
       {/* Tour Preview Section */}
       <section className="max-w-7xl mx-auto px-6 py-20 border-b border-slate-100 dark:border-slate-900">
-        <div className="text-right mb-12">
+        <div className="text-left mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
             Layout Preview
           </span>
