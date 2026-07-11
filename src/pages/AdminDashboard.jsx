@@ -123,6 +123,37 @@ const AdminDashboard = () => {
     return () => clearTimeout(timer)
   }, [])
 
+  const getProductRating = (productId) => {
+    const stored = localStorage.getItem(`shopease_reviews_${productId}`)
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        if (parsed.length) {
+          const avg = parsed.reduce((sum, r) => sum + r.rating, 0) / parsed.length
+          return { avg: avg.toFixed(1), count: parsed.length }
+        }
+      } catch (e) {}
+    }
+    return { avg: "4.4", count: 3 }
+  }
+
+  const handleUpdateOrderStatus = (orderId, newStatus) => {
+    let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"))
+    if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
+      currentOrders = [...recentOrders]
+    }
+    const updated = currentOrders.map(order => {
+      const id = order.orderId || order.id
+      if (id === orderId) {
+        return { ...order, status: newStatus }
+      }
+      return order
+    })
+    localStorage.setItem("shopease_orders", JSON.stringify(updated))
+    setAdminOrders(updated)
+    success(`Order ${orderId} updated to ${newStatus}`)
+  }
+
 
 
   const handleChangePassword = (e) => {
@@ -335,20 +366,26 @@ const AdminDashboard = () => {
                           <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
                           <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                           <td className="px-6 py-4">
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                order.status === "Delivered"
-                                  ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400"
-                                  : order.status === "Processing"
-                                    ? "bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400"
-                                    : order.status === "Shipped"
-                                      ? "bg-yellow-100 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400"
-                                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                              }`}
-                            >
-                              {order.status}
-                            </span>
-                          </td>
+                           <select
+                             value={order.status}
+                             onChange={(e) => handleUpdateOrderStatus(orderId, e.target.value)}
+                             className={`px-2.5 py-1 rounded-full text-xs font-semibold outline-none cursor-pointer border border-transparent transition-all duration-200
+                               ${
+                                 order.status === "Delivered"
+                                   ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 hover:border-green-300"
+                                   : order.status === "Processing"
+                                     ? "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 hover:border-blue-300"
+                                     : order.status === "Shipped"
+                                       ? "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 hover:border-yellow-300"
+                                       : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                               }`}
+                           >
+                             <option value="Pending" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Pending</option>
+                             <option value="Processing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Processing</option>
+                             <option value="Shipped" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Shipped</option>
+                             <option value="Delivered" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Delivered</option>
+                           </select>
+                         </td>
                         </tr>
                       )})}
                     </tbody>
@@ -436,6 +473,7 @@ const AdminDashboard = () => {
                         <th className="px-4 py-3 font-medium">Category</th>
                         <th className="px-4 py-3 font-medium">Price</th>
                         <th className="px-4 py-3 font-medium">Added By</th>
+                        <th className="px-4 py-3 font-medium">Rating</th>
                         <th className="px-4 py-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
@@ -449,10 +487,11 @@ const AdminDashboard = () => {
                           <ProductRowSkeleton />
                         </>
                       ) : filtered.length === 0 ? (
-                        <tr><td colSpan="6" className="px-4 py-12 text-center text-gray-400 dark:text-gray-500">No products found</td></tr>
+                        <tr><td colSpan="7" className="px-4 py-12 text-center text-gray-400 dark:text-gray-500">No products found</td></tr>
                       ) : (
                         filtered.map((product) => {
                           const canEdit = canModify(product)
+                          const ratingData = getProductRating(product.id)
                           return (
                             <tr key={product.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
                               <td className="px-4 py-3">
@@ -465,6 +504,15 @@ const AdminDashboard = () => {
                               <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">₨{product.price}</td>
                               <td className="px-4 py-3">
                                 <span className={`text-xs font-medium ${product.addedBy === "admin" ? "text-amber-600 dark:text-amber-400" : "text-blue-600 dark:text-blue-400"}`}>{product.addedBy}</span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-1">
+                                  <svg className="w-4 h-4 text-amber-500 fill-current" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <span className="font-bold text-gray-900 dark:text-white text-xs">{ratingData.avg}</span>
+                                  <span className="text-gray-400 dark:text-gray-500 text-xs">({ratingData.count})</span>
+                                </div>
                               </td>
                               <td className="px-4 py-3 text-right">
                                 {canEdit ? (

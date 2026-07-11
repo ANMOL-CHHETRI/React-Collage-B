@@ -51,7 +51,7 @@ const stats = [
     value: "500+", 
     label: "Products", 
     icon: (
-      <svg className="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
     )
@@ -60,7 +60,7 @@ const stats = [
     value: "100+", 
     label: "Local Sellers", 
     icon: (
-      <svg className="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     )
@@ -69,7 +69,7 @@ const stats = [
     value: "77", 
     label: "Districts Served", 
     icon: (
-      <svg className="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
       </svg>
     )
@@ -78,7 +78,7 @@ const stats = [
     value: "24/7", 
     label: "Customer Support", 
     icon: (
-      <svg className="w-8 h-8 text-amber-500 mx-auto" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
     )
@@ -193,23 +193,25 @@ const AboutPage = () => {
       </section>
 
       {/* ── Statistics ── */}
-      <section className="bg-gradient-to-br from-slate-900 to-amber-950 py-20 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+      <section className="bg-slate-50 dark:bg-slate-900/50 border-y border-slate-100 dark:border-slate-900 py-20 relative overflow-hidden transition-colors duration-300">
+        <div className="absolute inset-0 opacity-15 dark:opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)", backgroundSize: "32px 32px" }} />
         <div className="max-w-6xl mx-auto px-6 relative">
           <div className="text-center mb-14">
-            <span className="inline-block text-xs font-bold uppercase tracking-widest text-amber-400 mb-3">
+            <span className="inline-block text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-3">
               By The Numbers
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white">ShopEase at a Glance</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white">ShopEase at a Glance</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, i) => (
-              <div key={i} className="text-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="text-3xl mb-3">{stat.icon}</div>
-                <div className="text-4xl md:text-5xl font-extrabold text-transparent bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text mb-2">
+              <div key={i} className="text-center bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/60 rounded-2xl p-6 hover:shadow-lg dark:hover:shadow-black/30 transition-all duration-300 hover:scale-105">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/50 dark:border-amber-900/30 flex items-center justify-center mb-4">
+                  {stat.icon}
+                </div>
+                <div className="text-4xl md:text-5xl font-extrabold text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-500 bg-clip-text mb-2">
                   {stat.value}
                 </div>
-                <p className="text-slate-400 font-medium text-sm">{stat.label}</p>
+                <p className="text-slate-500 dark:text-slate-400 font-semibold text-sm">{stat.label}</p>
               </div>
             ))}
           </div>
