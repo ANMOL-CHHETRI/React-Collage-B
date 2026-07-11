@@ -171,7 +171,7 @@ const ContactPage = () => {
               <div className="space-y-3 text-xs text-slate-600 dark:text-slate-400">
                 <div>
                   <span className="text-slate-400 dark:text-slate-500 block text-[9px] font-bold uppercase mb-0.5">Email Support</span>
-                  <a href="mailto:support@shopease.com.np" className="text-amber-600 dark:text-amber-400 hover:underline font-bold text-sm block">
+                  <a href="mailto:support@shopease.com.np" className="text-amber-600 hover:underline font-bold text-sm block">
                     support@shopease.com.np
                   </a>
                 </div>

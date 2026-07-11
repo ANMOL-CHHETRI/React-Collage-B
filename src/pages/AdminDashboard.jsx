@@ -55,11 +55,12 @@ const sidebarItems = [
   { id: "products", label: "Products" },
   { id: "orders", label: "Orders" },
   { id: "users", label: "Users" },
+  { id: "coupons", label: "Coupons" },
   { id: "messages", label: "Messages" },
   { id: "settings", label: "Settings" },
 ]
 
-const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" }
+const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "", stock: "0" }
 
 const AdminDashboard = () => {
   const { 
@@ -98,6 +99,12 @@ const AdminDashboard = () => {
   // Dynamic Data state
   const [adminOrders, setAdminOrders] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
+  const [viewingOrder, setViewingOrder] = useState(null)
+  const [adminNote, setAdminNote] = useState("")
+  
+  // Coupons state
+  const [coupons, setCoupons] = useState([])
+  const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
     try {
@@ -105,10 +112,13 @@ const AdminDashboard = () => {
       const orders = Array.isArray(rawOrders) ? rawOrders : []
       const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
       const messages = Array.isArray(rawMessages) ? rawMessages : []
+      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
+      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
       
       const timer = setTimeout(() => {
         setAdminOrders(orders)
         setAdminMessages(messages)
+        setCoupons(loadedCoupons)
       }, 0)
       return () => clearTimeout(timer)
     } catch (e) {
@@ -203,8 +213,14 @@ const AdminDashboard = () => {
       toastError("Please enter a valid price.")
       return
     }
+    
+    const parsedStock = parseInt(form.stock, 10)
+    if (isNaN(parsedStock) || parsedStock < 0) {
+      toastError("Please enter a valid stock quantity.")
+      return
+    }
 
-    const payload = { ...form, price: parsedPrice }
+    const payload = { ...form, price: parsedPrice, stock: parsedStock }
     if (editing) {
       updateProduct(editing.id, payload)
       success("Product updated successfully")
@@ -218,7 +234,7 @@ const AdminDashboard = () => {
   }
 
   const handleEdit = (product) => {
-    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "" })
+    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "", stock: String(product.stock || 0) })
     setEditing(product)
     setShowForm(true)
   }
@@ -235,6 +251,7 @@ const AdminDashboard = () => {
     products: "Products",
     orders: "Orders",
     users: "Users",
+    coupons: "Coupons",
     messages: "Messages",
     settings: "Settings",
   }
@@ -429,6 +446,10 @@ const AdminDashboard = () => {
                           <input type="number" step="0.01" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
                         </div>
                         <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
+                          <input type="number" min="0" required value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
+                        </div>
+                        <div className="flex-1">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
                           <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
                             <option>Traditional Apparel</option>
@@ -472,6 +493,7 @@ const AdminDashboard = () => {
                         <th className="px-4 py-3 font-medium">Name</th>
                         <th className="px-4 py-3 font-medium">Category</th>
                         <th className="px-4 py-3 font-medium">Price</th>
+                        <th className="px-4 py-3 font-medium">Stock</th>
                         <th className="px-4 py-3 font-medium">Added By</th>
                         <th className="px-4 py-3 font-medium">Rating</th>
                         <th className="px-4 py-3 font-medium text-right">Actions</th>
@@ -502,6 +524,13 @@ const AdminDashboard = () => {
                               <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{product.name}</td>
                               <td className="px-4 py-3"><span className="px-2 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-md text-xs">{product.category}</span></td>
                               <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">₨{product.price}</td>
+                              <td className="px-4 py-3">
+                                {product.stock === 0 ? (
+                                  <span className="px-2 py-1 bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 rounded-md text-xs font-bold whitespace-nowrap">Out of Stock</span>
+                                ) : (
+                                  <span className="text-gray-700 dark:text-gray-300 font-medium">{product.stock || 0}</span>
+                                )}
+                              </td>
                               <td className="px-4 py-3">
                                 <span className={`text-xs font-medium ${product.addedBy === "admin" ? "text-amber-600 dark:text-amber-400" : "text-blue-600 dark:text-blue-400"}`}>{product.addedBy}</span>
                               </td>
@@ -553,6 +582,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-3 font-medium">Product</th>
                       <th className="px-6 py-3 font-medium">Amount</th>
                       <th className="px-6 py-3 font-medium">Status</th>
+                      <th className="px-6 py-3 font-medium text-right">Details</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -569,19 +599,33 @@ const AdminDashboard = () => {
                         <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{product}</td>
                         <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{amount}</td>
                         <td className="px-6 py-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              order.status === "Delivered"
-                                ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400"
-                                : order.status === "Processing"
-                                  ? "bg-blue-100 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400"
-                                  : order.status === "Shipped"
-                                    ? "bg-yellow-100 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                            }`}
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateOrderStatus(orderId, e.target.value)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-semibold outline-none cursor-pointer border border-transparent transition-all duration-200
+                              ${
+                                order.status === "Delivered"
+                                  ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 hover:border-green-300"
+                                  : order.status === "Processing"
+                                    ? "bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 hover:border-blue-300"
+                                    : order.status === "Shipped"
+                                      ? "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 hover:border-yellow-300"
+                                      : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                              }`}
                           >
-                            {order.status}
-                          </span>
+                            <option value="Pending" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Pending</option>
+                            <option value="Processing" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Processing</option>
+                            <option value="Shipped" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Shipped</option>
+                            <option value="Delivered" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">Delivered</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => { setViewingOrder(order); setAdminNote(order.adminMessage || ""); }}
+                            className="px-3 py-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition cursor-pointer"
+                          >
+                            View details
+                          </button>
                         </td>
                       </tr>
                     )})}
@@ -646,6 +690,131 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===== COUPONS SECTION ===== */}
+          {activeSection === "coupons" && (
+            <div className="max-w-4xl space-y-6">
+              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Coupon</h3>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!couponForm.code.trim() || !couponForm.percent) return;
+                    
+                    const code = couponForm.code.trim().toUpperCase();
+                    if (coupons.some(c => c.code === code)) {
+                      toastError("Coupon code already exists!");
+                      return;
+                    }
+                    
+                    const percent = parseInt(couponForm.percent, 10);
+                    if (percent <= 0 || percent > 100) {
+                      toastError("Percentage must be between 1 and 100");
+                      return;
+                    }
+
+                    const newCoupon = {
+                      code,
+                      percent,
+                      creator: user?.username || "admin"
+                    };
+
+                    const updatedCoupons = [...coupons, newCoupon];
+                    setCoupons(updatedCoupons);
+                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                    setCouponForm({ code: "", percent: "" });
+                    success("Coupon created successfully!");
+                  }}
+                  className="flex flex-wrap items-end gap-4"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Coupon Code</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={couponForm.code} 
+                      onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })} 
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" 
+                      placeholder="e.g. SUMMER50"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discount (%)</label>
+                    <input 
+                      type="number" 
+                      min="1" max="100"
+                      required
+                      value={couponForm.percent} 
+                      onChange={(e) => setCouponForm({ ...couponForm, percent: e.target.value })} 
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" 
+                      placeholder="e.g. 20"
+                    />
+                  </div>
+                  <button type="submit" className="bg-amber-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition cursor-pointer">
+                    + Create Coupon
+                  </button>
+                </form>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Coupons</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-950">
+                        <th className="px-6 py-3 font-medium">Code</th>
+                        <th className="px-6 py-3 font-medium">Discount</th>
+                        <th className="px-6 py-3 font-medium">Created By</th>
+                        <th className="px-6 py-3 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {coupons.map((coupon) => {
+                        const isOwner = isAdmin || coupon.creator === user?.username;
+                        return (
+                          <tr key={coupon.code} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
+                            <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{coupon.code}</td>
+                            <td className="px-6 py-4 text-emerald-600 dark:text-emerald-400 font-bold">{coupon.percent}%</td>
+                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
+                              {coupon.creator === "admin" ? (
+                                <span className="text-amber-600 dark:text-amber-400 font-medium">Admin</span>
+                              ) : (
+                                <span className="text-blue-600 dark:text-blue-400 font-medium">{coupon.creator}</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              {isOwner ? (
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Delete coupon ${coupon.code}?`)) {
+                                      const updated = coupons.filter(c => c.code !== coupon.code);
+                                      setCoupons(updated);
+                                      localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                      success("Coupon deleted.");
+                                    }
+                                  }}
+                                  className="px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 transition cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              ) : (
+                                <span className="text-xs text-gray-400">Read Only</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {coupons.length === 0 && (
+                        <tr><td colSpan="4" className="px-6 py-8 text-center text-gray-500">No active coupons found.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -798,6 +967,153 @@ const AdminDashboard = () => {
           )}
         </main>
       </div>
+
+      {viewingOrder && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setViewingOrder(null)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Order Details</span>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">
+                  {viewingOrder.orderId || viewingOrder.id}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setViewingOrder(null)} 
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+              {/* Customer & Delivery */}
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl space-y-3">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Shipping Details</h4>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Recipient</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.fullName || viewingOrder.customer || "N/A"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Phone Number</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.phone || "N/A"}
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Address</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {viewingOrder.address ? `${viewingOrder.address}, ${viewingOrder.city || ""}, ${viewingOrder.provinceName || ""}` : "N/A"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Items List */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ordered Items</h4>
+                <div className="space-y-2">
+                  {viewingOrder.items && Array.isArray(viewingOrder.items) && viewingOrder.items.length > 0 ? (
+                    viewingOrder.items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-xs border-b border-slate-100 dark:border-slate-850 pb-2">
+                        <div>
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">{item.name}</p>
+                          <p className="text-slate-400 dark:text-slate-500 text-[10px]">Qty: {item.quantity || 1} × Rs. {item.price}</p>
+                        </div>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
+                          Rs. {((item.quantity || 1) * item.price).toLocaleString()}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-600 dark:text-slate-400">
+                        {viewingOrder.product || "Demo Product"}
+                      </span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200">
+                        {viewingOrder.amount}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Admin message to customer */}
+              <div className="bg-amber-50/40 dark:bg-amber-950/10 p-4 rounded-2xl border border-amber-100/50 dark:border-amber-900/20 space-y-3">
+                <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Message to Customer
+                </h4>
+                <div className="space-y-2">
+                  <textarea
+                    rows="2"
+                    placeholder="Type order updates, delivery notes, or support messages..."
+                    value={adminNote}
+                    onChange={(e) => setAdminNote(e.target.value)}
+                    className="w-full text-xs px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-slate-950 text-gray-800 dark:text-gray-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = viewingOrder.orderId || viewingOrder.id;
+                      let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+                      if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
+                        currentOrders = [...recentOrders];
+                      }
+                      const updated = currentOrders.map(order => {
+                        const oid = order.orderId || order.id;
+                        if (oid === id) {
+                          return { ...order, adminMessage: adminNote };
+                        }
+                        return order;
+                      });
+                      localStorage.setItem("shopease_orders", JSON.stringify(updated));
+                      setAdminOrders(updated);
+                      setViewingOrder({ ...viewingOrder, adminMessage: adminNote });
+                      success("Message updated and sent to customer!");
+                    }}
+                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer"
+                  >
+                    Update & Send Message
+                  </button>
+                  {viewingOrder.adminMessage && (
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                      <span className="font-bold">Sent Message:</span> "{viewingOrder.adminMessage}"
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Total Summary */}
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">Total Amount</span>
+                <span className="text-lg font-black text-amber-600 dark:text-amber-400">
+                  {viewingOrder.total ? `Rs. ${viewingOrder.total.toLocaleString()}` : viewingOrder.amount}
+                </span>
+              </div>
+            </div>
+
+            {/* Footer buttons */}
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+              <button 
+                onClick={() => setViewingOrder(null)} 
+                className="w-full py-2.5 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+              >
+                Close Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

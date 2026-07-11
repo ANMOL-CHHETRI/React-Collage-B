@@ -40,31 +40,31 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
 const initialOrders = [
   {
     id: "#ORD-NP-92841",
-    storeName: "Universal Mobile Zone",
+    storeName: "Palpa Weaver Cooperatives",
     status: "Completed",
     date: "Jun 15, 2026",
     items: [
       {
-        name: "Vivo V23E 4G/5G / Vivo Y75 4G (Same Size) Transparent Bumper Cover Case - Non-yellowing Soft TPU",
-        attributes: "Compatibility By Model: Vivo V23e, Color Family: Black",
-        price: 223,
+        name: "Premium Dhaka Topi (Handwoven)",
+        attributes: "Size: Standard, Color: Traditional Red/Green",
+        price: 1200,
         qty: 1,
-        image: "https://i.pinimg.com/736x/3f/82/ff/3f82ff025c898c0d1279a557876a3e5c.jpg"
+        image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg"
       }
     ]
   },
   {
     id: "#ORD-NP-81724",
-    storeName: "Brothers Empire",
+    storeName: "Ilam Tea Gardens",
     status: "Completed",
     date: "Jun 10, 2026",
     items: [
       {
-        name: "MAIBO Original Fashion Canvas Backpack College Bag Unisex Large Capacity Travel",
-        attributes: "Color Family: Black",
-        price: 1950,
-        qty: 1,
-        image: "https://i.pinimg.com/736x/11/49/74/114974246fa4d567c9c05e54d8ecdb2f.jpg"
+        name: "Himalayan Orthodox Golden Tea",
+        attributes: "Package: 250g, Type: Organic Loose Leaf",
+        price: 850,
+        qty: 2,
+        image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
       }
     ]
   },
@@ -75,11 +75,11 @@ const initialOrders = [
     date: "Jun 20, 2026",
     items: [
       {
-        name: "Handmade Shakyamuni Buddha Statue (Gold Gilded)",
+        name: "Handmade Shakyamuni Buddha Statue",
         attributes: "Material: Copper, Finish: 24k Gold Gilded",
         price: 18500,
         qty: 1,
-        image: "https://i.pinimg.com/736x/8f/58/01/8f5801314672479768bada91c28c8dbb.jpg"
+        image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
       }
     ]
   }
@@ -115,6 +115,9 @@ const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [trackingOrderId, setTrackingOrderId] = useState(null)
+  const [showContactModal, setShowContactModal] = useState(null)
+  const [contactSubject, setContactSubject] = useState("")
+  const [contactMessage, setContactMessage] = useState("")
 
   const getActiveStep = (status) => {
     const s = status ? status.toLowerCase() : "";
@@ -126,6 +129,8 @@ const UserDashboard = () => {
   };
 
   const [rawOrders, setRawOrders] = useState([])
+  const [coupons, setCoupons] = useState([])
+  const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
     try {
@@ -137,19 +142,33 @@ const UserDashboard = () => {
         storeName: "ShopEase Official",
         status: o.status || "Processing",
         date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-        items: (Array.isArray(o.items) ? o.items : []).map(item => ({
-          name: item?.name || "Unknown Product",
-          attributes: "Qty: " + (item?.quantity || 1),
-          price: item?.price || 0,
-          qty: item?.quantity || 1,
-          image: item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-        }))
+        items: (Array.isArray(o.items) ? o.items : []).map(item => {
+          let img = item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg";
+          const itemName = (item?.name || "").toLowerCase();
+          if (itemName.includes("pashmina") || img.includes("c2/ae/03")) {
+            img = "/pashmina_shawl.png";
+          } else if (itemName.includes("buddha") || img.includes("8f/58/01")) {
+            img = "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg";
+          }
+          return {
+            name: item?.name || "Unknown Product",
+            attributes: "Qty: " + (item?.quantity || 1),
+            price: item?.price || 0,
+            qty: item?.quantity || 1,
+            image: img
+          };
+        })
       }))
       
       const baseOrders = user?.username === "user" ? initialOrders : []
       const orders = [...formattedDynamicOrders, ...baseOrders]
+      
+      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
+      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
+
       const timer = setTimeout(() => {
         setRawOrders(orders)
+        setCoupons(loadedCoupons)
       }, 0)
       return () => clearTimeout(timer)
     } catch (e) {
@@ -285,12 +304,25 @@ const UserDashboard = () => {
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
-    updateProfile({
+    
+    // Validate phone number before saving
+    if (profilePhone && !/^\d{10}$/.test(profilePhone)) {
+      toastError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
+    const updatedProfile = {
       name: profileName,
       email: profileEmail,
       phone: profilePhone,
-      address: profileAddress,
-    })
+      address: profileAddress
+    }
+    localStorage.setItem("shopease_profile", JSON.stringify(updatedProfile))
+    
+    if (updateProfile) {
+      updateProfile(updatedProfile)
+    }
+    
     setProfileSaved(true)
     setTimeout(() => setProfileSaved(false), 3000)
   }
@@ -312,6 +344,33 @@ const UserDashboard = () => {
       setConfirmPassword("")
     } else {
       setPasswordMessage({ type: "error", text: result.message })
+    }
+  }
+
+  const handleSendContactMessage = (e) => {
+    e.preventDefault()
+    if (!contactSubject || !contactMessage) {
+      toastError("Please fill out all fields.")
+      return
+    }
+    const newMessage = {
+      id: "MSG-" + Math.floor(100000 + Math.random() * 900000),
+      name: user?.name || "Customer",
+      email: user?.email || "customer@shopease.com",
+      subject: contactSubject,
+      message: contactMessage,
+      date: new Date().toISOString()
+    }
+    try {
+      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
+      const messages = Array.isArray(rawMessages) ? rawMessages : []
+      localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...messages]))
+      success("Message sent successfully to the admin!")
+      setShowContactModal(null)
+      setContactSubject("")
+      setContactMessage("")
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -402,13 +461,18 @@ const UserDashboard = () => {
               <li>
                 <button 
                   onClick={() => setActiveSection("orders")} 
-                  className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
+                  className={`w-full text-left font-medium flex items-center justify-between transition duration-200 cursor-pointer ${
                     activeSection === "orders" 
                       ? "text-orange-600 dark:text-orange-400 font-bold" 
                       : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
                   }`}
                 >
-                  My Orders
+                  <span>My Orders</span>
+                  {rawOrders.filter(o => o.adminMessage).length > 0 && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold bg-amber-500 text-white rounded-full leading-none mr-2">
+                      {rawOrders.filter(o => o.adminMessage).length}
+                    </span>
+                  )}
                 </button>
               </li>
             </ul>
@@ -561,14 +625,50 @@ const UserDashboard = () => {
                       </div>
                     </div>
 
-                    <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${
-                      order.status === "Completed" 
-                        ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900/30" 
-                        : "bg-orange-50 dark:bg-orange-950/20 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30"
-                    }`}>
-                      {order.status}
-                    </span>
-                  </div>
+                     <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border ${
+                       order.status === "Delivered" || order.status === "Completed"
+                         ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-900/30" 
+                         : order.status === "Processing"
+                           ? "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-100/50 dark:border-blue-900/30"
+                           : order.status === "Shipped"
+                             ? "bg-amber-50 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/30"
+                             : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200/50 dark:border-slate-800/45"
+                     }`}>
+                       {order.status}
+                     </span>
+                   </div>
+                    {/* Admin message alert / notification */}
+                    {order.adminMessage && (
+                      <div className="mt-3 text-xs bg-amber-500/10 dark:bg-amber-500/5 text-amber-800 dark:text-amber-300 p-3.5 rounded-2xl border border-amber-500/20 dark:border-amber-500/10 flex items-start gap-2.5">
+                        <svg className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-[10px] uppercase tracking-wider block text-amber-700 dark:text-amber-400">Message from ShopEase Support:</span>
+                          <p className="font-medium">{order.adminMessage}</p>
+                        </div>
+                      </div>
+                    )}
+
+                   {/* Status message details */}
+                   <div className="mt-3 text-xs bg-slate-50 dark:bg-slate-900/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-900 flex items-center gap-2.5">
+                     <div className={`w-2 h-2 rounded-full shrink-0 animate-pulse ${
+                       order.status === "Delivered" || order.status === "Completed"
+                         ? "bg-green-500"
+                         : order.status === "Processing"
+                           ? "bg-blue-500"
+                           : order.status === "Shipped"
+                             ? "bg-amber-500"
+                             : "bg-slate-400"
+                     }`} />
+                     <p className="text-slate-600 dark:text-slate-400 font-medium">
+                       {order.status === "Pending" && "Your order is pending confirmation from ShopEase."}
+                       {order.status === "Processing" && "We are processing and packaging your order at our warehouse."}
+                       {order.status === "Shipped" && "Your order has been shipped and is in transit to your district."}
+                       {(order.status === "Delivered" || order.status === "Completed") && "Your package has been successfully delivered! Thank you for shopping with us."}
+                       {!["Pending", "Processing", "Shipped", "Delivered", "Completed"].includes(order.status) && "Your order status is being updated."}
+                     </p>
+                   </div>
 
                   <div className="space-y-4">
                     {order.items.map((item, idx) => (
@@ -662,7 +762,14 @@ const UserDashboard = () => {
                   )}
 
                   <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button onClick={() => alert("Thank you for contacting us! Seller will contact you shortly.")} className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer">
+                    <button 
+                      onClick={() => {
+                        setShowContactModal(order);
+                        setContactSubject(`Inquiry regarding Order ${order.id}`);
+                        setContactMessage("");
+                      }} 
+                      className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-xl transition cursor-pointer"
+                    >
                       Contact Seller
                     </button>
                     <button 
@@ -742,12 +849,19 @@ const UserDashboard = () => {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Phone Number (Nepal)</label>
                   <input
-                    type="tel"
+                    type="text"
                     required
+                    maxLength={10}
                     value={profilePhone}
-                    onChange={(e) => setProfilePhone(e.target.value)}
-                    className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setProfilePhone(val);
+                    }}
+                    className={`w-full text-sm border ${profilePhone && profilePhone.length > 0 && profilePhone.length < 10 ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition`}
                   />
+                  {profilePhone && profilePhone.length > 0 && profilePhone.length < 10 && (
+                    <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Default Delivery Address</label>
@@ -965,13 +1079,20 @@ const UserDashboard = () => {
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Business Phone</label>
                     <input
-                      type="tel"
+                      type="text"
                       required
+                      maxLength={10}
                       placeholder="e.g. 98XXXXXXXX"
                       value={contactNumber}
-                      onChange={(e) => setContactNumber(e.target.value)}
-                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition"
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setContactNumber(val);
+                      }}
+                      className={`w-full text-sm border ${contactNumber && contactNumber.length > 0 && contactNumber.length < 10 ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 transition`}
                     />
+                    {contactNumber && contactNumber.length > 0 && contactNumber.length < 10 && (
+                      <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
+                    )}
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase block">Business Address</label>
@@ -1056,6 +1177,16 @@ const UserDashboard = () => {
                   }`}
                 >
                   Customers
+                </button>
+                <button
+                  onClick={() => setSellerTab("coupons")}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
+                    sellerTab === "coupons" 
+                      ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow" 
+                      : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  Coupons
                 </button>
               </div>
 
@@ -1316,6 +1447,111 @@ const UserDashboard = () => {
             )}
           </div>
             </>
+          ) : sellerTab === "coupons" ? (
+            <div className="max-w-4xl space-y-6">
+              <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Create New Coupon</h3>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!couponForm.code.trim() || !couponForm.percent) return;
+                    
+                    const code = couponForm.code.trim().toUpperCase();
+                    if (coupons.some(c => c.code === code)) {
+                      toastError("Coupon code already exists!");
+                      return;
+                    }
+                    
+                    const percent = parseInt(couponForm.percent, 10);
+                    if (percent <= 0 || percent > 100) {
+                      toastError("Percentage must be between 1 and 100");
+                      return;
+                    }
+
+                    const newCoupon = {
+                      code,
+                      percent,
+                      creator: user?.username || "user"
+                    };
+
+                    const updatedCoupons = [...coupons, newCoupon];
+                    setCoupons(updatedCoupons);
+                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                    setCouponForm({ code: "", percent: "" });
+                    success("Coupon created successfully!");
+                  }}
+                  className="flex flex-wrap items-end gap-4"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Coupon Code</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={couponForm.code} 
+                      onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })} 
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition" 
+                      placeholder="e.g. SUMMER50"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Discount (%)</label>
+                    <input 
+                      type="number" 
+                      min="1" max="100"
+                      required
+                      value={couponForm.percent} 
+                      onChange={(e) => setCouponForm({ ...couponForm, percent: e.target.value })} 
+                      className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition" 
+                      placeholder="e.g. 20"
+                    />
+                  </div>
+                  <button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition cursor-pointer shadow h-[42px]">
+                    + Create Coupon
+                  </button>
+                </form>
+              </div>
+
+              <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">My Active Coupons</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-slate-900 text-slate-400 uppercase tracking-wider font-bold">
+                        <th className="py-3 px-4">Code</th>
+                        <th className="py-3 px-4">Discount</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-900">
+                      {coupons.filter(c => c.creator === user?.username).map((coupon) => (
+                        <tr key={coupon.code} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
+                          <td className="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">{coupon.code}</td>
+                          <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold">{coupon.percent}%</td>
+                          <td className="py-3 px-4 text-right space-x-2 shrink-0">
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete coupon ${coupon.code}?`)) {
+                                  const updated = coupons.filter(c => c.code !== coupon.code);
+                                  setCoupons(updated);
+                                  localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                  success("Coupon deleted.");
+                                }
+                              }}
+                              className="bg-red-50 dark:bg-red-950/20 hover:bg-red-100 text-red-700 dark:text-red-400 font-bold py-1.5 px-3 rounded-lg transition cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {coupons.filter(c => c.creator === user?.username).length === 0 && (
+                        <tr><td colSpan="3" className="py-8 text-center text-slate-500">You haven't created any coupons yet.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Your Customers</h3>
@@ -1353,6 +1589,68 @@ const UserDashboard = () => {
             </div>
           )}
         </main>
+      )}
+
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowContactModal(null)}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest">Inquiry Support</span>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">Contact Seller / Admin</h3>
+              </div>
+              <button 
+                onClick={() => setShowContactModal(null)} 
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleSendContactMessage} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Subject</label>
+                <input
+                  type="text"
+                  value={contactSubject}
+                  onChange={(e) => setContactSubject(e.target.value)}
+                  className="w-full text-sm px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Message Description</label>
+                <textarea
+                  rows="4"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  placeholder="Describe your issue, query, or customized product request..."
+                  className="w-full text-sm px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowContactModal(null)}
+                  className="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition cursor-pointer"
+                >
+                  Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       </div>

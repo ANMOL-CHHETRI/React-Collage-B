@@ -24,6 +24,7 @@ import DeliveryCoveragePage from "./pages/DeliveryCoveragePage"
 import NotFoundPage from "./pages/NotFoundPage"
 import WishlistPage from "./pages/WishlistPage"
 import CoworkingPage from "./pages/CoworkingPage"
+import SearchPage from "./pages/SearchPage"
 
 const Router = () => {
   return (
@@ -45,13 +46,14 @@ const Router = () => {
           <Route path="/coworking" element={<CoworkingPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/delivery-coverage" element={<DeliveryCoveragePage />} />
           <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />
-          <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/user-login" element={<UserLoginPage />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/user/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
           <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfilePage /></ProtectedRoute>} />
           {/* /dashboard/crud route removed — product CRUD is now in /admin/dashboard Products section */}

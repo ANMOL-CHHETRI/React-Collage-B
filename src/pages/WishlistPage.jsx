@@ -4,7 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
 
 const WishlistPage = () => {
-  const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
+  const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { success } = useToast();
 
@@ -144,6 +144,7 @@ const WishlistPage = () => {
                         >
                           Remove
                         </button>
+
                       </div>
                     </td>
                   </tr>
@@ -158,13 +159,6 @@ const WishlistPage = () => {
             >
               ← Continue Shopping
             </Link>
-
-            <button
-              onClick={clearWishlist}
-              className="px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-700 transition font-medium"
-            >
-              Clear Wishlist
-            </button>
           </div>
 
           <div className="border-t border-slate-200 dark:border-slate-800 px-6 py-5">

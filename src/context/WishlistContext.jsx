@@ -15,6 +15,12 @@ export const WishlistProvider = ({ children }) => {
     }
   });
 
+  // Stores information for the wishlist popup
+  const [wishlistModal, setWishlistModal] = useState({
+    open: false,
+    product: null,
+  });
+
   const { success } = useToast();
 
   useEffect(() => {
@@ -29,18 +35,21 @@ export const WishlistProvider = ({ children }) => {
         return prev.filter((item) => item.id !== product.id);
       } else {
         success(`Added ${product.name} to wishlist`);
+
+        // Open the wishlist popup (Disabled as per request)
+        // setWishlistModal({
+        //   open: true,
+        //   product: product,
+        // });
+
         return [...prev, product];
       }
     });
   };
 
   const removeFromWishlist = (productId) => {
-  setWishlist((prev) => prev.filter((item) => item.id !== productId));
-};
-
-const clearWishlist = () => {
-  setWishlist([]);
-};
+    setWishlist((prev) => prev.filter((item) => item.id !== productId));
+  };
 
   const isInWishlist = (productId) => {
     return wishlist.some((item) => item.id === productId);
@@ -53,9 +62,10 @@ const clearWishlist = () => {
         wishlistCount: wishlist.length,
         toggleWishlist,
         removeFromWishlist,
-        clearWishlist,
         isInWishlist,
-}}
+        wishlistModal,
+        setWishlistModal,
+      }}
     >
       {children}
     </WishlistContext.Provider>

@@ -4,20 +4,40 @@ import { useToast } from "../context/ToastContext"
 import { useCart } from "../context/CartContext"
 import { useAuth } from "../context/AuthContext"
 
-const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
+const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discountPercent = 0, promoCode = "", singleProduct = null }) => {
   const { user } = useAuth()
   const [checkoutStep, setCheckoutStep] = useState(1) // 1: Shipping, 2: Payment, 3: Review, 4: Receipt
-  const [shippingDetails, setShippingDetails] = useState({ fullName: "", phone: "", address: "", city: "" })
-  const [paymentMethod, setPaymentMethod] = useState("credit_card")
-  const [checkingOut, setCheckingOut] = useState(false)
   const [agreedToPolicy, setAgreedToPolicy] = useState(false)
   const [lastPlacedOrder, setLastPlacedOrder] = useState(null)
+  const [paymentMethod, setPaymentMethod] = useState("credit_card")
+  const [checkingOut, setCheckingOut] = useState(false)
+
+  const getSavedProfile = () => {
+    try {
+      const saved = localStorage.getItem("shopease_profile")
+      const parsed = saved ? JSON.parse(saved) : null
+      return (parsed && typeof parsed === "object" && !Array.isArray(parsed)) ? parsed : null
+    } catch { return null }
+  }
+
+  const [shippingDetails, setShippingDetails] = useState(() => {
+    const p = getSavedProfile()
+    return {
+      fullName: p?.name || user?.name || "",
+      phone: sessionStorage.getItem("shopease_quick_checkout_phone") || p?.phone || user?.phone || "",
+      address: p?.address || user?.address || "",
+      city: p?.city || "",
+    }
+  })
   
   const { clearCart, cartItems } = useCart()
   const { success } = useToast()
   const navigate = useNavigate()
 
   if (!isOpen) return null
+
+  const finalTotal = grandTotal - discountAmount
+  const itemsToCheckout = singleProduct ? [singleProduct] : [...cartItems];
 
   const handleCheckout = () => {
     setCheckingOut(true)
@@ -33,10 +53,11 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
         address: shippingDetails.address,
         city: shippingDetails.city,
         provinceName: "Bagmati", 
-        items: [...cartItems],
+        items: itemsToCheckout,
         subtotal: grandTotal, 
+        discount: discountAmount,
         shipping: 0,
-        total: grandTotal,
+        total: finalTotal,
         estDays: "2-4 Days",
         status: "Processing",
         date: new Date().toISOString()
@@ -51,7 +72,9 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
       }
 
       setLastPlacedOrder(simulatedOrder)
-      clearCart()
+      if (!singleProduct) {
+        clearCart()
+      }
       success("Order placed successfully!")
       setCheckoutStep(4)
     }, 2000)
@@ -70,7 +93,8 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
     }
   }
 
-  const isShippingValid = shippingDetails.fullName && shippingDetails.phone && shippingDetails.address && shippingDetails.city
+  const isPhoneValid = /^\d{10}$/.test(shippingDetails.phone.trim())
+  const isShippingValid = shippingDetails.fullName && isPhoneValid && shippingDetails.address && shippingDetails.city
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -120,12 +144,20 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
                 <input 
-                  type="tel" 
+                  type="text" 
+                  maxLength={10}
                   value={shippingDetails.phone}
-                  onChange={e => setShippingDetails({...shippingDetails, phone: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-slate-900 dark:text-white" 
-                  placeholder="+977 98XXXXXXX"
+                  onChange={e => {
+                    // Only allow digits
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setShippingDetails({...shippingDetails, phone: val});
+                  }}
+                  className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border ${shippingDetails.phone && !isPhoneValid ? 'border-red-500 focus:ring-red-500' : 'border-slate-200 dark:border-slate-700 focus:ring-orange-500'} rounded-xl focus:ring-2 outline-none text-slate-900 dark:text-white`}
+                  placeholder="98XXXXXXXX"
                 />
+                {shippingDetails.phone && !isPhoneValid && (
+                  <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -223,8 +255,20 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-slate-500 dark:text-slate-400">Total Amount:</span>
-                <span className="font-bold text-orange-600">Rs. {grandTotal.toLocaleString()}</span>
+                <span className={discountAmount > 0 ? "line-through text-slate-400" : "font-bold text-orange-600"}>Rs. {grandTotal.toLocaleString()}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between mb-2 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <span>Discount ({discountPercent}%):</span>
+                  <span>- Rs. {discountAmount.toLocaleString()}</span>
+                </div>
+              )}
+              {discountAmount > 0 && (
+                <div className="flex justify-between mb-2">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold">New Total:</span>
+                  <span className="font-bold text-orange-600 text-lg">Rs. {finalTotal.toLocaleString()}</span>
+                </div>
+              )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2 pt-2">
                 <span className="text-slate-500 dark:text-slate-400 block mb-1">Receiver Details:</span>
                 <span className="font-bold text-slate-900 dark:text-white block">{shippingDetails.fullName}</span>
@@ -374,8 +418,14 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal }) => {
                 <div className="w-full max-w-[240px] space-y-2 border-t border-slate-150 dark:border-slate-800 pt-3">
                   <div className="flex justify-between text-slate-500">
                     <span>Subtotal</span>
-                    <span>Rs. {lastPlacedOrder.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}</span>
+                    <span>Rs. {lastPlacedOrder.subtotal.toLocaleString()}</span>
                   </div>
+                  {lastPlacedOrder.discount > 0 && (
+                    <div className="flex justify-between text-emerald-600">
+                      <span>Discount</span>
+                      <span>- Rs. {lastPlacedOrder.discount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-slate-500">
                     <span>Shipping Fee</span>
                     <span>Rs. {lastPlacedOrder.shipping.toLocaleString()}</span>
