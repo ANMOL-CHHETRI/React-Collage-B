@@ -450,12 +450,12 @@ const CartDrawer = () => {
                         type="text" 
                         value={promoCode}
                         onChange={e => { setPromoCode(e.target.value); setPromoError(""); }}
-                        className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white uppercase text-xs" 
+                        className="flex-1 min-w-0 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white uppercase text-xs" 
                         placeholder="Enter coupon code"
                       />
                       <button 
                         onClick={handleApplyPromo}
-                        className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-lg transition cursor-pointer text-xs"
+                        className="shrink-0 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-lg transition cursor-pointer text-xs"
                       >
                         Apply
                       </button>

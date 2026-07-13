@@ -455,33 +455,19 @@ const Navbar = () => {
                   user?.role === "admin" ? "Admin Dashboard" : "Account Dashboard"
                 }
               >
-                <svg
-                  className="w-5.5 h-5.5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </Link>
-            )}
-
-            {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  Hi, {user.name}
-                </span>
-                <button
-                  onClick={logout}
-                  className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-3 py-2 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200 cursor-pointer"
-                >
+                {user ? (
+                  user.avatar ? (
+                    <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
+                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-[10px] uppercase border border-slate-200 dark:border-slate-700">
+                      {user.name ? user.name.charAt(0) : user.username?.charAt(0) || "U"}
+                    </div>
+                  )
+                ) : (
                   <svg
-                    className="w-4.5 h-4.5"
+                    className="w-5.5 h-5.5"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -490,11 +476,18 @@ const Navbar = () => {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
-                  Logout
-                </button>
+                )}
+              </Link>
+            )}
+
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  Hi, {user.name}
+                </span>
               </div>
             ) : (
               <>
@@ -641,16 +634,38 @@ const Navbar = () => {
             )}
 
             {/* Mobile Profile Icon */}
-            {user && (
+            {!isDashboard && (
               <Link
-                to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
+                to={user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
                 className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer"
                 title="Account Dashboard"
                 onClick={() => setIsOpen(false)}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                {user ? (
+                  user.avatar ? (
+                    <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
+                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-[10px] uppercase border border-slate-200 dark:border-slate-700">
+                      {user.name ? user.name.charAt(0) : user.username?.charAt(0) || "U"}
+                    </div>
+                  )
+                ) : (
+                  <svg
+                    className="w-5.5 h-5.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                )}
               </Link>
             )}
 
@@ -817,17 +832,7 @@ const Navbar = () => {
                 </span>
               </button>
 
-              {user ? (
-                <button
-                  onClick={() => {
-                    logout();
-                    setIsOpen(false);
-                  }}
-                  className="w-full text-center py-2.5 text-red-600 font-medium rounded-xl border border-red-200 hover:bg-red-50 cursor-pointer"
-                >
-                  Logout
-                </button>
-              ) : (
+              {!user && (
                 <>
                   <Link
                     to="/user-login"

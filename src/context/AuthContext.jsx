@@ -13,7 +13,7 @@ const DEFAULT_USER_CREDENTIALS = { username: "user", password: "user123" }
 
 const DEFAULT_USERS = [
   {
-    name: "Sahil Adhikari",
+    name: "Sahil Tuladhar",
     username: "user",
     email: "user@test.com",
     phone: "9841234567",
@@ -58,6 +58,15 @@ export const AuthProvider = ({ children }) => {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"))
   }
+  const [reportedAvatars, setReportedAvatars] = useState(() => {
+    try {
+      const saved = localStorage.getItem("shopease_reported_avatars")
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
+  
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
       const saved = localStorage.getItem(REGISTERED_USERS_KEY)
@@ -160,6 +169,7 @@ export const AuthProvider = ({ children }) => {
         name: "Admin",
         username: adminCredentials.username,
         email: "admin@shopease.com",
+        avatar: adminCredentials.avatar,
       }
       setUser(adminUser)
       localStorage.setItem("shopease_user", JSON.stringify(adminUser))
@@ -194,6 +204,7 @@ export const AuthProvider = ({ children }) => {
       email: foundUser.email,
       phone: foundUser.phone,
       address: foundUser.address,
+      avatar: foundUser.avatar,
     }
     setUser(regularUser)
     localStorage.setItem("shopease_user", JSON.stringify(regularUser))
@@ -212,6 +223,7 @@ export const AuthProvider = ({ children }) => {
           name: "Admin",
           username: adminCredentials.username,
           email: "admin@shopease.com",
+          avatar: adminCredentials.avatar,
         }
         setUser(adminUser)
         localStorage.setItem("shopease_user", JSON.stringify(adminUser))
@@ -239,6 +251,7 @@ export const AuthProvider = ({ children }) => {
         email: foundUser.email,
         phone: foundUser.phone,
         address: foundUser.address,
+        avatar: foundUser.avatar,
       }
       setUser(regularUser)
       localStorage.setItem("shopease_user", JSON.stringify(regularUser))
@@ -288,12 +301,44 @@ export const AuthProvider = ({ children }) => {
   }
 
   const updateProfile = (updatedDetails) => {
-    setUser((prev) => {
-      if (!prev) return null
-      const updated = { ...prev, ...updatedDetails }
-      localStorage.setItem("shopease_user", JSON.stringify(updated))
-      return updated
-    })
+    if (!user) return;
+    const updated = { ...user, ...updatedDetails };
+    setUser(updated);
+    localStorage.setItem("shopease_user", JSON.stringify(updated));
+
+    const updatedUsers = registeredUsers.map(u => u.username === user.username ? { ...u, ...updatedDetails } : u);
+    saveRegisteredUsers(updatedUsers);
+  }
+
+  const updateAdminProfile = (updatedDetails) => {
+    const updated = { ...adminCredentials, ...updatedDetails };
+    setAdminCredentials(updated);
+    localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updated));
+    if (user && user.role === "admin") {
+      const adminUser = { ...user, ...updatedDetails };
+      setUser(adminUser);
+      localStorage.setItem("shopease_user", JSON.stringify(adminUser));
+    }
+  }
+
+  const reportUserAvatar = (username, avatarUrl) => {
+    if (!reportedAvatars.find(r => r.username === username)) {
+      const newReported = [...reportedAvatars, { username, avatar: avatarUrl, date: new Date().toISOString() }];
+      setReportedAvatars(newReported);
+      localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported));
+    }
+  }
+
+  const dismissAvatarReport = (username) => {
+    const newReported = reportedAvatars.filter(r => r.username !== username);
+    setReportedAvatars(newReported);
+    localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported));
+  }
+
+  const removeUserAvatar = (username) => {
+    const updatedUsers = registeredUsers.map(u => u.username === username ? { ...u, avatar: null } : u);
+    saveRegisteredUsers(updatedUsers);
+    dismissAvatarReport(username);
   }
 
   const clearCartStorage = () => {
@@ -444,10 +489,15 @@ export const AuthProvider = ({ children }) => {
         adminResetUserPassword,
         userSetNewPassword,
         updateProfile,
+        updateAdminProfile,
         logout,
         signup,
         logoutAdmin,
         registeredUsers,
+        reportedAvatars,
+        reportUserAvatar,
+        dismissAvatarReport,
+        removeUserAvatar,
         updateUserViolations,
         setExactUserViolations,
         autoCalculateViolations,

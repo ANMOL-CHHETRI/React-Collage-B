@@ -95,8 +95,9 @@ const mockSellerCustomers = [
 const UserDashboard = () => {
   const { 
     user, 
-    updateProfile, 
-    changePassword, 
+    logout, 
+    updateProfile,
+    changePassword,
     registeredUsers, 
     theme, 
     toggleTheme, 
@@ -132,6 +133,69 @@ const UserDashboard = () => {
   const [coupons, setCoupons] = useState([])
   const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
+  const presetChars = [...Array(26)].map((_, i) => String.fromCharCode(65 + i)).concat([...Array(10)].map((_, i) => String(i)))
+
+  const handlePresetSelect = (char) => {
+    const canvas = document.createElement("canvas")
+    canvas.width = 200
+    canvas.height = 200
+    const ctx = canvas.getContext("2d")
+    ctx.fillStyle = "#ffedd5"
+    ctx.fillRect(0, 0, 200, 200)
+    ctx.fillStyle = "#ea580c"
+    ctx.font = "bold 100px sans-serif"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillText(char, 100, 110)
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.9)
+    if (updateProfile) {
+      updateProfile({ avatar: dataUrl })
+      success("Profile avatar updated successfully!")
+    }
+    setShowAvatarPicker(false)
+  }
+
+  const handleUserAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 200;
+        const MAX_HEIGHT = 200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+        if (updateProfile) {
+          updateProfile({ avatar: dataUrl });
+          success("Profile avatar updated successfully!");
+        }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
   useEffect(() => {
     try {
       const rawDynamic = JSON.parse(localStorage.getItem("shopease_orders"));
@@ -422,12 +486,20 @@ const UserDashboard = () => {
         {/* User Card */}
         <div className="mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase">
-              {user?.name ? user.name[0] : "S"}
+            <div className="relative group w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase overflow-hidden">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                user?.name ? user.name[0] : "S"
+              )}
+              <label className="absolute inset-0 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-[8px] font-bold">
+                 Upload
+                 <input type="file" accept="image/*" className="hidden" onChange={handleUserAvatarUpload} onClick={(e) => (e.target.value = '')} />
+              </label>
             </div>
             <div>
               <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold block">Hello,</span>
-              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">{user?.name || "Sahil Adhikari"}</h2>
+              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">{user?.name || "Sahil Tuladhar"}</h2>
             </div>
           </div>
         </div>
@@ -531,14 +603,24 @@ const UserDashboard = () => {
           </div>
         </nav>
 
-        {/* Back link */}
-        <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
-          <Link to="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-2 text-xs font-semibold">
+        {/* Back link and Logout */}
+        <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
+          <Link to="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-2 text-xs font-semibold transition-colors duration-200">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Store
           </Link>
+          
+          <button 
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-900/30 text-xs font-bold py-2.5 rounded-xl transition duration-200 cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -821,6 +903,41 @@ const UserDashboard = () => {
           )}
 
           <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm max-w-2xl space-y-6">
+            {/* Avatar Section */}
+            <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+               <div className="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center overflow-hidden border-2 border-orange-200 dark:border-orange-900/50">
+                  {user?.avatar ? (
+                    <img src={user.avatar} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">{user?.name?.[0] || "S"}</span>
+                  )}
+               </div>
+               <div className="flex flex-col gap-2 w-full sm:w-auto">
+                 <div className="flex gap-2">
+                   <label className="bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/60 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition text-center flex-1 sm:flex-none">
+                     Upload Image
+                     <input type="file" accept="image/*" className="hidden" onChange={handleUserAvatarUpload} onClick={(e) => (e.target.value = '')} />
+                   </label>
+                   <button type="button" onClick={() => setShowAvatarPicker(!showAvatarPicker)} className="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition text-center flex-1 sm:flex-none">
+                     Choose Preset
+                   </button>
+                 </div>
+               </div>
+            </div>
+            
+            {showAvatarPicker && (
+               <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Select an Avatar</h4>
+                  <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-12 gap-2">
+                    {presetChars.map(char => (
+                      <button key={char} type="button" onClick={() => handlePresetSelect(char)} className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 font-bold hover:ring-2 hover:ring-orange-500 hover:bg-orange-200 dark:hover:bg-orange-800 transition cursor-pointer">
+                        {char}
+                      </button>
+                    ))}
+                  </div>
+               </div>
+            )}
+
             <form onSubmit={handleSaveProfile} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
@@ -1156,8 +1273,8 @@ const UserDashboard = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Seller Dashboard</h1>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage your catalog items and view listings.</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
+            <div className="flex items-center gap-4 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl shrink-0">
                 <button
                   onClick={() => setSellerTab("overview")}
                   className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
@@ -1187,6 +1304,16 @@ const UserDashboard = () => {
                   }`}
                 >
                   Coupons
+                </button>
+                <button
+                  onClick={() => setSellerTab("reviews")}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
+                    sellerTab === "reviews" 
+                      ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow" 
+                      : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  Reviews
                 </button>
               </div>
 
@@ -1550,6 +1677,69 @@ const UserDashboard = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          ) : sellerTab === "reviews" ? (
+            <div className="bg-white dark:bg-slate-950 rounded-2xl shadow-sm dark:shadow-slate-800 border border-slate-200/70 dark:border-slate-800 p-6">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4">Product Reviews</h2>
+              <div className="space-y-4">
+                {products.filter(p => p.addedBy === user?.username).map(product => {
+                  const storedReviews = localStorage.getItem(`shopease_reviews_${product.id}`);
+                  const productReviews = storedReviews ? JSON.parse(storedReviews) : [
+                    { id: 1, name: "Priya Sharma", rating: 5, date: "June 12, 2025", title: "Absolutely love it!", text: "The quality is outstanding. Exactly as described and beautifully packaged." },
+                    { id: 2, name: "Rohan Thapa", rating: 4, date: "May 28, 2025", title: "Great product", text: "Very happy with this purchase. The craftsmanship is excellent." }
+                  ];
+                  return (
+                    <div key={product.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-6">
+                      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" referrerPolicy="no-referrer" />
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white">{product.name}</h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{productReviews.length} Reviews</p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        {productReviews.length === 0 ? (
+                          <p className="text-xs text-slate-500 dark:text-slate-400">No reviews yet for this product.</p>
+                        ) : (
+                          productReviews.map(review => (
+                            <div key={review.id} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                    {review.avatar && (review.avatar.startsWith('data:') || review.avatar.startsWith('http')) ? (
+                                      <img src={review.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                        {review.avatar || review.name.charAt(0).toUpperCase()}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{review.name}</span>
+                                    <span className="text-[10px] text-slate-400 ml-2">{review.date}</span>
+                                  </div>
+                                </div>
+                                <div className="flex text-amber-500">
+                                  {[...Array(5)].map((_, i) => (
+                                    <svg key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "text-amber-500 fill-amber-500" : "text-slate-300 dark:text-slate-700"}`} fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                  ))}
+                                </div>
+                              </div>
+                              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-300 mb-1">{review.title}</h4>
+                              <p className="text-xs text-slate-600 dark:text-slate-400">{review.text}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {products.filter(p => p.addedBy === user?.username).length === 0 && (
+                  <p className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center">You haven't listed any products yet.</p>
+                )}
               </div>
             </div>
           ) : (
