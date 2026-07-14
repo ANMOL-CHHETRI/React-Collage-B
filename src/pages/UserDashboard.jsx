@@ -422,12 +422,12 @@ const UserDashboard = () => {
         {/* User Card */}
         <div className="mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase">
+            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-amber-950 dark:text-orange-900 font-bold flex items-center justify-center text-sm uppercase">
               {user?.name ? user.name[0] : "S"}
             </div>
             <div>
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold block">Hello,</span>
-              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">{user?.name || "Sahil Adhikari"}</h2>
+              <span className="text-xs text-slate-600 dark:text-slate-500 font-semibold block">Hello,</span>
+              <h2 className="text-sm font-bold text-amber-900 dark:text-slate-100">{user?.name || "Sahil Adhikari"}</h2>
             </div>
           </div>
         </div>
@@ -437,15 +437,15 @@ const UserDashboard = () => {
           
           {/* Group 1: Manage My Account */}
           <div className="space-y-2">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Manage My Account</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Manage My Account</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button 
                   onClick={() => setActiveSection("profile")} 
                   className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
                     activeSection === "profile" 
-                      ? "text-orange-600 dark:text-orange-400 font-bold" 
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   My Profile
@@ -456,15 +456,15 @@ const UserDashboard = () => {
 
           {/* Group 2: My Orders */}
           <div className="space-y-2">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">My Orders</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-200">My Orders</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button 
                   onClick={() => setActiveSection("orders")} 
                   className={`w-full text-left font-medium flex items-center justify-between transition duration-200 cursor-pointer ${
                     activeSection === "orders" 
-                      ? "text-orange-600 dark:text-orange-400 font-bold" 
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   <span>My Orders</span>
@@ -480,15 +480,15 @@ const UserDashboard = () => {
 
           {/* Group 3: Settings */}
           <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Preferences</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Preferences</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button
                   onClick={() => setActiveSection("settings")}
                   className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
                     activeSection === "settings"
-                      ? "text-orange-600 dark:text-orange-400 font-bold"
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold"
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   Settings
@@ -504,8 +504,8 @@ const UserDashboard = () => {
                 onClick={() => setActiveSection("seller-dashboard")}
                 className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "seller-dashboard"
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                    ? "text-amber-900 dark:text-amber-800"
+                    : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-800"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -518,8 +518,8 @@ const UserDashboard = () => {
                 onClick={() => setActiveSection("sell-on-shopease")}
                 className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "sell-on-shopease"
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                    ? "text-amber-900 dark:text-amber-800"
+                    : "text-slate-600 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -557,8 +557,8 @@ const UserDashboard = () => {
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Orders</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Orders</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
             </div>
           </div>
 
@@ -569,7 +569,7 @@ const UserDashboard = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`py-3 px-5 border-b-2 transition duration-200 cursor-pointer ${
                   activeTab === tab 
-                    ? "border-orange-500 text-orange-600 dark:text-orange-400 font-bold" 
+                    ? "border-amber-900 text-amber-900 dark:text-amber-800 font-bold" 
                     : "border-transparent hover:text-slate-800 dark:hover:text-white"
                 }`}
               >
@@ -682,7 +682,7 @@ const UserDashboard = () => {
                         </div>
 
                         <div className="flex-1 space-y-1">
-                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
+                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-amber-900 dark:hover:text-amber-800 cursor-pointer">
                             {item.name}
                           </h5>
                           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
@@ -697,7 +697,7 @@ const UserDashboard = () => {
                           </div>
                           <div className="text-right">
                             <span className="text-[10px] text-slate-400 block uppercase">Price</span>
-                            <span className="font-extrabold text-orange-600 dark:text-orange-400 text-sm">Rs. {item.price.toLocaleString()}</span>
+                            <span className="font-extrabold text-amber-900 dark:text-amber-800 text-sm">Rs. {item.price.toLocaleString()}</span>
                           </div>
                         </div>
 
