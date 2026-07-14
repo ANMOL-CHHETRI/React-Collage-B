@@ -48,7 +48,7 @@ const Navbar = () => {
           (o.username === user.username ||
             o.fullName === user.name ||
             user.role === "admin" ||
-            user.username === "user")
+            user.username === "user"),
       );
 
       const list = [];
@@ -82,7 +82,9 @@ const Navbar = () => {
   };
 
   const allNotifications = getNotifications();
-  const unreadCount = allNotifications.filter((n) => !readNotifications.includes(n.id)).length;
+  const unreadCount = allNotifications.filter(
+    (n) => !readNotifications.includes(n.id),
+  ).length;
 
   const markAsRead = (id) => {
     setReadNotifications((prev) => {
@@ -103,8 +105,8 @@ const Navbar = () => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const linkClass = ({ isActive }) =>
@@ -118,32 +120,68 @@ const Navbar = () => {
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
-  const dbUser = user && (user.role === "user" || user.role === "sub-admin") ? (registeredUsers || []).find(u => u.username === user.username) : null;
+  const dbUser =
+    user && (user.role === "user" || user.role === "sub-admin")
+      ? (registeredUsers || []).find((u) => u.username === user.username)
+      : null;
   const hasViolations = dbUser && dbUser.violations > 0;
 
   return (
-    <nav className={`sticky top-0 z-50 text-slate-800 dark:text-slate-100 transition-all duration-300 ${
-      scrolled
-        ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-slate-950/50 border-b border-slate-200/60 dark:border-slate-800/60"
-        : "bg-white/70 dark:bg-slate-950/70 backdrop-blur-md border-b border-slate-100/80 dark:border-slate-800/50"
-    }`}>
+    <nav
+      className={`sticky top-0 z-50 text-slate-800 dark:text-slate-100 transition-all duration-300  ${
+        scrolled
+          ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-slate-950/50 border-b border-slate-200/60 dark:border-slate-800/60"
+          : "bg-white/70 dark:bg-slate-950/70 backdrop-blur-md border-b border-slate-100/80 dark:border-slate-800/50"
+      }`}
+    >
       {hasViolations && (
         <div className="bg-red-600 text-white text-center py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 animate-pulse">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <svg
+            className="w-4 h-4 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
-          <span>Warning: {dbUser.violations} violation(s) detected on your account! Please review our policies to avoid a permanent ban.</span>
+          <span>
+            Warning: {dbUser.violations} violation(s) detected on your account!
+            Please review our policies to avoid a permanent ban.
+          </span>
         </div>
       )}
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative">
+            {/* <div className="relative">
               <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 rounded-lg bg-amber-400/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+            </div> */}
+            <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-200">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ShopEase <span className="text-amber-600 font-semibold">Nepal</span></span>
+            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              ShopEase{" "}
+              <span className="text-amber-600 font-semibold">Nepal</span>
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -255,7 +293,11 @@ const Navbar = () => {
                 strokeWidth="2"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </form>
             {/* Theme Toggle */}
@@ -300,8 +342,18 @@ const Navbar = () => {
               className="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors duration-200 relative cursor-pointer"
               title="Wishlist"
             >
-              <svg className={`w-5.5 h-5.5 ${wishlistCount > 0 ? "animate-bounce" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <svg
+                className={`w-5.5 h-5.5 ${wishlistCount > 0 ? "animate-bounce" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
               {wishlistCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
@@ -385,7 +437,7 @@ const Navbar = () => {
                           </button>
                         )}
                       </div>
-                      
+
                       <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
                         {allNotifications.length === 0 ? (
                           <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
@@ -393,7 +445,9 @@ const Navbar = () => {
                           </div>
                         ) : (
                           allNotifications.map((notif) => {
-                            const isUnread = !readNotifications.includes(notif.id);
+                            const isUnread = !readNotifications.includes(
+                              notif.id,
+                            );
                             return (
                               <div
                                 key={notif.id}
@@ -409,12 +463,32 @@ const Navbar = () => {
                               >
                                 <div className="mt-0.5">
                                   {notif.type === "message" ? (
-                                    <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <svg
+                                      className="w-4 h-4 text-amber-500"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                      />
                                     </svg>
                                   ) : (
-                                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01" />
+                                    <svg
+                                      className="w-4 h-4 text-emerald-500"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01"
+                                      />
                                     </svg>
                                   )}
                                 </div>
@@ -431,7 +505,14 @@ const Navbar = () => {
                                     {notif.description}
                                   </p>
                                   <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-semibold">
-                                    {new Date(notif.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    {new Date(notif.date).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                      },
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -448,11 +529,15 @@ const Navbar = () => {
             {!isDashboard && (
               <Link
                 to={
-                  user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
+                  user?.role === "admin"
+                    ? "/admin/dashboard"
+                    : "/user/dashboard"
                 }
                 className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200"
                 title={
-                  user?.role === "admin" ? "Admin Dashboard" : "Account Dashboard"
+                  user?.role === "admin"
+                    ? "Admin Dashboard"
+                    : "Account Dashboard"
                 }
               >
                 <svg
@@ -580,7 +665,7 @@ const Navbar = () => {
                           </button>
                         )}
                       </div>
-                      
+
                       <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
                         {allNotifications.length === 0 ? (
                           <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
@@ -588,7 +673,9 @@ const Navbar = () => {
                           </div>
                         ) : (
                           allNotifications.map((notif) => {
-                            const isUnread = !readNotifications.includes(notif.id);
+                            const isUnread = !readNotifications.includes(
+                              notif.id,
+                            );
                             return (
                               <div
                                 key={notif.id}
@@ -604,12 +691,32 @@ const Navbar = () => {
                               >
                                 <div className="mt-0.5">
                                   {notif.type === "message" ? (
-                                    <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <svg
+                                      className="w-4 h-4 text-amber-500"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                      />
                                     </svg>
                                   ) : (
-                                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01" />
+                                    <svg
+                                      className="w-4 h-4 text-emerald-500"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01"
+                                      />
                                     </svg>
                                   )}
                                 </div>
@@ -626,7 +733,14 @@ const Navbar = () => {
                                     {notif.description}
                                   </p>
                                   <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-semibold">
-                                    {new Date(notif.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    {new Date(notif.date).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                      },
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -643,13 +757,25 @@ const Navbar = () => {
             {/* Mobile Profile Icon */}
             {user && (
               <Link
-                to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
+                to={
+                  user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
+                }
                 className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer"
                 title="Account Dashboard"
                 onClick={() => setIsOpen(false)}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </Link>
             )}
@@ -715,7 +841,11 @@ const Navbar = () => {
                   strokeWidth="2"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </form>
             </div>
@@ -802,8 +932,6 @@ const Navbar = () => {
                 {cartCount}
               </span>
             </button>
-
-
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
               {/* Theme Mode Toggle for Mobile */}
