@@ -229,7 +229,7 @@ const UserLoginPage = () => {
             style={{ maxHeight:"92vh" }}>
 
             {/* Modal header */}
-            <div className="relative bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-6 py-5 rounded-t-3xl flex-shrink-0">
+            <div className="relative bg-gradient-to-r from-amber-950 to-orange-800 px-6 py-5 rounded-t-3xl flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,15 +309,15 @@ const UserLoginPage = () => {
                 )}
 
                 <button type="submit"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer mt-1 flex items-center justify-center gap-2">
+                  className="w-full bg-gradient-to-r from-amber-950 to-orange-800 hover:to-amber-950 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer mt-1 flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                   Create My Account
                 </button>
-                <p className={`text-center text-xs pb-1 ${dark ? "text-slate-500" : "text-gray-400"}`}>
+                <p className={`text-center text-xs pb-1 ${dark ? "text-slate-500" : "text-gray-600"}`}>
                   Already have an account?{" "}
-                  <button type="button" onClick={closeSignup} className="text-amber-500 font-semibold hover:underline cursor-pointer">
+                  <button type="button" onClick={closeSignup} className="text-amber-950 font-semibold hover:underline cursor-pointer">
                     Sign in instead
                   </button>
                 </p>
