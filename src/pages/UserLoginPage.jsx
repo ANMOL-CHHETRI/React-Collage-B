@@ -329,7 +329,7 @@ const UserLoginPage = () => {
 
       {/* ─── Main Login Page ─── */}
       <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300
-        ${dark ? "bg-slate-950" : "bg-gradient-to-br from-amber-50 to-orange-100"}`}>
+        ${dark ? "bg-slate-950" : "bg-linear-to-br from-amber-50 to-orange-100"}`}>
         <div className={`rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl min-h-[580px] md:h-[620px] max-h-[95vh]
           ${dark ? "bg-slate-900 shadow-slate-900/80" : "bg-white"}`}>
 

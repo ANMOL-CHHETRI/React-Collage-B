@@ -161,7 +161,7 @@ const UserProfilePage = () => {
               type="submit"
               className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
-              Save Changes
+              Save Change
             </button>
 
             {saved && (
