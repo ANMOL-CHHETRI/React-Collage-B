@@ -18,7 +18,7 @@ const OutOfStockModal = ({ productName, onClose }) => {
         <h3 className="text-lg font-bold text-slate-900 mb-1">Out of Stock</h3>
         <p className="text-sm text-slate-500 mb-6 leading-relaxed">
           <span className="font-medium text-slate-700">{productName}</span> is currently out of stock.
-          All available units have already been added to carts.
+         
         </p>
 
         <button
