@@ -8,36 +8,24 @@ import { useToast } from "../context/ToastContext"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import CheckoutModal from "../components/CheckoutModal"
+import ConfirmDialog from "../components/ConfirmDialog"
 
-
-  const CartPage = () => {
+const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
   const { user } = useAuth()
   const [selectedProvince, setSelectedProvince] = useState("bagmati")
   const [loading, setLoading] = useState(true)
   const [checkoutModal, setCheckoutModal] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
-  
-  const [promoCode, setPromoCode] = useState("")
-  const [appliedCoupon, setAppliedCoupon] = useState(null)
-  const [promoError, setPromoError] = useState("")
-
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    onConfirm: null,
+  })
   const { error: toastError } = useToast()
   const navigate = useNavigate()
-
-  const handleApplyPromo = () => {
-    const rawCoupons = localStorage.getItem("shopease_coupons");
-    const coupons = rawCoupons ? JSON.parse(rawCoupons) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
-    
-    const found = coupons.find(c => c.code === promoCode.trim().toUpperCase());
-    if (found) {
-      setAppliedCoupon(found);
-      setPromoError("");
-    } else {
-      setAppliedCoupon(null);
-      setPromoError("Invalid or expired promo code.");
-    }
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500)
@@ -45,53 +33,71 @@ import CheckoutModal from "../components/CheckoutModal"
   }, [])
 
   const shipping = provincesData[selectedProvince]?.shippingFee || 0
-  
-  const calculateDiscount = () => {
-    if (!appliedCoupon) return 0;
-    let totalDiscount = 0;
-    cartItems.forEach(item => {
-      if (appliedCoupon.creator === "admin" || item.addedBy === appliedCoupon.creator) {
-        totalDiscount += (item.price * item.quantity) * (appliedCoupon.percent / 100);
-      }
-    });
-    return Math.floor(totalDiscount);
-  }
-  
-  const discountAmount = calculateDiscount();
   const grandTotal = cartSubtotal + shipping
-  const handleDecrease = (item) => {
-  if (item.quantity === 1) {
-    const confirmRemove = window.confirm(
-      "Remove this item from your cart?"
-    );
+  const hasOutOfStockItem = cartItems.some((item) => item.stock === 0)
 
-    if (confirmRemove) {
-      removeFromCart(item.id);
+  const openConfirmDialog = ({ title, message, confirmText, onConfirm }) => {
+    setConfirmDialog({ isOpen: true, title, message, confirmText, onConfirm })
+  }
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      isOpen: false,
+      title: "",
+      message: "",
+      confirmText: "Confirm",
+      onConfirm: null,
+    })
+  }
+
+  const handleConfirmAction = () => {
+    if (confirmDialog.onConfirm) {
+      confirmDialog.onConfirm()
     }
-
-    return;
+    closeConfirmDialog()
   }
 
-  updateQuantity(item.id, item.quantity - 1);
-};
-
-const handleClearCart = () => {
-  const confirmClear = window.confirm(
-    "Are you sure you want to clear your cart?"
-  );
-
-  if (confirmClear) {
-    clearCart();
+  const handleRemoveItem = (itemId) => {
+    openConfirmDialog({
+      title: "Remove item?",
+      message: "This product will be removed from your cart.",
+      confirmText: "Remove",
+      onConfirm: () => removeFromCart(itemId),
+    })
   }
-};
+
+  const handleDecrease = (item) => {
+    if (item.quantity === 1) {
+      handleRemoveItem(item.id)
+      return
+    }
+    updateQuantity(item.id, item.quantity - 1)
+  }
+
+  const handleClearCart = () => {
+    openConfirmDialog({
+      title: "Clear cart?",
+      message: "All items will be removed from your cart. This action cannot be undone.",
+      confirmText: "Clear Cart",
+      onConfirm: clearCart,
+    })
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Shopping Cart</h1>
-          <Link to="/" className="text-sm text-amber-600 hover:underline font-medium">&larr; Continue Shopping</Link>
+          <Link to="/" className="text-sm text-amber-600 hover:underline font-medium">
+            &larr; Continue Shopping
+          </Link>
         </div>
+
+        {hasOutOfStockItem && !loading && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            One or more items in your cart are currently out of stock. Please remove them to continue.
+          </div>
+        )}
 
         {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -100,7 +106,6 @@ const handleClearCart = () => {
                 <CartItemSkeleton key={i} />
               ))}
             </div>
-            {/* Order Summary skeleton */}
             <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm space-y-4 animate-pulse">
               <div className="h-5 bg-slate-200 rounded w-32" />
               <div className="space-y-3">
@@ -127,38 +132,78 @@ const handleClearCart = () => {
             </svg>
             <h2 className="text-xl font-bold text-slate-700 mb-2">Your cart is Empty</h2>
             <p className="text-sm text-slate-400 mb-6">Add some products to get started</p>
-            <Link to="/" className="inline-block px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition">Browse Products</Link>
+            <Link to="/" className="inline-block px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition">
+              Browse Products
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl p-4 flex items-center gap-4 border border-slate-100 shadow-sm">
-                  <img referrerPolicy="no-referrer" src={item.image} alt={item.name} className="w-20 h-20 rounded-lg object-cover" />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>
-                    <p className="text-amber-600 font-bold mt-1">Rs. {item.price.toLocaleString()}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleDecrease(item)} className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer">&minus;</button>
-                    <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer">+</button>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-slate-900">Rs. {(item.price * item.quantity).toLocaleString()}</p>
-                    <button onClick={() => {const confirmRemove = window.confirm("Are you sure you want to remove this item from your cart?");
-                    if (confirmRemove) {
-                       removeFromCart(item.id);
-                       }
-                      }}
-                       className="text-xs text-red-500 hover:underline mt-1 cursor-pointer">Remove</button>
-                    
+              {cartItems.map((item) => {
+                const isOutOfStock = item.stock === 0
+                const isAtMax = item.stock !== undefined && item.quantity >= item.stock
 
-      
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-xl p-4 flex items-center gap-4 border border-slate-100 shadow-sm"
+                  >
+                    <img
+                      referrerPolicy="no-referrer"
+                      src={item.image}
+                      alt={item.name}
+                      className="w-20 h-20 rounded-lg object-cover"
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>
+                      <p className="text-amber-600 font-bold mt-1">Rs. {item.price.toLocaleString()}</p>
+
+                      {isOutOfStock ? (
+                        <span className="inline-block mt-1 text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
+                          Out of Stock
+                        </span>
+                      ) : item.stock !== undefined && item.stock <= 5 ? (
+                        <span className="inline-block mt-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                          Only {item.stock} left
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDecrease(item)}
+                        disabled={isOutOfStock}
+                        className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        &minus;
+                      </button>
+                      <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        disabled={isOutOfStock || isAtMax}
+                        className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-bold text-slate-900">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                      <button
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="text-xs text-red-500 hover:underline mt-1 cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-              <button onClick={handleClearCart} className="text-sm text-red-500 hover:underline cursor-pointer">Clear Cart</button>
+                )
+              })}
+
+              <button onClick={handleClearCart} className="text-sm text-red-500 hover:underline cursor-pointer">
+                Clear Cart
+              </button>
             </div>
 
             <div className="space-y-6">
@@ -173,57 +218,37 @@ const handleClearCart = () => {
                     <span>Shipping</span>
                     <span>Rs. {shipping.toLocaleString()}</span>
                   </div>
-                  {appliedCoupon && discountAmount > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-bold">
-                      <span>Discount ({appliedCoupon.percent}%)</span>
-                      <span>- Rs. {discountAmount.toLocaleString()}</span>
-                    </div>
-                  )}
                   <hr className="border-slate-100" />
                   <div className="flex justify-between font-bold text-slate-900 text-base">
                     <span>Total</span>
-                    <span>Rs. {(grandTotal - discountAmount).toLocaleString()}</span>
+                    <span>Rs. {grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
-
-                <div className="pt-2">
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Promo Code</label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      value={promoCode}
-                      onChange={e => { setPromoCode(e.target.value); setPromoError(""); }}
-                      className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 uppercase text-sm" 
-                      placeholder="Code"
-                    />
-                    <button 
-                      onClick={handleApplyPromo}
-                      className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-lg transition cursor-pointer text-sm"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                  {promoError && <p className="text-red-500 text-xs mt-1">{promoError}</p>}
-                  {appliedCoupon && discountAmount > 0 && <p className="text-emerald-600 text-xs mt-1 font-bold">Promo code applied!</p>}
-                  {appliedCoupon && discountAmount === 0 && <p className="text-orange-500 text-xs mt-1 font-bold">Coupon doesn't apply to these items.</p>}
-                </div>
-
-                <button  
+                <button
+                  disabled={hasOutOfStockItem}
                   onClick={() => {
                     if (!user) {
                       toastError("Please log in to proceed to checkout.")
                       navigate("/user-login")
                     } else {
-                     setCheckingOut(true)
-                     setTimeout(() => {
-                      setCheckoutModal(true)
-                      setCheckingOut(false)
-                     },500)
+                      setCheckingOut(true)
+                      setTimeout(() => {
+                        setCheckoutModal(true)
+                        setCheckingOut(false)
+                      }, 500)
                     }
                   }}
-                  className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition cursor-pointer"
+                  className={`w-full mt-4 font-bold py-3 px-4 rounded-xl shadow-md transition ${
+                    hasOutOfStockItem
+                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                      : "bg-orange-600 hover:bg-orange-700 text-white hover:shadow-lg cursor-pointer"
+                  }`}
                 >
-                 {checkingOut ? "Processing..." : "Proceed to Checkout"}
+                  {checkingOut
+                    ? "Processing..."
+                    : hasOutOfStockItem
+                    ? "Remove out-of-stock items"
+                    : "Proceed to Checkout"}
                 </button>
                 <p className="text-xs text-slate-400 text-center mt-2">Select a province below to calculate shipping</p>
               </div>
@@ -234,16 +259,18 @@ const handleClearCart = () => {
         )}
       </div>
 
-      <CheckoutModal 
-        isOpen={checkoutModal} 
-        onClose={() => setCheckoutModal(false)} 
-        grandTotal={grandTotal}
-        discountAmount={discountAmount}
-        discountPercent={appliedCoupon?.percent || 0}
-        promoCode={appliedCoupon?.code || ""}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText={confirmDialog.confirmText}
+        onCancel={closeConfirmDialog}
+        onConfirm={handleConfirmAction}
       />
+
+      <CheckoutModal isOpen={checkoutModal} onClose={() => setCheckoutModal(false)} grandTotal={grandTotal} />
     </div>
   )
-
 }
+
 export default CartPage
