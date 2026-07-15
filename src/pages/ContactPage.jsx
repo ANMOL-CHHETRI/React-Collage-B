@@ -1,27 +1,39 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { api } from "../utils/api"
 
 const ContactPage = () => {
   const { user } = useAuth()
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
-    const newMessage = {
-      id: "MSG-" + Math.floor(1000 + Math.random() * 9000),
-      ...form,
-      date: new Date().toISOString()
-    }
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: "",
+      message: `Subject: ${form.subject}\n\n${form.message}`
+    };
 
     try {
-      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"));
-      const existing = Array.isArray(rawMessages) ? rawMessages : [];
-      localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...existing]))
+      await api.createMessage(payload);
     } catch (err) {
-      console.error("Error saving message:", err)
+      console.warn("Failed to save message to backend, saving locally:", err);
+      const newMessage = {
+        id: "MSG-" + Math.floor(1000 + Math.random() * 9000),
+        ...form,
+        date: new Date().toISOString()
+      }
+      try {
+        const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"));
+        const existing = Array.isArray(rawMessages) ? rawMessages : [];
+        localStorage.setItem("shopease_messages", JSON.stringify([newMessage, ...existing]))
+      } catch (err) {
+        console.error("Error saving message locally:", err)
+      }
     }
 
     setSent(true)

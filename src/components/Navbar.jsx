@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
+import { onConnectionChange } from "../utils/api";
 
 const Navbar = () => {
   const location = useLocation();
@@ -13,6 +14,13 @@ const Navbar = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const [dbConnected, setDbConnected] = useState(false);
+
+  useEffect(() => {
+    return onConnectionChange((status) => {
+      setDbConnected(status);
+    });
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -158,31 +166,33 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            {/* <div className="relative">
-              <img referrerPolicy="no-referrer" src="/logo.png" alt="ShopEase Nepal" className="w-8 h-8 rounded-lg object-cover shadow-md shadow-amber-500/25 group-hover:scale-110 transition-transform duration-300" />
-              <div className="absolute inset-0 rounded-lg bg-amber-400/20 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-            </div> */}
-            <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-200">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
+          <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-200">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+              </div>
+              <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                ShopEase{" "}
+                <span className="text-amber-600 font-semibold">Nepal</span>
+              </span>
+            </Link>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 select-none shadow-sm transition-all duration-300">
+              <span className={`w-1.5 h-1.5 rounded-full ${dbConnected ? "bg-emerald-500 shadow-sm shadow-emerald-400" : "bg-orange-500 shadow-sm shadow-orange-400"} animate-pulse`} />
+              <span>{dbConnected ? "Live DB" : "Offline Cache"}</span>
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              ShopEase{" "}
-              <span className="text-amber-600 font-semibold">Nepal</span>
-            </span>
-          </Link>
+          </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1.5">

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
 import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
+import { api } from "../utils/api"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -147,24 +148,45 @@ const AdminDashboard = () => {
   const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
-    try {
-      const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"))
-      const orders = Array.isArray(rawOrders) ? rawOrders : []
-      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
-      const messages = Array.isArray(rawMessages) ? rawMessages : []
-      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
-      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
-      
-      const timer = setTimeout(() => {
-        setAdminOrders(orders)
-        setAdminMessages(messages)
-        setCoupons(loadedCoupons)
-      }, 0)
-      return () => clearTimeout(timer)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [activeSection])
+    const fetchAdminData = async () => {
+      let orders = [];
+      let couponsList = [];
+      try {
+        const dbOrders = await api.getOrders();
+        orders = dbOrders.map(o => ({
+          orderId: o.id,
+          username: o.username,
+          storeName: o.storeName,
+          status: o.status,
+          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+          items: o.items.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          total: o.amount
+        }));
+      } catch (err) {
+        console.warn("Failed to fetch admin orders from API, checking local storage:", err);
+        const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+        orders = Array.isArray(rawOrders) ? rawOrders : [];
+      }
+
+      try {
+        const dbCoupons = await api.getCoupons();
+        couponsList = dbCoupons;
+      } catch (err) {
+        console.warn("Failed to fetch admin coupons from API, checking local storage:", err);
+        const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"));
+        couponsList = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+      }
+
+      setAdminOrders(orders);
+      setCoupons(couponsList);
+    };
+    fetchAdminData();
+  }, [activeSection]);
 
   // Loading state
   const [loading, setLoading] = useState(true)
@@ -187,21 +209,25 @@ const AdminDashboard = () => {
     return { avg: "4.4", count: 3 }
   }
 
-  const handleUpdateOrderStatus = (orderId, newStatus) => {
-    let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"))
-    if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
-      currentOrders = [...recentOrders]
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await api.updateOrderStatus(orderId, newStatus);
+      setAdminOrders((prev) => prev.map(o => o.orderId === orderId ? { ...o, status: newStatus } : o));
+      success(`Order ${orderId} updated to ${newStatus}`);
+    } catch (err) {
+      console.warn("Failed to update order status on backend, updating locally:", err);
+      let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+      const updated = (Array.isArray(currentOrders) ? currentOrders : []).map(order => {
+        const id = order.orderId || order.id;
+        if (id === orderId) {
+          return { ...order, status: newStatus };
+        }
+        return order;
+      });
+      localStorage.setItem("shopease_orders", JSON.stringify(updated));
+      setAdminOrders(updated);
+      success(`Order ${orderId} updated to ${newStatus} (Local Mode)`);
     }
-    const updated = currentOrders.map(order => {
-      const id = order.orderId || order.id
-      if (id === orderId) {
-        return { ...order, status: newStatus }
-      }
-      return order
-    })
-    localStorage.setItem("shopease_orders", JSON.stringify(updated))
-    setAdminOrders(updated)
-    success(`Order ${orderId} updated to ${newStatus}`)
   }
 
 
@@ -802,7 +828,7 @@ const AdminDashboard = () => {
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Coupon</h3>
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
                     if (!couponForm.code.trim() || !couponForm.percent) return;
                     
@@ -824,11 +850,19 @@ const AdminDashboard = () => {
                       creator: user?.username || "admin"
                     };
 
-                    const updatedCoupons = [...coupons, newCoupon];
-                    setCoupons(updatedCoupons);
-                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
-                    setCouponForm({ code: "", percent: "" });
-                    success("Coupon created successfully!");
+                    try {
+                      const dbCoupon = await api.createCoupon(newCoupon);
+                      setCoupons((prev) => [...prev, dbCoupon]);
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created successfully!");
+                    } catch (err) {
+                      console.warn("Failed to save coupon to backend, saving locally:", err);
+                      const updatedCoupons = [...coupons, newCoupon];
+                      setCoupons(updatedCoupons);
+                      localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created locally (offline mode)");
+                    }
                   }}
                   className="flex flex-wrap items-end gap-4"
                 >
@@ -892,12 +926,19 @@ const AdminDashboard = () => {
                             <td className="px-6 py-4 text-right">
                               {isOwner ? (
                                 <button
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (confirm(`Delete coupon ${coupon.code}?`)) {
-                                      const updated = coupons.filter(c => c.code !== coupon.code);
-                                      setCoupons(updated);
-                                      localStorage.setItem("shopease_coupons", JSON.stringify(updated));
-                                      success("Coupon deleted.");
+                                      try {
+                                        await api.deleteCoupon(coupon.code);
+                                        setCoupons((prev) => prev.filter(c => c.code !== coupon.code));
+                                        success("Coupon deleted.");
+                                      } catch (err) {
+                                        console.warn("Failed to delete coupon on backend, deleting locally:", err);
+                                        const updated = coupons.filter(c => c.code !== coupon.code);
+                                        setCoupons(updated);
+                                        localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                        success("Coupon deleted (offline mode).");
+                                      }
                                     }
                                   }}
                                   className="px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 transition cursor-pointer"

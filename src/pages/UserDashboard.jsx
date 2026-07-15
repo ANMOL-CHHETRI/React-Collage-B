@@ -6,6 +6,7 @@ import { useProducts } from "../context/ProductContext"
 import { useMemo } from "react"
 import { useToast } from "../context/ToastContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
+import { api } from "../utils/api"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -197,48 +198,64 @@ const UserDashboard = () => {
     e.target.value = '';
   }
   useEffect(() => {
-    try {
-      const rawDynamic = JSON.parse(localStorage.getItem("shopease_orders"));
-      const dynamicOrders = Array.isArray(rawDynamic) ? rawDynamic : [];
-      // Convert dynamic orders into the format UserDashboard expects safely
-      const formattedDynamicOrders = dynamicOrders.filter(o => o && (o.username === user?.username || o.fullName === user?.name || user?.username === "user")).map(o => ({
-        id: o.orderId || o.id || "#ORD-UNKNOWN",
-        storeName: "ShopEase Official",
-        status: o.status || "Processing",
-        date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-        items: (Array.isArray(o.items) ? o.items : []).map(item => {
-          let img = item?.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg";
-          const itemName = (item?.name || "").toLowerCase();
-          if (itemName.includes("pashmina") || img.includes("c2/ae/03")) {
-            img = "/pashmina_shawl.png";
-          } else if (itemName.includes("buddha") || img.includes("8f/58/01")) {
-            img = "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg";
-          }
-          return {
+    const loadDashboardData = async () => {
+      let fetchedOrders = [];
+      let fetchedCoupons = [];
+      try {
+        const dbOrders = await api.getOrders(user?.role === "admin" ? null : user?.username);
+        fetchedOrders = dbOrders.map(o => ({
+          id: o.id,
+          storeName: o.storeName || "ShopEase Official",
+          status: o.status,
+          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+          items: o.items.map(item => ({
+            name: item.name,
+            attributes: "Qty: " + item.quantity,
+            price: item.price,
+            qty: item.quantity,
+            image: item.image
+          })),
+          username: o.username
+        }));
+      } catch (err) {
+        console.warn("Failed to fetch dashboard orders from API, checking local storage:", err);
+        const rawDynamic = JSON.parse(localStorage.getItem("shopease_orders"));
+        const dynamicOrders = Array.isArray(rawDynamic) ? rawDynamic : [];
+        fetchedOrders = dynamicOrders.filter(o => o && (o.username === user?.username || o.fullName === user?.name || user?.username === "user")).map(o => ({
+          id: o.orderId || o.id || "#ORD-UNKNOWN",
+          storeName: o.storeName || "ShopEase Official",
+          status: o.status || "Processing",
+          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+          items: (Array.isArray(o.items) ? o.items : []).map(item => ({
             name: item?.name || "Unknown Product",
             attributes: "Qty: " + (item?.quantity || 1),
             price: item?.price || 0,
             qty: item?.quantity || 1,
-            image: img
-          };
-        })
-      }))
-      
-      const baseOrders = user?.username === "user" ? initialOrders : []
-      const orders = [...formattedDynamicOrders, ...baseOrders]
-      
-      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
-      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
+            image: item?.image
+          })),
+          username: o.username
+        }));
+        const baseOrders = user?.username === "user" ? initialOrders : [];
+        fetchedOrders = [...fetchedOrders, ...baseOrders];
+      }
 
-      const timer = setTimeout(() => {
-        setRawOrders(orders)
-        setCoupons(loadedCoupons)
-      }, 0)
-      return () => clearTimeout(timer)
-    } catch (e) {
-      console.error(e)
+      try {
+        const dbCoupons = await api.getCoupons();
+        fetchedCoupons = dbCoupons;
+      } catch (err) {
+        console.warn("Failed to fetch dashboard coupons from API, checking local storage:", err);
+        const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"));
+        fetchedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+      }
+
+      setRawOrders(fetchedOrders);
+      setCoupons(fetchedCoupons);
+    };
+
+    if (user) {
+      loadDashboardData();
     }
-  }, [user])
+  }, [user]);
 
   const orders = useMemo(() => {
     return rawOrders.map(order => {
@@ -1246,7 +1263,7 @@ const UserDashboard = () => {
                       className="w-5 h-5 mt-0.5 rounded border-slate-300 text-amber-900 focus:ring-orange-800 cursor-pointer"
                     />
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      I agree to the <a href="/policy#seller" target="_blank" className="text-amber-900 hover:underline">Seller Policy</a>. I understand the operational guidelines, prohibited items, and platform fees.
+                      I agree to the <a href="/policy#seller" target="_blank" rel="noopener noreferrer" className="text-amber-900 hover:underline">Seller Policy</a>. I understand the operational guidelines, prohibited items, and platform fees.
                     </span>
                   </label>
                 </div>
@@ -1579,7 +1596,7 @@ const UserDashboard = () => {
               <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Create New Coupon</h3>
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
                     if (!couponForm.code.trim() || !couponForm.percent) return;
                     
@@ -1601,11 +1618,19 @@ const UserDashboard = () => {
                       creator: user?.username || "user"
                     };
 
-                    const updatedCoupons = [...coupons, newCoupon];
-                    setCoupons(updatedCoupons);
-                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
-                    setCouponForm({ code: "", percent: "" });
-                    success("Coupon created successfully!");
+                    try {
+                      const dbCoupon = await api.createCoupon(newCoupon);
+                      setCoupons((prev) => [...prev, dbCoupon]);
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created successfully!");
+                    } catch (err) {
+                      console.warn("Failed to save coupon to backend, saving locally:", err);
+                      const updatedCoupons = [...coupons, newCoupon];
+                      setCoupons(updatedCoupons);
+                      localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created locally (offline mode)");
+                    }
                   }}
                   className="flex flex-wrap items-end gap-4"
                 >
@@ -1656,12 +1681,19 @@ const UserDashboard = () => {
                           <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-bold">{coupon.percent}%</td>
                           <td className="py-3 px-4 text-right space-x-2 shrink-0">
                             <button
-                              onClick={() => {
+                              onClick={async () => {
                                 if (confirm(`Delete coupon ${coupon.code}?`)) {
-                                  const updated = coupons.filter(c => c.code !== coupon.code);
-                                  setCoupons(updated);
-                                  localStorage.setItem("shopease_coupons", JSON.stringify(updated));
-                                  success("Coupon deleted.");
+                                  try {
+                                    await api.deleteCoupon(coupon.code);
+                                    setCoupons((prev) => prev.filter(c => c.code !== coupon.code));
+                                    success("Coupon deleted.");
+                                  } catch (err) {
+                                    console.warn("Failed to delete coupon on backend, deleting locally:", err);
+                                    const updated = coupons.filter(c => c.code !== coupon.code);
+                                    setCoupons(updated);
+                                    localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                    success("Coupon deleted (offline mode).");
+                                  }
                                 }
                               }}
                               className="bg-red-50 dark:bg-red-950/20 hover:bg-red-100 text-red-700 dark:text-red-400 font-bold py-1.5 px-3 rounded-lg transition cursor-pointer"

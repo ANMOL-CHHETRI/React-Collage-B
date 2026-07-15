@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
+import { api } from "../utils/api"
 
 const AuthContext = createContext()
 
@@ -58,92 +59,144 @@ export const AuthProvider = ({ children }) => {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"))
   }
-  const [reportedAvatars, setReportedAvatars] = useState(() => {
-    try {
-      const saved = localStorage.getItem("shopease_reported_avatars")
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
-  
-  const [registeredUsers, setRegisteredUsers] = useState(() => {
-    try {
-      const saved = localStorage.getItem(REGISTERED_USERS_KEY)
-      const parsed = saved ? JSON.parse(saved) : DEFAULT_USERS
-      return Array.isArray(parsed) ? parsed : DEFAULT_USERS
-    } catch {
-      return DEFAULT_USERS
-    }
-  })
+
+  const [reportedAvatars, setReportedAvatars] = useState([])
+  const [registeredUsers, setRegisteredUsers] = useState([])
+  const [sellerApplications, setSellerApplications] = useState([])
   const [error, setError] = useState("")
   const navigate = useNavigate()
+
+  // Sync users list, applications, and reported avatars
+  const syncData = useCallback(async () => {
+    try {
+      const usersList = await api.getUsers()
+      setRegisteredUsers(usersList)
+      localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(usersList))
+    } catch {
+      try {
+        const saved = localStorage.getItem(REGISTERED_USERS_KEY)
+        setRegisteredUsers(saved ? JSON.parse(saved) : DEFAULT_USERS)
+      } catch {
+        setRegisteredUsers(DEFAULT_USERS)
+      }
+    }
+
+    try {
+      const apps = await api.getSellerApplications()
+      setSellerApplications(apps)
+      localStorage.setItem("shopease_seller_applications", JSON.stringify(apps))
+    } catch {
+      try {
+        const saved = localStorage.getItem("shopease_seller_applications")
+        setSellerApplications(saved ? JSON.parse(saved) : [])
+      } catch {
+        setSellerApplications([])
+      }
+    }
+
+    try {
+      const avatars = await api.getReportedAvatars()
+      setReportedAvatars(avatars)
+      localStorage.setItem("shopease_reported_avatars", JSON.stringify(avatars))
+    } catch {
+      try {
+        const saved = localStorage.getItem("shopease_reported_avatars")
+        setReportedAvatars(saved ? JSON.parse(saved) : [])
+      } catch {
+        setReportedAvatars([])
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    syncData()
+  }, [syncData, user])
 
   const saveRegisteredUsers = (usersList) => {
     setRegisteredUsers(usersList)
     localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(usersList))
   }
 
-  const updateUserViolations = (username, delta) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, violations: Math.max(0, u.violations + delta) }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const updateUserViolations = async (username, delta) => {
+    try {
+      const updatedUser = await api.updateUserViolations(username, delta)
+      setRegisteredUsers(prev => prev.map(u => u.username === username ? updatedUser : u))
+    } catch {
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, violations: Math.max(0, u.violations + delta) }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
+    }
   }
 
-  const setExactUserViolations = (username, count) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, violations: Math.max(0, count) }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const setExactUserViolations = async (username, count) => {
+    try {
+      const updatedUser = await api.setExactUserViolations(username, count)
+      setRegisteredUsers(prev => prev.map(u => u.username === username ? updatedUser : u))
+    } catch {
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, violations: Math.max(0, count) }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
+    }
   }
 
-  const autoCalculateViolations = (username) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        const autoVio = Math.floor((u.oneStarReviews || 0) / 10)
-        return { ...u, violations: autoVio }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const autoCalculateViolations = async (username) => {
+    const found = registeredUsers.find(u => u.username === username)
+    if (!found) return
+    const autoVio = Math.floor((found.oneStarReviews || 0) / 10)
+    await setExactUserViolations(username, autoVio)
   }
 
-  const toggleUserBan = (username) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, banned: !u.banned }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const toggleUserBan = async (username) => {
+    try {
+      const updatedUser = await api.toggleUserBan(username)
+      setRegisteredUsers(prev => prev.map(u => u.username === username ? updatedUser : u))
+    } catch {
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, banned: !u.banned }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
+    }
   }
 
-  const adminResetUserPassword = (username) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, password: "shopease123" }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const adminResetUserPassword = async (username) => {
+    try {
+      await api.adminResetUserPassword(username)
+    } catch {
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, password: "shopease123" }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
+    }
     localStorage.removeItem("shopease_failed_user_login")
   }
 
-  const userSetNewPassword = (username, newPassword) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, password: newPassword }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
+  const userSetNewPassword = async (username, newPassword) => {
+    try {
+      // Use profile update or change password endpoint
+      await api.changePassword(user?.role || "user", userCredentials.password, newPassword, username)
+    } catch {
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, password: newPassword }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
+    }
     localStorage.removeItem("shopease_failed_user_login")
   }
 
@@ -157,67 +210,20 @@ export const AuthProvider = ({ children }) => {
     return adminCredentials.email === email && adminCredentials.phone === phone
   }
 
-  const loginAdmin = (username, password) => {
+  const loginAdmin = async (username, password) => {
     setError("")
-    const trimmedUser = username.trim()
-    if (
-      trimmedUser === adminCredentials.username &&
-      password === adminCredentials.password
-    ) {
-      const adminUser = {
-        role: "admin",
-        name: "Admin",
-        username: adminCredentials.username,
-        email: "admin@shopease.com",
-        avatar: adminCredentials.avatar,
-      }
-      setUser(adminUser)
-      localStorage.setItem("shopease_user", JSON.stringify(adminUser))
+    try {
+      const data = await api.login(username, password)
+      setUser(data)
+      localStorage.setItem("shopease_user", JSON.stringify(data))
       if (typeof navigate === "function") {
         navigate("/admin/dashboard")
       }
       return true
-    }
-    setError("Invalid admin username or password")
-    return false
-  }
-
-  const loginUser = (username, password) => {
-    setError("")
-    const trimmedUser = username.trim()
-    const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
-
-    if (!foundUser || password !== userCredentials.password) {
-      setError("Invalid user username or password")
-      return false
-    }
-
-    if (foundUser.banned) {
-      setError("Your account has been banned due to violations.")
-      return false
-    }
-
-    const regularUser = {
-      role: foundUser.role || "user",
-      name: foundUser.name,
-      username: foundUser.username,
-      email: foundUser.email,
-      phone: foundUser.phone,
-      address: foundUser.address,
-      avatar: foundUser.avatar,
-    }
-    setUser(regularUser)
-    localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-    navigate("/")
-    return true
-  }
-
-  const login = (username, password) => {
-    setError("")
-    const trimmedUser = username.trim()
-
-    if (trimmedUser === adminCredentials.username) {
-      if (password === adminCredentials.password) {
+    } catch (err) {
+      // Local fallback
+      const trimmedUser = username.trim()
+      if (trimmedUser === adminCredentials.username && password === adminCredentials.password) {
         const adminUser = {
           role: "admin",
           name: "Admin",
@@ -232,13 +238,30 @@ export const AuthProvider = ({ children }) => {
         }
         return true
       }
-      setError("Invalid admin username or password")
+      setError(err.message || "Invalid admin credentials")
       return false
     }
+  }
 
-    const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
-    const validPassword = foundUser && (foundUser.password ? password === foundUser.password : password === userCredentials.password)
-    if (foundUser && validPassword) {
+  const loginUser = async (username, password) => {
+    setError("")
+    try {
+      const data = await api.login(username, password)
+      setUser(data)
+      localStorage.setItem("shopease_user", JSON.stringify(data))
+      navigate("/")
+      return true
+    } catch (err) {
+      // Local fallback
+      const trimmedUser = username.trim()
+      const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
+      const isFallbackValid = foundUser && (foundUser.password ? password === foundUser.password : password === userCredentials.password)
+
+      if (!foundUser || !isFallbackValid) {
+        setError(err.message || "Invalid user credentials")
+        return false
+      }
+
       if (foundUser.banned) {
         setError("Your account has been banned due to violations.")
         return false
@@ -255,15 +278,55 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(regularUser)
       localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-      // Navigation is handled by UserLoginPage after the store-opening animation
+      navigate("/")
       return true
     }
-
-    setError("Invalid username or password")
-    return false
   }
 
-  const changePassword = (role, currentPassword, newPassword) => {
+  const login = async (username, password) => {
+    setError("")
+    const trimmedUser = username.trim()
+
+    if (trimmedUser === adminCredentials.username) {
+      return await loginAdmin(username, password)
+    }
+
+    try {
+      const data = await api.login(username, password)
+      setUser(data)
+      localStorage.setItem("shopease_user", JSON.stringify(data))
+      return true
+    } catch (err) {
+      // Local fallback
+      const foundUser = registeredUsers.find((u) => u.username === trimmedUser)
+      const validPassword = foundUser && (foundUser.password ? password === foundUser.password : password === userCredentials.password)
+      
+      if (foundUser && validPassword) {
+        if (foundUser.banned) {
+          setError("Your account has been banned due to violations.")
+          return false
+        }
+
+        const regularUser = {
+          role: foundUser.role || "user",
+          name: foundUser.name,
+          username: foundUser.username,
+          email: foundUser.email,
+          phone: foundUser.phone,
+          address: foundUser.address,
+          avatar: foundUser.avatar,
+        }
+        setUser(regularUser)
+        localStorage.setItem("shopease_user", JSON.stringify(regularUser))
+        return true
+      }
+
+      setError(err.message || "Invalid username or password")
+      return false
+    }
+  }
+
+  const changePassword = async (role, currentPassword, newPassword) => {
     if (!newPassword || newPassword.length < 4) {
       return { success: false, message: "New password must be at least 4 characters" }
     }
@@ -271,74 +334,121 @@ export const AuthProvider = ({ children }) => {
       return { success: false, message: "New password must be different from current password" }
     }
 
-    if (role === "admin") {
-      if (currentPassword !== adminCredentials.password) {
-        return { success: false, message: "Current password is incorrect" }
+    try {
+      await api.changePassword(role, currentPassword, newPassword, user?.username)
+      if (role === "admin") {
+        setAdminCredentials(prev => ({ ...prev, password: newPassword }))
+      } else {
+        setUserCredentials(prev => ({ ...prev, password: newPassword }))
       }
-      if (newPassword === userCredentials.password) {
-        return { success: false, message: "Admin password cannot match the user password" }
+      return { success: true, message: "Password updated successfully" }
+    } catch (err) {
+      // Local fallback
+      if (role === "admin") {
+        if (currentPassword !== adminCredentials.password) {
+          return { success: false, message: "Current password is incorrect" }
+        }
+        if (newPassword === userCredentials.password) {
+          return { success: false, message: "Admin password cannot match the user password" }
+        }
+        const updated = { ...adminCredentials, password: newPassword }
+        setAdminCredentials(updated)
+        localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updated))
+        return { success: true, message: "Admin password updated locally" }
       }
-      const updated = { ...adminCredentials, password: newPassword }
+
+      if (role === "user" || role === "sub-admin") {
+        if (currentPassword !== userCredentials.password) {
+          return { success: false, message: "Current password is incorrect" }
+        }
+        if (newPassword === adminCredentials.password) {
+          return { success: false, message: "User password cannot match the admin password" }
+        }
+        const updated = { ...userCredentials, password: newPassword }
+        setUserCredentials(updated)
+        localStorage.setItem(USER_CREDS_KEY, JSON.stringify(updated))
+        return { success: true, message: "User password updated locally" }
+      }
+      return { success: false, message: err.message || "Password change failed" }
+    }
+  }
+
+  const updateProfile = async (updatedDetails) => {
+    if (!user) return
+    try {
+      const updatedUser = await api.updateProfile(user.username, updatedDetails)
+      setUser(updatedUser)
+      localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+      setRegisteredUsers(prev => prev.map(u => u.username === user.username ? updatedUser : u))
+    } catch {
+      const updated = { ...user, ...updatedDetails }
+      setUser(updated)
+      localStorage.setItem("shopease_user", JSON.stringify(updated))
+      const updatedUsers = registeredUsers.map(u => u.username === user.username ? { ...u, ...updatedDetails } : u)
+      saveRegisteredUsers(updatedUsers)
+    }
+  }
+
+  const updateAdminProfile = async (updatedDetails) => {
+    try {
+      const updatedUser = await api.updateProfile(adminCredentials.username, updatedDetails)
+      if (user && user.role === "admin") {
+        setUser(updatedUser)
+        localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+      }
+      setAdminCredentials(prev => ({ ...prev, ...updatedDetails }))
+      localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify({ ...adminCredentials, ...updatedDetails }))
+    } catch {
+      const updated = { ...adminCredentials, ...updatedDetails }
       setAdminCredentials(updated)
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updated))
-      return { success: true, message: "Admin password updated successfully" }
-    }
-
-    if (role === "user" || role === "sub-admin") {
-      if (currentPassword !== userCredentials.password) {
-        return { success: false, message: "Current password is incorrect" }
+      if (user && user.role === "admin") {
+        const adminUser = { ...user, ...updatedDetails }
+        setUser(adminUser)
+        localStorage.setItem("shopease_user", JSON.stringify(adminUser))
       }
-      if (newPassword === adminCredentials.password) {
-        return { success: false, message: "User password cannot match the admin password" }
+    }
+  }
+
+  const reportUserAvatar = async (username, avatarUrl) => {
+    try {
+      const report = await api.reportAvatar(username, avatarUrl)
+      setReportedAvatars(prev => [...prev.filter(r => r.username !== username), report])
+    } catch {
+      if (!reportedAvatars.find(r => r.username === username)) {
+        const newReported = [...reportedAvatars, { username, avatar: avatarUrl, date: new Date().toISOString() }]
+        setReportedAvatars(newReported)
+        localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported))
       }
-      const updated = { ...userCredentials, password: newPassword }
-      setUserCredentials(updated)
-      localStorage.setItem(USER_CREDS_KEY, JSON.stringify(updated))
-      return { success: true, message: "User password updated successfully" }
-    }
-
-    return { success: false, message: "Invalid role" }
-  }
-
-  const updateProfile = (updatedDetails) => {
-    if (!user) return;
-    const updated = { ...user, ...updatedDetails };
-    setUser(updated);
-    localStorage.setItem("shopease_user", JSON.stringify(updated));
-
-    const updatedUsers = registeredUsers.map(u => u.username === user.username ? { ...u, ...updatedDetails } : u);
-    saveRegisteredUsers(updatedUsers);
-  }
-
-  const updateAdminProfile = (updatedDetails) => {
-    const updated = { ...adminCredentials, ...updatedDetails };
-    setAdminCredentials(updated);
-    localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updated));
-    if (user && user.role === "admin") {
-      const adminUser = { ...user, ...updatedDetails };
-      setUser(adminUser);
-      localStorage.setItem("shopease_user", JSON.stringify(adminUser));
     }
   }
 
-  const reportUserAvatar = (username, avatarUrl) => {
-    if (!reportedAvatars.find(r => r.username === username)) {
-      const newReported = [...reportedAvatars, { username, avatar: avatarUrl, date: new Date().toISOString() }];
-      setReportedAvatars(newReported);
-      localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported));
+  const dismissAvatarReport = async (username) => {
+    try {
+      await api.dismissAvatarReport(username)
+      setReportedAvatars(prev => prev.filter(r => r.username !== username))
+    } catch {
+      const newReported = reportedAvatars.filter(r => r.username !== username)
+      setReportedAvatars(newReported)
+      localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported))
     }
   }
 
-  const dismissAvatarReport = (username) => {
-    const newReported = reportedAvatars.filter(r => r.username !== username);
-    setReportedAvatars(newReported);
-    localStorage.setItem("shopease_reported_avatars", JSON.stringify(newReported));
-  }
-
-  const removeUserAvatar = (username) => {
-    const updatedUsers = registeredUsers.map(u => u.username === username ? { ...u, avatar: null } : u);
-    saveRegisteredUsers(updatedUsers);
-    dismissAvatarReport(username);
+  const removeUserAvatar = async (username) => {
+    try {
+      await api.removeReportedAvatar(username)
+      setReportedAvatars(prev => prev.filter(r => r.username !== username))
+      setRegisteredUsers(prev => prev.map(u => u.username === username ? { ...u, avatar: null } : u))
+      if (user && user.username === username) {
+        const updatedUser = { ...user, avatar: null }
+        setUser(updatedUser)
+        localStorage.setItem("shopease_user", JSON.stringify(updatedUser))
+      }
+    } catch {
+      const updatedUsers = registeredUsers.map(u => u.username === username ? { ...u, avatar: null } : u)
+      saveRegisteredUsers(updatedUsers)
+      dismissAvatarReport(username)
+    }
   }
 
   const clearCartStorage = () => {
@@ -352,41 +462,52 @@ export const AuthProvider = ({ children }) => {
     navigate("/")
   }, [navigate])
 
-  const signup = (name, username, email, password) => {
+  const signup = async (name, username, email, password) => {
     setError("")
-    const trimmedUser = username.trim()
-    if (registeredUsers.some((u) => u.username === trimmedUser)) {
-      setError("Username already exists.")
-      return false
+    try {
+      const data = await api.register(name, username, email, password)
+      setUser(data)
+      localStorage.setItem("shopease_user", JSON.stringify(data))
+      if (typeof navigate === "function") {
+        navigate("/")
+      }
+      return true
+    } catch (err) {
+      // Local fallback
+      const trimmedUser = username.strip ? username.strip() : username.trim()
+      if (registeredUsers.some((u) => u.username === trimmedUser)) {
+        setError("Username already exists.")
+        return false
+      }
+      const newUser = {
+        name,
+        username: trimmedUser,
+        email,
+        password,
+        phone: "",
+        address: "",
+        violations: 0,
+        banned: false,
+        role: "user"
+      }
+      const updatedUsers = [...registeredUsers, newUser]
+      saveRegisteredUsers(updatedUsers)
+      
+      const regularUser = {
+        role: "user",
+        name,
+        username: trimmedUser,
+        email,
+        phone: "",
+        address: "",
+      }
+      setUser(regularUser)
+      localStorage.setItem("shopease_user", JSON.stringify(regularUser))
+      if (typeof navigate === "function") {
+        navigate("/")
+      }
+      return true
     }
-    const newUser = {
-      name,
-      username: trimmedUser,
-      email,
-      password,
-      phone: "",
-      address: "",
-      violations: 0,
-      banned: false,
-      role: "user"
-    }
-    const updatedUsers = [...registeredUsers, newUser]
-    saveRegisteredUsers(updatedUsers)
-    
-    const regularUser = {
-      role: "user",
-      name,
-      username: trimmedUser,
-      email,
-      phone: "",
-      address: "",
-    }
-    setUser(regularUser)
-    localStorage.setItem("shopease_user", JSON.stringify(regularUser))
-    if (typeof navigate === "function") {
-      navigate("/")
-    }
-    return true
   }
 
   const logoutAdmin = () => {
@@ -398,49 +519,58 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const promoteToSubAdmin = (username) => {
-    const updated = registeredUsers.map((u) => {
-      if (u.username === username) {
-        return { ...u, role: "sub-admin" }
-      }
-      return u
-    })
-    saveRegisteredUsers(updated)
-  }
-
-  const [sellerApplications, setSellerApplications] = useState(() => {
+  const promoteToSubAdmin = async (username) => {
     try {
-      const saved = localStorage.getItem("shopease_seller_applications")
-      return saved ? JSON.parse(saved) : []
+      await api.promoteToSubAdmin(username)
+      setRegisteredUsers(prev => prev.map(u => u.username === username ? { ...u, role: "sub-admin" } : u))
     } catch {
-      return []
+      const updated = registeredUsers.map((u) => {
+        if (u.username === username) {
+          return { ...u, role: "sub-admin" }
+        }
+        return u
+      })
+      saveRegisteredUsers(updated)
     }
-  })
-
-  const submitSellerApplication = (appDetails) => {
-    const newApp = {
-      ...appDetails,
-      username: user?.username,
-      status: "Pending",
-      submittedAt: new Date().toISOString(),
-    }
-    const updated = [...sellerApplications.filter(a => a.username !== user?.username), newApp]
-    setSellerApplications(updated)
-    localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
   }
 
-  const reviewSellerApplication = (username, status) => {
-    const updated = sellerApplications.map((app) => {
-      if (app.username === username) {
-        return { ...app, status }
+  const submitSellerApplication = async (appDetails) => {
+    try {
+      const app = await api.applySeller({ ...appDetails, username: user?.username })
+      setSellerApplications(prev => [...prev.filter(a => a.username !== user?.username), app])
+    } catch {
+      const newApp = {
+        ...appDetails,
+        username: user?.username,
+        status: "Pending",
+        submittedAt: new Date().toISOString(),
       }
-      return app
-    })
-    setSellerApplications(updated)
-    localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
+      const updated = [...sellerApplications.filter(a => a.username !== user?.username), newApp]
+      setSellerApplications(updated)
+      localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
+    }
+  }
 
-    if (status === "Approved") {
-      promoteToSubAdmin(username)
+  const reviewSellerApplication = async (username, status) => {
+    try {
+      const updatedApp = await api.reviewSellerApplication(username, status)
+      setSellerApplications(prev => prev.map(a => a.username === username ? updatedApp : a))
+      if (status === "Approved") {
+        setRegisteredUsers(prev => prev.map(u => u.username === username ? { ...u, role: "sub-admin" } : u))
+      }
+    } catch {
+      const updated = sellerApplications.map((app) => {
+        if (app.username === username) {
+          return { ...app, status }
+        }
+        return app
+      })
+      setSellerApplications(updated)
+      localStorage.setItem("shopease_seller_applications", JSON.stringify(updated))
+
+      if (status === "Approved") {
+        promoteToSubAdmin(username)
+      }
     }
   }
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "../context/ToastContext"
 import { useCart } from "../context/CartContext"
 import { useAuth } from "../context/AuthContext"
+import { api } from "../utils/api"
 
 const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discountPercent = 0, promoCode = "", singleProduct = null }) => {
   const { user } = useAuth()
@@ -41,7 +42,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
 
   const handleCheckout = () => {
     setCheckingOut(true)
-    setTimeout(() => {
+    setTimeout(async () => {
       setCheckingOut(false)
 
       const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000)
@@ -63,12 +64,33 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
         date: new Date().toISOString()
       };
 
+      const orderPayload = {
+        id: simulatedOrder.orderId || `ORD-${Date.now().toString().slice(-5)}`,
+        username: user?.username || "guest",
+        storeName: "ShopEase Official",
+        status: "Processing",
+        date: new Date().toISOString(),
+        items: itemsToCheckout.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        amount: finalTotal
+      };
+
+      try {
+        await api.createOrder(orderPayload);
+      } catch (err) {
+        console.warn("Failed to save order to backend, saving locally:", err);
+      }
+
       try {
         const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
         const existingOrders = Array.isArray(rawOrders) ? rawOrders : [];
         localStorage.setItem("shopease_orders", JSON.stringify([simulatedOrder, ...existingOrders]));
       } catch (err) {
-        console.error("Error saving order:", err);
+        console.error("Error saving order locally:", err);
       }
 
       setLastPlacedOrder(simulatedOrder)
@@ -289,7 +311,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
                   className="w-5 h-5 mt-0.5 rounded border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
                 />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  I agree to ShopEase Nepal's <a href="/policy" target="_blank" className="text-orange-600 hover:underline">Terms of Use</a> and <a href="/policy" target="_blank" className="text-orange-600 hover:underline">Purchase Policy</a>. I understand this is required to complete my order.
+                  I agree to ShopEase Nepal's <a href="/policy" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline">Terms of Use</a> and <a href="/policy" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline">Purchase Policy</a>. I understand this is required to complete my order.
                 </span>
               </label>
             </div>

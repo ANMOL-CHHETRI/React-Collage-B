@@ -6,6 +6,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
+import { api } from "../utils/api";
 import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
 import CheckoutModal from "../components/CheckoutModal";
@@ -480,20 +481,25 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     if (!product) return;
-    const stored = localStorage.getItem(`shopease_reviews_${product.id}`);
-    if (stored) {
+    const fetchReviews = async () => {
       try {
-        setReviews(JSON.parse(stored));
+        const data = await api.getReviews(product.id);
+        setReviews(data);
       } catch (error) {
-        setReviews(MOCK_REVIEWS);
+        console.warn("Failed to fetch reviews from backend, checking local cache:", error);
+        const stored = localStorage.getItem(`shopease_reviews_${product.id}`);
+        if (stored) {
+          try {
+            setReviews(JSON.parse(stored));
+          } catch (e) {
+            setReviews(MOCK_REVIEWS);
+          }
+        } else {
+          setReviews(MOCK_REVIEWS);
+        }
       }
-    } else {
-      setReviews(MOCK_REVIEWS);
-      localStorage.setItem(
-        `shopease_reviews_${product.id}`,
-        JSON.stringify(MOCK_REVIEWS),
-      );
-    }
+    };
+    fetchReviews();
   }, [id, product]);
   const handleContactChange = (e) => {
     setContactForm({
@@ -531,13 +537,22 @@ const ProductDetailPage = () => {
     );
   }
 
-  const handleAddReview = (newReview) => {
-    const updated = [newReview, ...reviews];
-    setReviews(updated);
-    localStorage.setItem(
-      `shopease_reviews_${product.id}`,
-      JSON.stringify(updated),
-    );
+  const handleAddReview = async (newReview) => {
+    try {
+      const savedReview = await api.addReview(product.id, {
+        ...newReview,
+        user_username: user?.username || null
+      });
+      setReviews((prev) => [savedReview, ...prev]);
+    } catch (err) {
+      console.warn("Failed to save review on backend, saving locally:", err);
+      const updated = [newReview, ...reviews];
+      setReviews(updated);
+      localStorage.setItem(
+        `shopease_reviews_${product.id}`,
+        JSON.stringify(updated),
+      );
+    }
   };
 
   const related = products

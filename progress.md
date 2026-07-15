@@ -57,3 +57,24 @@
 
 ### Errors
 - Windows subprocess needed `shell=True` for npm to resolve in PATH â€” documented in findings.md
+
+## 2026-07-13 — Avatar & Dashboard Enhancements
+
+### Done
+- Implemented user and admin avatar uploads using Canvas-based compression to 200x200px
+- Added A-Z and 0-9 preset avatar generator to Profile pages
+- Displayed user avatar across Navbar, Profiles, and Reviews globally
+- Relocated Logout button from main Store Navbar to Admin and User Dashboard sidebars
+- Fixed contrast issues for buttons during Dark Theme in UserProfilePage
+- Added a "Reviews" tab to the Seller Dashboard showing product-specific reviews
+- Added a global "Reviews" tab to the Admin Dashboard for store-wide review monitoring
+- Added avatar rendering inside the review cards on both dashboards
+- Handled mobile overflow horizontally for the Seller Dashboard tabs
+
+### Errors
+- None. Build passes successfully.
+
+### Remaining
+- Backend API integration (future)
+- GitHub Pages deployment setup
+

@@ -191,3 +191,7 @@ React + Vite ecommerce frontend. Pure UI — no backend yet. Designed after vold
 | 2026-06-27 | Fixed `useRef` missing import crash in CategoryPage, ProductDetailPage, UserDashboard | Agent |
 | 2026-06-27 | Created `DeliveryCoveragePage.jsx` — dedicated `/delivery-coverage` route with full Nepal map | Agent |
 | 2026-06-27 | Fixed Delivery Coverage navbar links (desktop + mobile) from broken `#delivery` anchor to `NavLink to="/delivery-coverage"` | Agent |
+| 2026-07-13 | Added user & admin avatar uploads, preset avatar generator (A-Z, 0-9), relocated logout button to dashboards | Agent |
+| 2026-07-13 | Fixed UserProfilePage dark mode styling and AdminDashboard parse error | Agent |
+| 2026-07-13 | Added global Reviews tab in AdminDashboard and product-specific Reviews tab in Seller Dashboard | Agent |
+| 2026-07-13 | Added user profile pictures rendering inside review cards across dashboards | Agent |

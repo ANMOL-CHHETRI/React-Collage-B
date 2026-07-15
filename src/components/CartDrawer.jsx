@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { provincesData } from "../data/provincesData";
+import { api } from "../utils/api";
 
 // Local ImageWithSkeleton for cart items
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
@@ -124,7 +125,7 @@ const CartDrawer = () => {
     }
 
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
       const estDays = provincesData[provinceValue]?.estDelivery || "2-4 Days";
       const shippingFee = provincesData[provinceValue]?.shippingFee || 0;
@@ -148,12 +149,33 @@ const CartDrawer = () => {
         date: new Date().toISOString()
       };
 
+      const orderPayload = {
+        id: simulatedOrder.orderId || `ORD-${Date.now().toString().slice(-5)}`,
+        username: user?.username || "guest",
+        storeName: "ShopEase Official",
+        status: "Processing",
+        date: new Date().toISOString(),
+        items: cartItems.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        amount: grandTotal
+      };
+
+      try {
+        await api.createOrder(orderPayload);
+      } catch (err) {
+        console.warn("Failed to save order to backend, saving locally:", err);
+      }
+
       try {
         const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
         const existingOrders = Array.isArray(rawOrders) ? rawOrders : [];
         localStorage.setItem("shopease_orders", JSON.stringify([simulatedOrder, ...existingOrders]));
       } catch (err) {
-        console.error("Error saving order:", err);
+        console.error("Error saving order locally:", err);
       }
 
       setOrderSuccess(simulatedOrder);
