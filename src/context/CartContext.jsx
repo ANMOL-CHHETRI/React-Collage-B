@@ -28,6 +28,7 @@ export const CartProvider = ({ children }) => {
     }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [outOfStockAlert, setOutOfStockAlert] = useState(null); // holds product name, or null
 
   // re-load cart when user changes (login/logout)
   const [prevKey, setPrevKey] = useState(key);
@@ -55,20 +56,42 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
+    const maxStock = product.stock ?? Infinity;
+
+    // Case 1: product has no stock at all
+    if (maxStock === 0) {
+      setOutOfStockAlert(product.name);
+      return;
+    }
+
+    const existing = cartItems.find((item) => item.id === product.id);
+
+    // Case 2: customer already has ALL available stock in their cart
+    if (existing && existing.quantity >= maxStock) {
+      setOutOfStockAlert(product.name);
+      return;
+    }
+
     setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
+      const existingItem = prev.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        const newQty = Math.min(existingItem.quantity + quantity, maxStock);
+        if (newQty < existingItem.quantity + quantity) {
+          toastError(`Only ${maxStock} of ${product.name} available. Cart updated to max stock.`);
+        }
         return prev.map((item) =>
-          item.id === product.id
-            ? {
-                ...item,
-                quantity: item.quantity + quantity,
-              }
-            : item,
+          item.id === product.id ? { ...item, quantity: newQty } : item,
         );
       }
-      return [...prev, { ...product, quantity }];
+
+      const cappedQuantity = Math.min(quantity, maxStock);
+      if (cappedQuantity < quantity) {
+        toastError(`Only ${maxStock} of ${product.name} available.`);
+      }
+      return [...prev, { ...product, quantity: cappedQuantity }];
     });
+
     setIsCartOpen(true); // Automatically open cart drawer when adding an item
   };
 
@@ -82,9 +105,16 @@ export const CartProvider = ({ children }) => {
       return;
     }
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === productId ? { ...item, quantity } : item,
-      ),
+      prev.map((item) => {
+        if (item.id !== productId) return item;
+        const maxStock = item.stock ?? Infinity;
+
+        if (quantity >= maxStock) {
+          setOutOfStockAlert(item.name);
+          return { ...item, quantity: maxStock };
+        }
+        return { ...item, quantity };
+      }),
     );
   };
 
@@ -110,6 +140,8 @@ export const CartProvider = ({ children }) => {
         clearCart,
         cartCount,
         cartSubtotal,
+        outOfStockAlert,
+        setOutOfStockAlert,
       }}
     >
       {children}

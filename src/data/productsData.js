@@ -27,7 +27,7 @@ export const defaultProducts = [
     "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
   ],
   badge: "Organic",
-  stock: 0,
+  stock: 10,
   category: "Organic Tea & Coffee",
   description:
     "Premium black tea hand-picked from the high-altitude hills of Ilam, Nepal.",
@@ -44,7 +44,7 @@ export const defaultProducts = [
     "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
   ],
   badge: "Handcrafted",
-  stock: 5,
+  stock: 2,
   category: "Local Handicrafts",
   description:
     "Exquisite copper statue with 24k gold gilding, handcrafted by master artisans in Patan.",
@@ -55,7 +55,7 @@ export const defaultProducts = [
 {
   id: 4,
   name: "Organic Wild Himalayan Honey",
-  price: 1500,
+  price: 3,
   image: "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg",
   images: [
     "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg"

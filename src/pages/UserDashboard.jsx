@@ -509,15 +509,15 @@ const UserDashboard = () => {
           
           {/* Group 1: Manage My Account */}
           <div className="space-y-2">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Manage My Account</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Manage My Account</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button 
                   onClick={() => setActiveSection("profile")} 
                   className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
                     activeSection === "profile" 
-                      ? "text-orange-600 dark:text-orange-400 font-bold" 
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   My Profile
@@ -528,15 +528,15 @@ const UserDashboard = () => {
 
           {/* Group 2: My Orders */}
           <div className="space-y-2">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">My Orders</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-200">My Orders</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button 
                   onClick={() => setActiveSection("orders")} 
                   className={`w-full text-left font-medium flex items-center justify-between transition duration-200 cursor-pointer ${
                     activeSection === "orders" 
-                      ? "text-orange-600 dark:text-orange-400 font-bold" 
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   <span>My Orders</span>
@@ -552,15 +552,15 @@ const UserDashboard = () => {
 
           {/* Group 3: Settings */}
           <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">Preferences</h3>
-            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-orange-500" : "border-slate-100 dark:border-slate-800"}`}>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Preferences</h3>
+            <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-amber-900" : "border-slate-100 dark:border-slate-800"}`}>
               <li>
                 <button
                   onClick={() => setActiveSection("settings")}
                   className={`w-full text-left font-medium block transition duration-200 cursor-pointer ${
                     activeSection === "settings"
-                      ? "text-orange-600 dark:text-orange-400 font-bold"
-                      : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                      ? "text-amber-900 dark:text-amber-800 font-bold"
+                      : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                   }`}
                 >
                   Settings
@@ -576,8 +576,8 @@ const UserDashboard = () => {
                 onClick={() => setActiveSection("seller-dashboard")}
                 className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "seller-dashboard"
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                    ? "text-amber-900 dark:text-amber-800"
+                    : "text-slate-500 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-800"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -590,8 +590,8 @@ const UserDashboard = () => {
                 onClick={() => setActiveSection("sell-on-shopease")}
                 className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition duration-200 cursor-pointer ${
                   activeSection === "sell-on-shopease"
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400"
+                    ? "text-amber-900 dark:text-amber-800"
+                    : "text-slate-600 dark:text-slate-400 hover:text-amber-900 dark:hover:text-amber-900"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -639,8 +639,8 @@ const UserDashboard = () => {
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Orders</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Orders</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
             </div>
           </div>
 
@@ -651,7 +651,7 @@ const UserDashboard = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`py-3 px-5 border-b-2 transition duration-200 cursor-pointer ${
                   activeTab === tab 
-                    ? "border-orange-500 text-orange-600 dark:text-orange-400 font-bold" 
+                    ? "border-amber-900 text-amber-900 dark:text-amber-800 font-bold" 
                     : "border-transparent hover:text-slate-800 dark:hover:text-white"
                 }`}
               >
@@ -764,7 +764,7 @@ const UserDashboard = () => {
                         </div>
 
                         <div className="flex-1 space-y-1">
-                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer">
+                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed hover:text-amber-900 dark:hover:text-amber-800 cursor-pointer">
                             {item.name}
                           </h5>
                           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
@@ -779,7 +779,7 @@ const UserDashboard = () => {
                           </div>
                           <div className="text-right">
                             <span className="text-[10px] text-slate-400 block uppercase">Price</span>
-                            <span className="font-extrabold text-orange-600 dark:text-orange-400 text-sm">Rs. {item.price.toLocaleString()}</span>
+                            <span className="font-extrabold text-amber-900 dark:text-amber-800 text-sm">Rs. {item.price.toLocaleString()}</span>
                           </div>
                         </div>
 
@@ -819,17 +819,17 @@ const UserDashboard = () => {
                             <div key={idx} className="flex md:flex-col items-center md:items-center text-left md:text-center flex-1 relative gap-4 md:gap-2 w-full">
                               <div className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs shrink-0 border-2 transition-all ${
                                 isCompleted 
-                                  ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/20" 
+                                  ? "bg-amber-900 border-amber-900 text-white shadow-lg shadow-orange-500/20" 
                                   : isActive 
-                                    ? "bg-white dark:bg-slate-900 border-orange-500 text-orange-500 ring-4 ring-orange-500/10 scale-110" 
-                                    : "bg-white dark:bg-slate-955 border-slate-200 dark:border-slate-800 text-slate-400"
+                                    ? "bg-white dark:bg-slate-900 border-amber-900 text-amber-900 ring-4 ring-orange-500/10 scale-110" 
+                                    : "bg-white dark:bg-slate-955 border-slate-300 dark:border-slate-800 text-slate-400"
                               }`}>
                                 {isCompleted ? (
                                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                                 ) : idx + 1}
                               </div>
                               <div className="space-y-0.5">
-                                <span className={`block text-xs font-bold ${isActive ? "text-orange-500" : isCompleted ? "text-slate-800 dark:text-slate-250" : "text-slate-400 dark:text-slate-600"}`}>
+                                <span className={`block text-xs font-bold ${isActive ? "text-amber-900" : isCompleted ? "text-slate-800 dark:text-slate-250" : "text-slate-400 dark:text-slate-600"}`}>
                                   {step.name}
                                 </span>
                                 <span className="block text-[10px] text-slate-450 dark:text-slate-500 leading-normal max-w-[130px] md:mx-auto">
@@ -864,8 +864,8 @@ const UserDashboard = () => {
                       }} 
                       className={`px-4 py-2 text-[11px] font-bold rounded-xl transition shadow cursor-pointer ${
                         trackingOrderId === order.id 
-                          ? "bg-orange-500 text-white hover:bg-orange-600 shadow-orange-500/10" 
-                          : "bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-955 shadow-slate-955/10"
+                          ? "bg-amber-950 text-white hover:bg-amber-800 shadow-orange-500/10" 
+                          : "bg-amber-950 dark:bg-amber-100 hover:bg-amber-800 dark:hover:bg-slate-200 text-white dark:text-slate-955 shadow-slate-955/10"
                       }`}
                     >
                       {order.status === "Completed" 
@@ -888,8 +888,8 @@ const UserDashboard = () => {
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">My Profile</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Edit your personal contact and delivery details.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Profile</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Edit your personal contact and delivery details.</p>
             </div>
           </div>
 
@@ -995,7 +995,7 @@ const UserDashboard = () => {
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer"
+                  className="bg-linear-to-r from-amber-950 to-orange-800 hover:from-amber-900 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 cursor-pointer"
                 >
                   Save Profile Changes
                 </button>
@@ -1069,8 +1069,8 @@ const UserDashboard = () => {
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Settings</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Manage your preferences and app settings.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">Settings</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage your preferences and app settings.</p>
             </div>
           </div>
 
@@ -1082,7 +1082,7 @@ const UserDashboard = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white dark:bg-slate-950 rounded-lg flex items-center justify-center shadow-sm">
                     {theme === "dark" ? (
-                      <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-amber-900" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                       </svg>
                     ) : (
@@ -1113,8 +1113,8 @@ const UserDashboard = () => {
         <main className="flex-1 p-6 md:p-10 space-y-6 overflow-y-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Become a Seller</h1>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Register your business and start selling on ShopEase Nepal.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">Become a Seller</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Register your business and start selling on ShopEase Nepal.</p>
             </div>
           </div>
 
@@ -1243,10 +1243,10 @@ const UserDashboard = () => {
                       required
                       checked={sellerPolicyAgreed} 
                       onChange={(e) => setSellerPolicyAgreed(e.target.checked)}
-                      className="w-5 h-5 mt-0.5 rounded border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                      className="w-5 h-5 mt-0.5 rounded border-slate-300 text-amber-900 focus:ring-orange-800 cursor-pointer"
                     />
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      I agree to the <a href="/policy#seller" target="_blank" className="text-orange-600 hover:underline">Seller Policy</a>. I understand the operational guidelines, prohibited items, and platform fees.
+                      I agree to the <a href="/policy#seller" target="_blank" className="text-amber-900 hover:underline">Seller Policy</a>. I understand the operational guidelines, prohibited items, and platform fees.
                     </span>
                   </label>
                 </div>
@@ -1255,7 +1255,7 @@ const UserDashboard = () => {
                   <button
                     type="submit"
                     disabled={!sellerPolicyAgreed}
-                    className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="bg-linear-to-r from-amber-950 to-orange-800 hover:from-amber-900 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Submit Seller Application
                   </button>
@@ -1786,7 +1786,7 @@ const UserDashboard = () => {
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest">Inquiry Support</span>
+                <span className="text-[10px] font-bold text-amber-900 dark:text-orange-800 uppercase tracking-widest">Inquiry Support</span>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">Contact Seller / Admin</h3>
               </div>
               <button 
@@ -1801,7 +1801,7 @@ const UserDashboard = () => {
 
             <form onSubmit={handleSendContactMessage} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Subject</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1.5">Subject</label>
                 <input
                   type="text"
                   value={contactSubject}
@@ -1812,7 +1812,7 @@ const UserDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Message Description</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1.5">Message Description</label>
                 <textarea
                   rows="4"
                   value={contactMessage}
@@ -1827,13 +1827,13 @@ const UserDashboard = () => {
                 <button
                   type="button"
                   onClick={() => setShowContactModal(null)}
-                  className="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+                  className="w-full py-3 bg-slate-300 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition cursor-pointer"
+                  className="w-full py-3 bg-amber-950 hover:bg-orange-900 text-white font-bold rounded-xl text-sm transition cursor-pointer"
                 >
                   Send Message
                 </button>

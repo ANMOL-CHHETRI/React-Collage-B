@@ -368,15 +368,15 @@ const CoworkingPage = () => {
       </section>
 
       {/* Tour Preview Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 border-b border-slate-100 dark:border-slate-900">
-        <div className="text-left mb-12">
+      <section className="max-w-7xl mx-auto px-6 py-20 border-b border-slate-100 dark:border-slate-900 ">
+        <div className="text-center mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
             Layout Preview
           </span>
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white mt-1">
             Virtual Workspace Tour
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mt-2">
+          <p className="text-slate-500 dark:text-slate-400 text-sm  text-center max-wd-md mt-2 ">
             Click on any zone below to examine specific design dimensions and
             active environment assets.
           </p>
@@ -462,14 +462,14 @@ const CoworkingPage = () => {
       {/* Amenities Showcase */}
       <section className="bg-slate-50/50 dark:bg-slate-900/10 py-20 border-b border-slate-100 dark:border-slate-900">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-left mb-16">
+          <div className="text-center mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
               Amenities
             </span>
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white mt-1">
               Productive Environment
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mt-2">
+            <p className="text-slate-500 dark:text-slate-400 text-sm text-center  max-wd-md mt-2">
               Every detail is engineered to support seamless office operations
               and daily corporate focus.
             </p>
@@ -503,14 +503,14 @@ const CoworkingPage = () => {
         id="plans"
         className="max-w-7xl mx-auto px-6 py-20 border-b border-slate-100 dark:border-slate-900"
       >
-        <div className="text-left mb-16">
+        <div className="text-center mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
             Memberships
           </span>
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white mt-1">
             Select Workspace Plan
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mt-2">
+          <p className="text-slate-500 dark:text-slate-400 text-sm text-center mt-2">
             Select a plan below to add it directly to your shopping cart.
             Purchases can be verified instantly via Cash on Delivery.
           </p>
