@@ -415,7 +415,7 @@ const HomePage = () => {
               <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">Explore authentic Nepali goods by category</p>
             </div>
             <Link to="/category/Traditional%20Apparel" className="hidden md:inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition group mt-4 md:mt-0">
-              View All
+              View all
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </Link>
           </div>
