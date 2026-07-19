@@ -195,7 +195,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-2">
             <NavLink to="/about" className={linkClass}>
               About
             </NavLink>
