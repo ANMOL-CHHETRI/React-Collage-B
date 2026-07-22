@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
 import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
+import { api } from "../utils/api"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -56,6 +57,7 @@ const sidebarItems = [
   { id: "orders", label: "Orders" },
   { id: "users", label: "Users" },
   { id: "coupons", label: "Coupons" },
+  { id: "reviews", label: "Reviews" },
   { id: "messages", label: "Messages" },
   { id: "settings", label: "Settings" },
 ]
@@ -74,7 +76,11 @@ const AdminDashboard = () => {
     changePassword,
     setExactUserViolations,
     autoCalculateViolations,
-    adminResetUserPassword
+    adminResetUserPassword,
+    updateAdminProfile,
+    reportedAvatars,
+    dismissAvatarReport,
+    removeUserAvatar
   } = useAuth()
   const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const { success, error: toastError } = useToast()
@@ -95,8 +101,43 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("name")
 
+  const handleAdminAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  // Dynamic Data state
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 200;
+        const MAX_HEIGHT = 200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+        updateAdminProfile({ avatar: dataUrl });
+        success("Profile avatar updated successfully!");
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }  // Dynamic Data state
   const [adminOrders, setAdminOrders] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
   const [viewingOrder, setViewingOrder] = useState(null)
@@ -107,24 +148,45 @@ const AdminDashboard = () => {
   const [couponForm, setCouponForm] = useState({ code: "", percent: "" })
 
   useEffect(() => {
-    try {
-      const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"))
-      const orders = Array.isArray(rawOrders) ? rawOrders : []
-      const rawMessages = JSON.parse(localStorage.getItem("shopease_messages"))
-      const messages = Array.isArray(rawMessages) ? rawMessages : []
-      const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"))
-      const loadedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }]
-      
-      const timer = setTimeout(() => {
-        setAdminOrders(orders)
-        setAdminMessages(messages)
-        setCoupons(loadedCoupons)
-      }, 0)
-      return () => clearTimeout(timer)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [activeSection])
+    const fetchAdminData = async () => {
+      let orders = [];
+      let couponsList = [];
+      try {
+        const dbOrders = await api.getOrders();
+        orders = dbOrders.map(o => ({
+          orderId: o.id,
+          username: o.username,
+          storeName: o.storeName,
+          status: o.status,
+          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+          items: o.items.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          total: o.amount
+        }));
+      } catch (err) {
+        console.warn("Failed to fetch admin orders from API, checking local storage:", err);
+        const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+        orders = Array.isArray(rawOrders) ? rawOrders : [];
+      }
+
+      try {
+        const dbCoupons = await api.getCoupons();
+        couponsList = dbCoupons;
+      } catch (err) {
+        console.warn("Failed to fetch admin coupons from API, checking local storage:", err);
+        const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"));
+        couponsList = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+      }
+
+      setAdminOrders(orders);
+      setCoupons(couponsList);
+    };
+    fetchAdminData();
+  }, [activeSection]);
 
   // Loading state
   const [loading, setLoading] = useState(true)
@@ -147,21 +209,25 @@ const AdminDashboard = () => {
     return { avg: "4.4", count: 3 }
   }
 
-  const handleUpdateOrderStatus = (orderId, newStatus) => {
-    let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"))
-    if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
-      currentOrders = [...recentOrders]
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await api.updateOrderStatus(orderId, newStatus);
+      setAdminOrders((prev) => prev.map(o => o.orderId === orderId ? { ...o, status: newStatus } : o));
+      success(`Order ${orderId} updated to ${newStatus}`);
+    } catch (err) {
+      console.warn("Failed to update order status on backend, updating locally:", err);
+      let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+      const updated = (Array.isArray(currentOrders) ? currentOrders : []).map(order => {
+        const id = order.orderId || order.id;
+        if (id === orderId) {
+          return { ...order, status: newStatus };
+        }
+        return order;
+      });
+      localStorage.setItem("shopease_orders", JSON.stringify(updated));
+      setAdminOrders(updated);
+      success(`Order ${orderId} updated to ${newStatus} (Local Mode)`);
     }
-    const updated = currentOrders.map(order => {
-      const id = order.orderId || order.id
-      if (id === orderId) {
-        return { ...order, status: newStatus }
-      }
-      return order
-    })
-    localStorage.setItem("shopease_orders", JSON.stringify(updated))
-    setAdminOrders(updated)
-    success(`Order ${orderId} updated to ${newStatus}`)
   }
 
 
@@ -252,6 +318,7 @@ const AdminDashboard = () => {
     orders: "Orders",
     users: "Users",
     coupons: "Coupons",
+    reviews: "Reviews",
     messages: "Messages",
     settings: "Settings",
   }
@@ -287,13 +354,19 @@ const AdminDashboard = () => {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-700 dark:border-slate-700">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition">
+        <div className="p-4 border-t border-gray-700 dark:border-slate-700 space-y-2">
+          <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-400 hover:text-white transition">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Store
           </Link>
+          <button onClick={logoutAdmin} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:text-red-400 hover:bg-gray-800 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -640,13 +713,23 @@ const AdminDashboard = () => {
             <div className="max-w-2xl space-y-6">
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Admin Account</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-amber-100 dark:bg-amber-950/40 rounded-full flex items-center justify-center text-amber-700 dark:text-amber-400 font-bold">A</div>
+                    <div className="relative group w-16 h-16 bg-amber-100 dark:bg-amber-950/40 rounded-full flex items-center justify-center text-amber-700 dark:text-amber-400 font-bold text-2xl overflow-hidden border-2 border-transparent hover:border-amber-500 transition-colors">
+                      {user?.avatar ? (
+                        <img src={user.avatar} alt="Admin Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        "A"
+                      )}
+                      <label className="absolute inset-0 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-[10px] font-bold">
+                        Upload
+                        <input type="file" accept="image/*" className="hidden" onChange={handleAdminAvatarUpload} onClick={(e) => (e.target.value = null)} />
+                      </label>
+                    </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{user?.username || "admin"}</p>
+                      <p className="font-medium text-gray-900 dark:text-white text-lg">{user?.username || "admin"}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email || "admin@shopease.com"}</p>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 font-medium">Admin</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 font-medium inline-block mt-1">Admin</span>
                     </div>
                   </div>
                 </div>
@@ -692,6 +775,50 @@ const AdminDashboard = () => {
                   ))}
                 </div>
               </div>
+
+              {reportedAvatars && reportedAvatars.length > 0 && (
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6 border border-red-100 dark:border-red-900/30">
+                  <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                    Reported Avatars
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {reportedAvatars.map((report) => (
+                      <div key={report.username} className="bg-red-50 dark:bg-red-950/20 rounded-xl p-4 border border-red-100 dark:border-red-900/40 text-center flex flex-col items-center gap-3">
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-red-200 dark:border-red-800">
+                          <img src={report.avatar} alt="Reported Avatar" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 dark:text-white">{report.username}</p>
+                          <p className="text-xs text-red-500 mt-1">Reported on {new Date(report.date).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex w-full gap-2 mt-2">
+                          <button
+                            onClick={() => {
+                              if (confirm(`Remove avatar for ${report.username}?`)) {
+                                removeUserAvatar(report.username);
+                                success("Avatar removed successfully.");
+                              }
+                            }}
+                            className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition"
+                          >
+                            Remove
+                          </button>
+                          <button
+                            onClick={() => {
+                              dismissAvatarReport(report.username);
+                              success("Report dismissed.");
+                            }}
+                            className="flex-1 px-3 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-white rounded-lg text-xs font-bold transition"
+                          >
+                            Dismiss
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -701,7 +828,7 @@ const AdminDashboard = () => {
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Coupon</h3>
                 <form 
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
                     if (!couponForm.code.trim() || !couponForm.percent) return;
                     
@@ -723,11 +850,19 @@ const AdminDashboard = () => {
                       creator: user?.username || "admin"
                     };
 
-                    const updatedCoupons = [...coupons, newCoupon];
-                    setCoupons(updatedCoupons);
-                    localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
-                    setCouponForm({ code: "", percent: "" });
-                    success("Coupon created successfully!");
+                    try {
+                      const dbCoupon = await api.createCoupon(newCoupon);
+                      setCoupons((prev) => [...prev, dbCoupon]);
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created successfully!");
+                    } catch (err) {
+                      console.warn("Failed to save coupon to backend, saving locally:", err);
+                      const updatedCoupons = [...coupons, newCoupon];
+                      setCoupons(updatedCoupons);
+                      localStorage.setItem("shopease_coupons", JSON.stringify(updatedCoupons));
+                      setCouponForm({ code: "", percent: "" });
+                      success("Coupon created locally (offline mode)");
+                    }
                   }}
                   className="flex flex-wrap items-end gap-4"
                 >
@@ -791,12 +926,19 @@ const AdminDashboard = () => {
                             <td className="px-6 py-4 text-right">
                               {isOwner ? (
                                 <button
-                                  onClick={() => {
+                                  onClick={async () => {
                                     if (confirm(`Delete coupon ${coupon.code}?`)) {
-                                      const updated = coupons.filter(c => c.code !== coupon.code);
-                                      setCoupons(updated);
-                                      localStorage.setItem("shopease_coupons", JSON.stringify(updated));
-                                      success("Coupon deleted.");
+                                      try {
+                                        await api.deleteCoupon(coupon.code);
+                                        setCoupons((prev) => prev.filter(c => c.code !== coupon.code));
+                                        success("Coupon deleted.");
+                                      } catch (err) {
+                                        console.warn("Failed to delete coupon on backend, deleting locally:", err);
+                                        const updated = coupons.filter(c => c.code !== coupon.code);
+                                        setCoupons(updated);
+                                        localStorage.setItem("shopease_coupons", JSON.stringify(updated));
+                                        success("Coupon deleted (offline mode).");
+                                      }
                                     }
                                   }}
                                   className="px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 transition cursor-pointer"
@@ -915,6 +1057,69 @@ const AdminDashboard = () => {
                     Update Password
                   </button>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {activeSection === "reviews" && (
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Store Reviews</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Review all customer feedback across your store catalog.</p>
+              <div className="space-y-4">
+                {products.map(product => {
+                  const storedReviews = localStorage.getItem(`shopease_reviews_${product.id}`);
+                  const productReviews = storedReviews ? JSON.parse(storedReviews) : [
+                    { id: 1, name: "Priya Sharma", rating: 5, date: "June 12, 2025", title: "Absolutely love it!", text: "The quality is outstanding. Exactly as described and beautifully packaged." },
+                    { id: 2, name: "Rohan Thapa", rating: 4, date: "May 28, 2025", title: "Great product", text: "Very happy with this purchase. The craftsmanship is excellent." }
+                  ];
+                  return (
+                    <div key={product.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-6">
+                      <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" referrerPolicy="no-referrer" />
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white">{product.name}</h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{productReviews.length} Reviews</p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        {productReviews.length === 0 ? (
+                          <p className="text-xs text-slate-500 dark:text-slate-400">No reviews yet for this product.</p>
+                        ) : (
+                          productReviews.map(review => (
+                            <div key={review.id} className="bg-slate-50 dark:bg-slate-850 rounded-xl p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                    {review.avatar && (review.avatar.startsWith('data:') || review.avatar.startsWith('http')) ? (
+                                      <img src={review.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                        {review.avatar || review.name.charAt(0).toUpperCase()}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{review.name}</span>
+                                    <span className="text-[10px] text-slate-400 ml-2">{review.date}</span>
+                                  </div>
+                                </div>
+                                <div className="flex text-amber-500">
+                                  {[...Array(5)].map((_, i) => (
+                                    <svg key={i} className={`w-3.5 h-3.5 ${i < review.rating ? "text-amber-500 fill-amber-500" : "text-slate-300 dark:text-slate-700"}`} fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                  ))}
+                                </div>
+                              </div>
+                              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-300 mb-1">{review.title}</h4>
+                              <p className="text-xs text-slate-600 dark:text-slate-400">{review.text}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

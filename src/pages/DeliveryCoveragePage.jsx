@@ -1,9 +1,9 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import NepalDeliveryMap from "../components/NepalDeliveryMap"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import NepalDeliveryMap from "../components/NepalDeliveryMap";
 
 const DeliveryCoveragePage = () => {
-  const [selectedProvince, setSelectedProvince] = useState("bagmati")
+  const [selectedProvince, setSelectedProvince] = useState("bagmati");
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
@@ -15,14 +15,30 @@ const DeliveryCoveragePage = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-white/80 font-medium mb-3">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            <Link to="/" className="hover:text-white transition-colors">
+              Home
+            </Link>
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
             <span className="font-bold text-white">Delivery Coverage</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight flex items-center gap-3">
-            <svg className="w-10 h-6 md:w-14 md:h-8 text-white shrink-0 drop-shadow" viewBox="0 0 100 50" fill="currentColor">
+            <svg
+              className="w-10 h-6 md:w-14 md:h-8 text-white shrink-0 drop-shadow"
+              viewBox="0 0 100 50"
+              fill="currentColor"
+            >
               <path d="M5,25 L12,23 L22,25 L28,21 L35,24 L42,21 L48,22 L58,18 L68,20 L78,16 L88,18 L95,15 L93,22 L91,28 L86,32 L78,31 L70,35 L60,33 L50,37 L42,34 L32,38 L25,35 L18,36 L10,31 Z" />
             </svg>
             <span>Nepal Delivery Coverage</span>
@@ -48,36 +64,69 @@ const DeliveryCoveragePage = () => {
           {[
             {
               icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               ),
               title: "Same-Day Delivery",
               desc: "Available in Kathmandu Valley. Orders placed before 2 PM are delivered the same evening.",
               badge: "Express",
-              badgeColor: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+              badgeColor:
+                "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
             },
             {
               icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
               ),
               title: "Cash on Delivery",
               desc: "Pay only when your order arrives. No advance payment required. 100% safe and convenient.",
               badge: "COD",
-              badgeColor: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
+              badgeColor:
+                "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
             },
             {
               icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"
+                  />
                 </svg>
               ),
               title: "7 Provinces Covered",
               desc: "We ship to every province in Nepal — from Sudurpashchim to Koshi, including remote hill districts.",
               badge: "Nationwide",
-              badgeColor: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
+              badgeColor:
+                "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
             },
           ].map((card, i) => (
             <div
@@ -90,12 +139,18 @@ const DeliveryCoveragePage = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">{card.title}</h3>
-                    <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${card.badgeColor}`}>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                      {card.title}
+                    </h3>
+                    <span
+                      className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${card.badgeColor}`}
+                    >
                       {card.badge}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">{card.desc}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                    {card.desc}
+                  </p>
                 </div>
               </div>
             </div>
@@ -103,7 +158,7 @@ const DeliveryCoveragePage = () => {
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default DeliveryCoveragePage
+export default DeliveryCoveragePage;

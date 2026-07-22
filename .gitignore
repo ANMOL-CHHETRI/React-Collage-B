@@ -26,3 +26,25 @@ dist-ssr
 # Playwright generated files
 playwright-report/
 test-results/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Virtual environments
+.venv
+venv
+ENV/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite temporary files
+*.db-journal
+*.db-shm
+*.db-wal

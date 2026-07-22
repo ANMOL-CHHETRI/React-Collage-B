@@ -6,6 +6,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
+import { api } from "../utils/api";
 import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
 import CheckoutModal from "../components/CheckoutModal";
@@ -172,13 +173,35 @@ const RatingSummary = ({ reviews }) => {
 
 // ── Individual review card ──────────────────────────────────────────────────
 const ReviewCard = ({ review }) => {
+  const { user, reportUserAvatar } = useAuth();
   const [helpful, setHelpful] = useState(review.helpful);
   const [voted, setVoted] = useState(false);
+  
+  const isImageAvatar = review.avatar && (review.avatar.startsWith('data:') || review.avatar.startsWith('http'));
+  
   return (
     <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white text-sm font-extrabold flex items-center justify-center shrink-0 shadow-md">
-          {review.avatar}
+        <div className="relative group">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-orange-500 text-white text-sm font-extrabold flex items-center justify-center shrink-0 shadow-md">
+            {isImageAvatar ? (
+              <img src={review.avatar} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              review.avatar
+            )}
+          </div>
+          {isImageAvatar && (!user || user.name !== review.name) && (
+            <button 
+              onClick={() => {
+                reportUserAvatar(review.name, review.avatar);
+                alert("Avatar reported for admin review.");
+              }}
+              className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-slate-800 rounded-full p-0.5 shadow-sm text-red-500 hover:text-red-600 border border-slate-200 dark:border-slate-700"
+              title="Report offensive picture"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+            </button>
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -270,7 +293,7 @@ const WriteReviewForm = ({ productName, onAddReview }) => {
     const newReview = {
       id: Date.now(),
       name: reviewerName,
-      avatar: initials || "GU",
+      avatar: user?.avatar || initials || "GU",
       rating,
       date: new Date().toLocaleDateString("en-US", {
         month: "long",
@@ -462,20 +485,25 @@ const [selectedImage, setSelectedImage] = useState(
 
   useEffect(() => {
     if (!product) return;
-    const stored = localStorage.getItem(`shopease_reviews_${product.id}`);
-    if (stored) {
+    const fetchReviews = async () => {
       try {
-        setReviews(JSON.parse(stored));
+        const data = await api.getReviews(product.id);
+        setReviews(data);
       } catch (error) {
-        setReviews(MOCK_REVIEWS);
+        console.warn("Failed to fetch reviews from backend, checking local cache:", error);
+        const stored = localStorage.getItem(`shopease_reviews_${product.id}`);
+        if (stored) {
+          try {
+            setReviews(JSON.parse(stored));
+          } catch (e) {
+            setReviews(MOCK_REVIEWS);
+          }
+        } else {
+          setReviews(MOCK_REVIEWS);
+        }
       }
-    } else {
-      setReviews(MOCK_REVIEWS);
-      localStorage.setItem(
-        `shopease_reviews_${product.id}`,
-        JSON.stringify(MOCK_REVIEWS),
-      );
-    }
+    };
+    fetchReviews();
   }, [id, product]);
   const handleContactChange = (e) => {
     setContactForm({
@@ -513,13 +541,22 @@ const [selectedImage, setSelectedImage] = useState(
     );
   }
 
-  const handleAddReview = (newReview) => {
-    const updated = [newReview, ...reviews];
-    setReviews(updated);
-    localStorage.setItem(
-      `shopease_reviews_${product.id}`,
-      JSON.stringify(updated),
-    );
+  const handleAddReview = async (newReview) => {
+    try {
+      const savedReview = await api.addReview(product.id, {
+        ...newReview,
+        user_username: user?.username || null
+      });
+      setReviews((prev) => [savedReview, ...prev]);
+    } catch (err) {
+      console.warn("Failed to save review on backend, saving locally:", err);
+      const updated = [newReview, ...reviews];
+      setReviews(updated);
+      localStorage.setItem(
+        `shopease_reviews_${product.id}`,
+        JSON.stringify(updated),
+      );
+    }
   };
 
   const related = products
@@ -665,11 +702,11 @@ const [selectedImage, setSelectedImage] = useState(
 
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-slate-300 rounded-md overflow-hidden h-11 bg-slate-200">
+                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden h-11 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white">
                   {/* Decrease quantity */}
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 cursor-pointer"
+                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
                   >
                     −
                   </button>
@@ -682,7 +719,7 @@ const [selectedImage, setSelectedImage] = useState(
                   {/* Increase quantity */}
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 cursor-pointer"
+                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
                   >
                     +
                   </button>
@@ -763,9 +800,9 @@ const [selectedImage, setSelectedImage] = useState(
                         placeholder="CODE" 
                         value={quickPromo}
                         onChange={(e) => { setQuickPromo(e.target.value.toUpperCase()); setQuickPromoError(""); }}
-                        className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm font-bold text-slate-900 dark:text-white uppercase transition-all"
+                        className="flex-1 min-w-0 px-4 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm font-bold text-slate-900 dark:text-white uppercase transition-all"
                       />
-                      <button onClick={handleApplyQuickPromo} className="px-3 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl font-bold text-xs transition cursor-pointer">
+                      <button onClick={handleApplyQuickPromo} className="px-3 shrink-0 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl font-bold text-xs transition cursor-pointer">
                         Apply
                       </button>
                     </div>
