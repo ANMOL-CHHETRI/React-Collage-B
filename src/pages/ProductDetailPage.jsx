@@ -404,6 +404,10 @@ const ProductDetailPage = () => {
 
   const product = products.find((p) => p.id === Number(id));
   const [loading, setLoading] = useState(true);
+  // Selected image for the gallery
+const [selectedImage, setSelectedImage] = useState(
+  product?.images?.[0] || product?.image
+);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [reviews, setReviews] = useState([]);
   // Quantity selected by the customer
@@ -565,12 +569,12 @@ const ProductDetailPage = () => {
                 />
               </div>
               {product.images && product.images.length > 1 && (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="flex gap-3 overflow-x-auto pb-2">
                   {product.images.map((img, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveImgIndex(idx)}
-                      className={`aspect-square rounded-xl overflow-hidden border-2 shadow-sm transition-all duration-300 cursor-pointer ${
+                      className={`w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 shadow-sm transition-all duration-300 cursor-pointer ${
                         activeImgIndex === idx
                           ? "border-amber-500 ring-2 ring-amber-300 scale-105 opacity-100"
                           : "border-transparent opacity-60 hover:opacity-100"

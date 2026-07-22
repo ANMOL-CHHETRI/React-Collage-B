@@ -74,7 +74,10 @@ export const defaultProducts = [
   name: "Pure Pashmina Cashmere Shawl",
   price: 9500,
   image: "/pashmina_shawl.png",
-  images: ["/pashmina_shawl.png"],
+  images: ["/pashmina_shawl.png",
+    "/pashmina_side.png",
+    "/pashmina_closeup.png"
+  ],
   badge: "Premium Quality",
   stock: 8,
   category: "Traditional Apparel",
