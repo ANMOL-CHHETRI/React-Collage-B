@@ -25,7 +25,7 @@ import NotFoundPage from "./pages/NotFoundPage"
 import WishlistPage from "./pages/WishlistPage"
 import CoworkingPage from "./pages/CoworkingPage"
 import SearchPage from "./pages/SearchPage"
-import GlobalOutOfStockModal from "./components/GlobalOutOfStockModal"
+
 
 const Router = () => {
   return (
@@ -59,7 +59,7 @@ const Router = () => {
           <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfilePage /></ProtectedRoute>} />
           {/* /dashboard/crud route removed — product CRUD is now in /admin/dashboard Products section */}
         </Routes>
-         <GlobalOutOfStockModal />
+         
         </WishlistProvider>
         </ProductProvider>
         </CartProvider>

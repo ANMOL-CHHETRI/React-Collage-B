@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
     }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [outOfStockAlert, setOutOfStockAlert] = useState(null); // holds product name, or null
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // re-load cart when user changes (login/logout)
   const [prevKey, setPrevKey] = useState(key);
@@ -47,6 +47,19 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem(key, JSON.stringify(cartItems));
   }, [cartItems, key]);
 
+  // Keep selection in sync with the cart: drop ids that no longer exist,
+  // and auto-select any newly added item so checkout "just works" by default.
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const stillValid = prev.filter((id) => cartItems.some((item) => item.id === id));
+      const newlyAdded = cartItems
+        .filter((item) => !prev.includes(item.id))
+        .map((item) => item.id);
+      return [...stillValid, ...newlyAdded];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItems]);
+
   const addToCart = (product, quantity = 1) => {
     if (!user) {
       toastError("Please log in to add items to your cart.");
@@ -60,7 +73,7 @@ export const CartProvider = ({ children }) => {
 
     // Case 1: product has no stock at all
     if (maxStock === 0) {
-      setOutOfStockAlert(product.name);
+      toastError(`${product.name} is currently out of stock.`);
       return;
     }
 
@@ -68,7 +81,7 @@ export const CartProvider = ({ children }) => {
 
     // Case 2: customer already has ALL available stock in their cart
     if (existing && existing.quantity >= maxStock) {
-      setOutOfStockAlert(product.name);
+      toastError(`You already have the maximum available stock of ${product.name} in your cart.`);
       return;
     }
 
@@ -97,6 +110,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = (productId) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
+    setSelectedIds((prev) => prev.filter((id) => id !== productId));
   };
 
   const updateQuantity = (productId, quantity) => {
@@ -110,7 +124,9 @@ export const CartProvider = ({ children }) => {
         const maxStock = item.stock ?? Infinity;
 
         if (quantity >= maxStock) {
-          setOutOfStockAlert(item.name);
+          if (quantity > maxStock) {
+            toastError(`Only ${maxStock} of ${item.name} available.`);
+          }
           return { ...item, quantity: maxStock };
         }
         return { ...item, quantity };
@@ -120,7 +136,29 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    setSelectedIds([]);
   };
+
+  const toggleSelectItem = (productId) => {
+    setSelectedIds((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) =>
+      prev.length === cartItems.length ? [] : cartItems.map((item) => item.id),
+    );
+  };
+
+  const isAllSelected = cartItems.length > 0 && selectedIds.length === cartItems.length;
+
+  const selectedItems = cartItems.filter((item) => selectedIds.includes(item.id));
+  const selectedSubtotal = selectedItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
+  const selectedCount = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cartItems.reduce(
@@ -140,8 +178,13 @@ export const CartProvider = ({ children }) => {
         clearCart,
         cartCount,
         cartSubtotal,
-        outOfStockAlert,
-        setOutOfStockAlert,
+        selectedIds,
+        selectedItems,
+        selectedSubtotal,
+        selectedCount,
+        isAllSelected,
+        toggleSelectItem,
+        toggleSelectAll,
       }}
     >
       {children}
