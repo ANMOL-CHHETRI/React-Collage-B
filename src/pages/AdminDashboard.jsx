@@ -62,7 +62,21 @@ const sidebarItems = [
   { id: "settings", label: "Settings" },
 ]
 
-const emptyForm = { name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "", stock: "0" }
+const emptyForm = {
+  name: "",
+  price: "",
+  category: "Traditional Apparel",
+
+  image: "",
+  image2: "",
+  image3: "",
+  image4: "",
+
+  imageFile: null,
+
+  description: "",
+  stock: "0",
+}
 
 const AdminDashboard = () => {
   const { 
@@ -286,7 +300,16 @@ const AdminDashboard = () => {
       return
     }
 
-    const payload = { ...form, price: parsedPrice, stock: parsedStock }
+    const payload = {
+  ...form,
+  price: parsedPrice,
+  stock: parsedStock,
+  images: [
+    form.image,
+    "/pashmina_side.png",
+    "/pashmina_closeup.png",
+  ],
+}
     if (editing) {
       updateProduct(editing.id, payload)
       success("Product updated successfully")
@@ -300,7 +323,20 @@ const AdminDashboard = () => {
   }
 
   const handleEdit = (product) => {
-    setForm({ name: product.name, price: String(product.price), category: product.category, image: product.image, imageFile: null, description: product.description || "", stock: String(product.stock || 0) })
+    setForm({
+  name: product.name,
+  price: String(product.price),
+  category: product.category,
+
+  image: product.images?.[0] || product.image,
+  image2: product.images?.[1] || "",
+  image3: product.images?.[2] || "",
+  image4: product.images?.[3] || "",
+
+  imageFile: null,
+  description: product.description || "",
+  stock: String(product.stock || 0),
+})
     setEditing(product)
     setShowForm(true)
   }
