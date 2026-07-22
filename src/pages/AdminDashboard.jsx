@@ -301,15 +301,16 @@ const AdminDashboard = () => {
     }
 
     const payload = {
-  ...form,
-  price: parsedPrice,
-  stock: parsedStock,
-  images: [
-    form.image,
-    "/pashmina_side.png",
-    "/pashmina_closeup.png",
-  ],
-}
+    ...form,
+    price: parsedPrice,
+    stock: parsedStock,
+    images: [
+      form.image,
+      form.image2,
+      form.image3,
+      form.image4,
+    ].filter(Boolean),
+  }
     if (editing) {
       updateProduct(editing.id, payload)
       success("Product updated successfully")
@@ -568,18 +569,84 @@ const AdminDashboard = () => {
                           </select>
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Image</label>
-                        <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60 cursor-pointer file:cursor-pointer" />
-                        {form.image && (
-                          <div className="mt-2 flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-700">
-                              <ImageWithSkeleton src={form.image} alt="Preview" className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">Image ready</span>
+                     <div className="space-y-4">
+                    {/* Main Image Upload */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Main Image
+                      </label>
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60"
+                      />
+
+                      {form.image && (
+                        <div className="mt-2 flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden border">
+                            <ImageWithSkeleton
+                              src={form.image}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Gallery Image 2 */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Gallery Image 2
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="/pashmina_side.png"
+                        value={form.image2}
+                        onChange={(e) =>
+                          setForm({ ...form, image2: e.target.value })
+                        }
+                        className="w-full rounded-lg border px-3 py-2"
+                      />
+                    </div>
+
+                    {/* Gallery Image 3 */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Gallery Image 3
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="/pashmina_closeup.png"
+                        value={form.image3}
+                        onChange={(e) =>
+                          setForm({ ...form, image3: e.target.value })
+                        }
+                        className="w-full rounded-lg border px-3 py-2"
+                      />
+                    </div>
+
+                    {/* Gallery Image 4 */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Gallery Image 4
+                      </label>
+
+                      <input
+                        type="text"
+                        placeholder="/image4.png"
+                        value={form.image4}
+                        onChange={(e) =>
+                          setForm({ ...form, image4: e.target.value })
+                        }
+                        className="w-full rounded-lg border px-3 py-2"
+                      />
+                    </div>
+                  </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <textarea rows="2" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
