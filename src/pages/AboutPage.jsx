@@ -239,7 +239,7 @@ const AboutPage = () => {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Mission */}
           <div className="group relative bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 rounded-3xl p-8 border border-amber-100 dark:border-amber-900/30 overflow-hidden hover:shadow-xl hover:shadow-amber-100/60 dark:hover:shadow-amber-950/40 transition-all duration-500">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-300/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-300/20 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 " />
             <div className="relative">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-amber-200 dark:shadow-amber-950/50">
                 <svg
@@ -247,6 +247,7 @@ const AboutPage = () => {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  
                 >
                   <path
                     strokeLinecap="round"
