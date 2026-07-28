@@ -85,6 +85,7 @@ const ContactPage = () => {
                 <div>
                   <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Full Name</label>
                   <input 
+                  placeholder="ram rai"
                     type="text" 
                     required 
                     value={form.name} 
@@ -95,6 +96,7 @@ const ContactPage = () => {
                 <div>
                   <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Email Address</label>
                   <input 
+                  placeholder="ramrai12@gmail.com"
                     type="email" 
                     required 
                     value={form.email} 
@@ -106,6 +108,7 @@ const ContactPage = () => {
               <div>
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Subject</label>
                 <input 
+                placeholder="Time"
                   type="text" 
                   required 
                   value={form.subject} 
@@ -116,6 +119,7 @@ const ContactPage = () => {
               <div>
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Message</label>
                 <textarea 
+                placeholder="how many days it will take to delivery product average time ?"
                   rows="5" 
                   required 
                   value={form.message} 
