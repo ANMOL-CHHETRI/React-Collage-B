@@ -318,7 +318,7 @@ const CoworkingPage = () => {
               </a>
               <a
                 href="#book"
-                className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold px-6 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition duration-150 cursor-pointer text-sm"
+                className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold px-6 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition duration-150 cursor-pointer text-sm bg-amber-300"
               >
                 Schedule Site Visit
               </a>
