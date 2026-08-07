@@ -326,6 +326,79 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const loginWithGoogle = async (googleData) => {
+    setError("")
+    const email = googleData?.email
+    if (!email) {
+      setError("Unable to get account email from Google.")
+      return false
+    }
+
+    const existingUser = registeredUsers.find((u) => u.email === email)
+    if (existingUser) {
+      if (existingUser.banned) {
+        setError("Your account has been banned due to violations.")
+        return false
+      }
+      const avatarUrl = googleData.picture || existingUser.avatar || null
+      const loggedUser = {
+        role: existingUser.role || "user",
+        name: existingUser.name || googleData.name,
+        username: existingUser.username,
+        email: existingUser.email,
+        phone: existingUser.phone || "",
+        address: existingUser.address || "",
+        avatar: avatarUrl,
+      }
+      if (!existingUser.avatar && googleData.picture) {
+        const updatedUsers = registeredUsers.map(u => u.username === existingUser.username ? { ...u, avatar: googleData.picture } : u)
+        saveRegisteredUsers(updatedUsers)
+      }
+      setUser(loggedUser)
+      localStorage.setItem("shopease_user", JSON.stringify(loggedUser))
+      navigate("/")
+      return true
+    }
+
+    // Create new account for Google user
+    const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "")
+    let finalUsername = baseUsername || "google_user"
+    if (registeredUsers.some((u) => u.username === finalUsername)) {
+      finalUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
+    }
+
+    const newUser = {
+      name: googleData.name || "Google User",
+      username: finalUsername,
+      email,
+      password: "",
+      phone: "",
+      address: "",
+      avatar: googleData.picture || null,
+      violations: 0,
+      banned: false,
+      role: "user"
+    }
+
+    const updatedUsers = [...registeredUsers, newUser]
+    saveRegisteredUsers(updatedUsers)
+
+    const loggedUser = {
+      role: "user",
+      name: newUser.name,
+      username: newUser.username,
+      email: newUser.email,
+      phone: "",
+      address: "",
+      avatar: newUser.avatar,
+    }
+    setUser(loggedUser)
+    localStorage.setItem("shopease_user", JSON.stringify(loggedUser))
+    navigate("/")
+    return true
+  }
+
+
   const changePassword = async (role, currentPassword, newPassword) => {
     if (!newPassword || newPassword.length < 4) {
       return { success: false, message: "New password must be at least 4 characters" }
@@ -615,6 +688,7 @@ export const AuthProvider = ({ children }) => {
         loginAdmin,
         loginUser,
         login,
+        loginWithGoogle,
         changePassword,
         adminResetUserPassword,
         userSetNewPassword,

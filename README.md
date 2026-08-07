@@ -60,6 +60,19 @@ npm run dev     # → http://localhost:5173
 npm run build   # production build
 ```
 
+## Environment Variables (`.env`)
+
+Create a `.env` file in the root directory:
+
+```env
+# Google OAuth Client Credentials
+VITE_GOOGLE_CLIENT_ID=633391699225-qq38jdvn78oaf7pd4l92uj9542s2djhh.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# Base Path (optional for dev)
+VITE_BASE_PATH=/
+```
+
 ## Tech Stack
 
 React 19 + Vite + Tailwind CSS v4 + react-router v8

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 
 /* ── Eye icon ── */
 const EyeIcon = ({ show }) =>
@@ -44,7 +45,7 @@ const PwField = ({ label, value, onChange, show, onToggle, dark }) => (
 /* ═══════════════════════════════════════════════════════════ */
 const UserLoginPage = () => {
   /* ── Auth ── */
-  const { user, login, signup, verifyUserIdentity, userSetNewPassword,
+  const { user, login, signup, loginWithGoogle, verifyUserIdentity, userSetNewPassword,
           adminCredentials, error, setError, theme } = useAuth();
   const { success } = useToast();
   const navigate = useNavigate();
@@ -217,16 +218,16 @@ const UserLoginPage = () => {
       {/* ─── Keyframes ─── */}
 
 
-      {/* ─── Sign-up Modal Drawer ─── */}
+      {/* ─── Sign-up Modal Drawer (Centered) ─── */}
       {signupOpen && (
         <div
-          className={`su-bd fixed inset-0 z-[500] flex items-end justify-center${signupClosing ? " closing" : ""}`}
-          style={{ background:"rgba(10,5,0,0.7)", backdropFilter:"blur(6px)" }}
+          className={`su-bd fixed inset-0 z-[500] flex items-center justify-center p-4${signupClosing ? " closing" : ""}`}
+          style={{ background:"rgba(10,5,0,0.75)", backdropFilter:"blur(6px)" }}
           onClick={e => { if (e.target === e.currentTarget) closeSignup(); }}
         >
-          <div className={`su-sheet w-full max-w-lg rounded-t-3xl shadow-2xl flex flex-col${signupClosing ? " closing" : ""}
-            ${dark ? "bg-slate-900 text-slate-100" : "bg-white text-gray-900"}`}
-            style={{ maxHeight:"92vh" }}>
+          <div className={`su-sheet w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden border ${signupClosing ? " closing" : ""}
+            ${dark ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white border-amber-100 text-gray-900"}`}
+            style={{ maxHeight:"90vh" }}>
 
             {/* Modal header */}
             <div className="relative bg-gradient-to-r from-amber-950 to-orange-800 px-6 py-5 rounded-t-3xl flex-shrink-0">
@@ -247,7 +248,6 @@ const UserLoginPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <div className="mx-auto mt-4 w-10 h-1 bg-white/30 rounded-full" />
             </div>
 
             {/* Modal form */}
@@ -315,7 +315,33 @@ const UserLoginPage = () => {
                   </svg>
                   Create My Account
                 </button>
-                <p className={`text-center text-xs pb-1 ${dark ? "text-slate-500" : "text-gray-600"}`}>
+
+                {/* Google Sign Up option */}
+                <div className="pt-1">
+                  <div className="relative my-3">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className={`w-full border-t ${dark ? "border-slate-800" : "border-gray-200"}`} />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className={`px-3 py-0.5 text-[11px] font-semibold tracking-wider rounded-full ${dark ? "bg-slate-900 text-slate-400" : "bg-white text-gray-500"}`}>
+                        Or sign up with
+                      </span>
+                    </div>
+                  </div>
+
+                  <GoogleSignInButton
+                    dark={dark}
+                    onGoogleSuccess={async (googleUser) => {
+                      const ok = await loginWithGoogle(googleUser);
+                      if (ok) {
+                        success(`Account created and signed in with Google as ${googleUser.name}`);
+                        closeSignup();
+                      }
+                    }}
+                  />
+                </div>
+
+                <p className={`text-center text-xs pt-1 pb-1 ${dark ? "text-slate-500" : "text-gray-600"}`}>
                   Already have an account?{" "}
                   <button type="button" onClick={closeSignup} className="text-amber-950 font-semibold hover:underline cursor-pointer">
                     Sign in instead
@@ -513,6 +539,32 @@ const UserLoginPage = () => {
                   className="w-full bg-gradient-to-r from-amber-950 to-orange-800 hover:from-orange-800 to-amber-950 text-white py-3 rounded-xl font-semibold transition cursor-pointer shadow-md hover:shadow-lg shadow-amber-500/20">
                   {recoveryMode ? (identityVerified ? "Reset Password" : "Verify Identity") : "Sign In"}
                 </button>
+
+                {/* ── Google Sign-In Option ── */}
+                {!recoveryMode && (
+                  <div className="pt-2">
+                    <div className="relative my-3">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className={`w-full border-t ${dark ? "border-slate-800" : "border-gray-200"}`} />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className={`px-3 py-0.5 text-[11px] font-semibold tracking-wider rounded-full ${dark ? "bg-slate-900 text-slate-400" : "bg-white text-gray-500"}`}>
+                          Or sign in with
+                        </span>
+                      </div>
+                    </div>
+
+                    <GoogleSignInButton
+                      dark={dark}
+                      onGoogleSuccess={async (googleUser) => {
+                        const ok = await loginWithGoogle(googleUser);
+                        if (ok) {
+                          success(`Signed in with Google as ${googleUser.name}`);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
               </form>
 
               <p className="text-center text-sm mt-6">
