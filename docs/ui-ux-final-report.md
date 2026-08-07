@@ -100,7 +100,7 @@ The application was tested across all standard viewport dimensions:
 |---|---|---|
 | Code Quality / Lint | PASS | `npm run lint` — 0 errors |
 | Production Build | PASS | `npm run build` — compiled in 884ms |
-| Playwright Test Suite | PASS | `npm run test:report` — verified |
+| Playwright Test Suite | PASS | `npm run test:report` — 4 passed (9.4s) |
 | Responsive Layouts | PASS | 375px to 1440px verified |
 | Keyboard Accessibility | PASS | Focus rings and ARIA tags verified |
 

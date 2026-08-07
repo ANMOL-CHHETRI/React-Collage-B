@@ -6,7 +6,7 @@ test('Admin login', async ({ page }) => {
   await page.locator('input[type="text"]').first().fill('admin');
   await page.locator('input[type="password"]').first().fill('admin123');
 
-  await page.getByRole('button', { name: /sign in|verify identity/i }).first().click();
+  await page.getByRole('button', { name: /sign in|verify identity|login|login/i }).first().click();
 
   await expect(page).toHaveURL(/admin\/dashboard|admin-login/);
 });

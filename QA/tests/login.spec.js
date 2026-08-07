@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('User login works', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('link', { name: /log in|sign up/i }).first().click();
+  await page.getByRole('link', { name: /login|log in|signup|sign up/i }).first().click();
   await expect(page).toHaveURL(/user-login/);
 
   await page.locator('input[type="text"]').first().fill('user');

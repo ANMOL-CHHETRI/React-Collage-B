@@ -64,9 +64,9 @@
     "version": "1.61.1",
     "workers": 6,
     "webServer": {
-      "command": "npm run preview -- --host 127.0.0.1 --port 4173",
+      "command": "npm run build && npm run preview -- --host 127.0.0.1 --port 4173",
       "url": "http://127.0.0.1:4173",
-      "reuseExistingServer": true,
+      "reuseExistingServer": false,
       "timeout": 120000
     }
   },
@@ -79,7 +79,7 @@
       "specs": [
         {
           "title": "Admin login",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -92,32 +92,18 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 5,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 3038,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-08-07T10:58:38.864Z",
+                  "startTime": "2026-08-07T11:02:34.078Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\Users\\Anupam Baral\\Downloads\\React-Collage-B\\test-results\\admin-login-Admin-login\\error-context.md"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "1cd7c711cd0f4a19096a-55d8548486272ac73352",
@@ -135,7 +121,7 @@
       "specs": [
         {
           "title": "Add product to cart",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -148,32 +134,18 @@
                 {
                   "workerIndex": 1,
                   "parallelIndex": 1,
-                  "status": "failed",
-                  "duration": 6,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 3687,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-08-07T10:58:38.872Z",
+                  "startTime": "2026-08-07T11:02:34.079Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\Users\\Anupam Baral\\Downloads\\React-Collage-B\\test-results\\cart-Add-product-to-cart\\error-context.md"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "ceb0bea1dd12be5aadb7-72bec6ca729dcec7d3cf",
@@ -191,7 +163,7 @@
       "specs": [
         {
           "title": "User login works",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -204,32 +176,18 @@
                 {
                   "workerIndex": 2,
                   "parallelIndex": 2,
-                  "status": "failed",
-                  "duration": 10,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 3708,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-08-07T10:58:38.856Z",
+                  "startTime": "2026-08-07T11:02:34.108Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\Users\\Anupam Baral\\Downloads\\React-Collage-B\\test-results\\login-User-login-works\\error-context.md"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "badc1754af1944f68b2b-c38e0c03abbcb0595253",
@@ -247,7 +205,7 @@
       "specs": [
         {
           "title": "Search product",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -260,32 +218,18 @@
                 {
                   "workerIndex": 3,
                   "parallelIndex": 3,
-                  "status": "failed",
-                  "duration": 7,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at C:\\Users\\Anupam Baral\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1228\\chrome-headless-shell-win64\\chrome-headless-shell.exe\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 2972,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-08-07T10:58:38.857Z",
+                  "startTime": "2026-08-07T11:02:34.140Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\Users\\Anupam Baral\\Downloads\\React-Collage-B\\test-results\\search-Search-product\\error-context.md"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "9e6ea2b6d72fedbaa223-7554509f1458242bef74",
@@ -298,11 +242,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-08-07T10:58:35.814Z",
-    "duration": 3589.175,
-    "expected": 0,
+    "startTime": "2026-08-07T11:02:29.138Z",
+    "duration": 9373.49,
+    "expected": 4,
     "skipped": 0,
-    "unexpected": 4,
+    "unexpected": 0,
     "flaky": 0
   }
 }
