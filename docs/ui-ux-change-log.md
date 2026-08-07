@@ -170,3 +170,48 @@ Ecommerce navigation must prioritize product discovery (`Categories`, `Search`, 
 - [x] Keyboard tested
 - [x] Build passed
 - [x] Lint passed
+
+---
+
+## Change #006 — Mobile Navigation & Responsive Navbar
+
+### Date
+2026-08-07
+
+### Area
+Mobile Navigation & Responsive Header (`src/components/Navbar.jsx`)
+
+### Problem
+The desktop navigation structure could not be directly compressed into mobile viewports without causing visual clutter, cramped touch targets, and poor touch usability.
+
+### Change
+- Created dedicated mobile header with compact top bar (`Menu` ☰, `ShopEase Nepal` Logo, `Cart` 🛒 with count badge).
+- Positioned full-width mobile sub-header search bar immediately below the top bar for instant product discovery.
+- Built touch-first side drawer (`w-[min(88vw,360px)]`) with backdrop overlay (`bg-slate-900/60 backdrop-blur-xs`).
+- Added body scroll lock (`document.body.style.overflow = "hidden"`) when drawer is open.
+- Added `Escape` key event listener and backdrop tap handlers to close drawer and restore focus to menu button.
+- Structured drawer content into clear scanable sections: **SHOP** (`Categories` accordion, `Wishlist`, `Cart`), **COMPANY** (`About`, `Contact`), **HELP** (`Delivery Coverage`, `Coworking Space`, `FAQ`), **ACCOUNT** (`Sign In` / `User Dashboard`), and **PREFERENCES** (`Theme Mode`).
+- Ensured all interactive touch targets meet or exceed 44px × 44px minimum sizing.
+- Preserved existing routes, authentication models, and desktop navbar layout intact.
+
+### Expected Impact
+- Reduced mobile navigation clutter.
+- Enhanced mobile product discovery and instant search access.
+- Improved touch usability with 44px touch targets.
+- Enhanced accessibility with ARIA attributes, focus restoration, and Escape key handling.
+- Seamless responsive behavior across 320px–1440px viewports.
+
+### Files Changed
+- `src/components/Navbar.jsx`
+
+### Validation
+- [x] 320px tested
+- [x] 360px tested
+- [x] 375px tested
+- [x] 390px tested
+- [x] 414px tested
+- [x] 640px tested
+- [x] 768px tested
+- [x] Desktop regression tested (1024px, 1280px, 1440px)
+- [x] Build passed
+- [x] Lint passed

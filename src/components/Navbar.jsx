@@ -22,6 +22,23 @@ const Navbar = () => {
     });
   }, []);
 
+  // Handle mobile drawer body scroll lock and Escape key close
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+          setIsOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isOpen]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -164,10 +181,35 @@ const Navbar = () => {
         </div>
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Bar for Desktop & Mobile */}
         <div className="flex items-center justify-between h-16 sm:h-20">
+          
+          {/* Mobile Menu Button (left on mobile) */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsOpen(!isOpen);
+              setNotificationsOpen(false);
+            }}
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+            className="md:hidden p-2.5 min-w-[44px] min-h-[44px] rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer focus-ring"
+          >
+            {isOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+
           {/* Logo */}
           <div className="flex items-center gap-6">
-            <Link to="/" aria-label="ShopEase Nepal Homepage" className="flex items-center gap-2.5 group focus-ring rounded-xl p-1">
+            <Link to="/" aria-label="ShopEase Nepal Homepage" className="flex items-center gap-2 group focus-ring rounded-xl p-1">
               <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-200">
                 <svg
                   className="w-5 h-5"
@@ -183,7 +225,7 @@ const Navbar = () => {
                   />
                 </svg>
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 ShopEase{" "}
                 <span className="text-amber-600 font-semibold">Nepal</span>
               </span>
@@ -275,7 +317,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Right Action Group */}
+          {/* Desktop Right Action Group */}
           <div className="hidden md:flex items-center gap-3">
             {/* Search Bar */}
             <form onSubmit={handleSearchSubmit} className="relative">
@@ -301,43 +343,6 @@ const Navbar = () => {
                 />
               </svg>
             </form>
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer focus-ring"
-              title="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  />
-                </svg>
-              )}
-            </button>
 
             <Link
               to="/wishlist"
@@ -398,7 +403,7 @@ const Navbar = () => {
                     setNotificationsOpen(!notificationsOpen);
                     setOpenDropdown(null);
                   }}
-                  className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer"
+                  className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer focus-ring"
                   title="Notifications"
                 >
                   <svg
@@ -491,7 +496,7 @@ const Navbar = () => {
                                       <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 022-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01"
                                       />
                                     </svg>
                                   )}
@@ -567,197 +572,17 @@ const Navbar = () => {
                 Sign In
               </Link>
             )}
-          </div>
 
-          {/* Mobile Actions and Toggle */}
-          <div className="flex md:hidden items-center gap-1.5 relative">
-            {/* Mobile Notification Bell */}
-            {user && (
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setNotificationsOpen(!notificationsOpen);
-                    setIsOpen(false);
-                  }}
-                  className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer"
-                  title="Notifications"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white animate-pulse">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {notificationsOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setNotificationsOpen(false)}
-                    />
-                    <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2.5rem)] sm:w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-3.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-                        <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">
-                          Notifications
-                        </span>
-                        {unreadCount > 0 && (
-                          <button
-                            onClick={() => markAllAsRead(allNotifications)}
-                            className="text-[10px] text-amber-600 dark:text-amber-400 font-bold hover:underline cursor-pointer"
-                          >
-                            Mark all as read
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
-                        {allNotifications.length === 0 ? (
-                          <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
-                            No notifications yet
-                          </div>
-                        ) : (
-                          allNotifications.map((notif) => {
-                            const isUnread = !readNotifications.includes(
-                              notif.id,
-                            );
-                            return (
-                              <div
-                                key={notif.id}
-                                onClick={() => {
-                                  markAsRead(notif.id);
-                                  setNotificationsOpen(false);
-                                }}
-                                className={`p-2.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-2.5 ${
-                                  isUnread
-                                    ? "bg-amber-50/50 dark:bg-amber-950/10 border-amber-100/50 dark:border-amber-900/30"
-                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850"
-                                }`}
-                              >
-                                <div className="mt-0.5">
-                                  {notif.type === "message" ? (
-                                    <svg
-                                      className="w-4 h-4 text-amber-500"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                      />
-                                    </svg>
-                                  ) : (
-                                    <svg
-                                      className="w-4 h-4 text-emerald-500"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-2 4h.01M9 16h.01"
-                                      />
-                                    </svg>
-                                  )}
-                                </div>
-                                <div className="flex-1 space-y-0.5">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-[11px] font-bold text-slate-800 dark:text-white">
-                                      {notif.title}
-                                    </span>
-                                    {isUnread && (
-                                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0" />
-                                    )}
-                                  </div>
-                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                    {notif.description}
-                                  </p>
-                                  <span className="text-[9px] text-slate-400 dark:text-slate-500 block font-semibold">
-                                    {new Date(notif.date).toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                      },
-                                    )}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Mobile Profile Icon */}
-            {!isDashboard && (
-              <Link
-                to={user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
-                className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer"
-                title="Account Dashboard"
-                onClick={() => setIsOpen(false)}
-              >
-                {user ? (
-                  user.avatar ? (
-                    <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
-                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-[10px] uppercase border border-slate-200 dark:border-slate-700">
-                      {user.name ? user.name.charAt(0) : user.username?.charAt(0) || "U"}
-                    </div>
-                  )
-                ) : (
-                  <svg
-                    className="w-5.5 h-5.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                )}
-              </Link>
-            )}
-
-            {/* Mobile menu toggle */}
+            {/* Theme Toggle Button */}
             <button
-              onClick={() => {
-                setIsOpen(!isOpen);
-                setNotificationsOpen(false);
-              }}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer focus-ring"
+              title="Toggle theme"
             >
-              {isOpen ? (
+              {theme === "dark" ? (
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -766,12 +591,12 @@ const Navbar = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"
                   />
                 </svg>
               ) : (
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -780,169 +605,229 @@ const Navbar = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                   />
                 </svg>
               )}
             </button>
           </div>
-        </div>
 
-        {/* Mobile menu */}
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-slate-100 dark:border-slate-800 space-y-2 animate-in fade-in duration-200">
-            {/* Mobile Search */}
-            <div className="px-3 pb-2">
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400"
-                />
-                <svg
-                  className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </form>
-            </div>
-            {/* SHOP Section */}
-            <div className="pt-2">
-              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Shop
-              </div>
-              <button
-                type="button"
-                onClick={() => toggleDropdown("mobile-features")}
-                aria-expanded={openDropdown === "mobile-features"}
-                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
-              >
-                <span>Categories</span>
-                <svg
-                  className={`w-4 h-4 transition-transform duration-200 ${openDropdown === "mobile-features" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {openDropdown === "mobile-features" && (
-                <div className="pl-6 space-y-1 py-1 border-l-2 border-slate-100 dark:border-slate-800 ml-4">
-                  {[
-                    { name: "Traditional Apparel" },
-                    { name: "Organic Tea & Coffee" },
-                    { name: "Local Handicrafts" },
-                    { name: "Herbs & Spices" },
-                  ].map((item) => (
-                    <Link
-                      key={item.name}
-                      to={`/category/${encodeURIComponent(item.name)}`}
-                      className="block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-
-              <Link
-                to="/wishlist"
-                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                <span>Wishlist</span>
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                  {wishlistCount}
-                </span>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  setIsCartOpen(true);
-                }}
-                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
-              >
-                <span>My Cart</span>
-                <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+          {/* Mobile Right Action (Cart button for mobile top bar) */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={() => setIsCartOpen(true)}
+              aria-label={`Open Cart with ${cartCount} items`}
+              className="p-2.5 min-w-[44px] min-h-[44px] text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors duration-200 relative cursor-pointer flex items-center justify-center focus-ring"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute top-1 right-1 w-5 h-5 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
                   {cartCount}
                 </span>
-              </button>
-            </div>
+              )}
+            </button>
+          </div>
+        </div>
 
-            {/* COMPANY Section */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Company
+        {/* Mobile Sub-Header Search Bar (Always visible below top bar on mobile) */}
+        <div className="md:hidden pb-3 px-1">
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <input
+              type="text"
+              aria-label="Search products"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products..."
+              className="w-full h-11 pl-11 pr-4 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400 focus-ring"
+            />
+            <svg
+              className="w-4.5 h-4.5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </form>
+        </div>
+      </div>
+
+      {/* Mobile Side-Drawer Overlay & Modal */}
+      {isOpen && (
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Slide-over Side Drawer */}
+          <nav
+            id="mobile-navigation"
+            aria-label="Mobile navigation"
+            className="fixed top-0 left-0 bottom-0 w-[min(88vw,360px)] bg-white dark:bg-slate-950 z-50 shadow-2xl p-6 overflow-y-auto md:hidden flex flex-col justify-between animate-in slide-in-from-left duration-250 border-r border-slate-100 dark:border-slate-800"
+          >
+            <div className="space-y-6">
+              {/* Drawer Top Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                <Link
+                  to="/"
+                  className="flex items-center gap-2 group"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-md">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                    ShopEase <span className="text-amber-600 font-semibold">Nepal</span>
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close navigation menu"
+                  className="p-2.5 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center justify-center focus-ring"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <NavLink
-                to="/about"
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                About Us
-              </NavLink>
 
-              <NavLink
-                to="/contact"
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                Contact
-              </NavLink>
-            </div>
+              {/* Categorized Sections */}
+              {/* SHOP Section */}
+              <div className="space-y-1">
+                <div className="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Shop
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown("mobile-features")}
+                  aria-expanded={openDropdown === "mobile-features"}
+                  className="flex items-center justify-between w-full py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+                >
+                  <span>Categories</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${openDropdown === "mobile-features" ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-            {/* HELP Section */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Help & Services
+                {openDropdown === "mobile-features" && (
+                  <div className="pl-6 space-y-1 py-1 border-l-2 border-slate-100 dark:border-slate-800 ml-4">
+                    {[
+                      { name: "Traditional Apparel" },
+                      { name: "Organic Tea & Coffee" },
+                      { name: "Local Handicrafts" },
+                      { name: "Herbs & Spices" },
+                    ].map((item) => (
+                      <Link
+                        key={item.name}
+                        to={`/category/${encodeURIComponent(item.name)}`}
+                        className="block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                <Link
+                  to="/wishlist"
+                  className="flex items-center justify-between w-full py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span>Wishlist</span>
+                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {wishlistCount}
+                  </span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsCartOpen(true);
+                  }}
+                  className="flex items-center justify-between w-full py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+                >
+                  <span>My Cart</span>
+                  <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {cartCount}
+                  </span>
+                </button>
               </div>
-              <NavLink
-                to="/delivery-coverage"
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                Delivery Coverage
-              </NavLink>
-              <NavLink
-                to="/coworking"
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                Coworking Space
-              </NavLink>
-              <NavLink
-                to="/faq"
-                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                onClick={() => setIsOpen(false)}
-              >
-                FAQ
-              </NavLink>
+
+              {/* COMPANY Section */}
+              <div className="space-y-1 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Company
+                </div>
+                <NavLink
+                  to="/about"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  About Us
+                </NavLink>
+
+                <NavLink
+                  to="/contact"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Contact
+                </NavLink>
+              </div>
+
+              {/* HELP Section */}
+              <div className="space-y-1 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Help & Services
+                </div>
+                <NavLink
+                  to="/delivery-coverage"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Delivery Coverage
+                </NavLink>
+                <NavLink
+                  to="/coworking"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Coworking Space
+                </NavLink>
+                <NavLink
+                  to="/faq"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                  onClick={() => setIsOpen(false)}
+                >
+                  FAQ
+                </NavLink>
+              </div>
             </div>
 
-            {/* ACCOUNT & PREFERENCES Section */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-              <div className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Account & Settings
+            {/* ACCOUNT & PREFERENCES Section (Bottom of Drawer) */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <div className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Account & Preferences
               </div>
               {user ? (
                 <NavLink
@@ -976,9 +861,9 @@ const Navbar = () => {
                 </span>
               </button>
             </div>
-          </div>
-        )}
-      </div>
+          </nav>
+        </>
+      )}
     </nav>
   );
 };

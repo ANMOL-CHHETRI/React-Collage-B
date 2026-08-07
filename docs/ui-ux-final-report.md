@@ -32,14 +32,15 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 ## 4. Implemented Changes
 
-### Navigation (`Navbar.jsx`)
+### Navigation & Mobile Architecture (`Navbar.jsx`)
 - Streamlined header structure with translucent glassmorphism background (`backdrop-blur-md`).
 - Removed internal `Live DB` status badge from the public brand area.
 - Focused desktop primary navigation on 3 key links: `Categories` (dropdown), `About`, and `Contact`.
-- Moved secondary links (`Delivery Coverage`, `Coworking Space`, `FAQ`) into footer and categorized mobile drawer sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**).
-- Positioned inline search input (224px–288px width) with magnifying glass icon and `aria-label="Search products"`.
-- Grouped shopping actions (`Wishlist` `♡`, `Cart` `🛒`, `Sign In` / `User Dashboard` `👤`, `Theme Toggle` `☾`/`☀️`) with equal sizing, ARIA labels, and focus rings.
-- Simplified authentication state: Unauthenticated visitors see a single `Sign In` CTA (`to="/user-login"`), while authenticated users see the `User Dashboard` icon (`👤`).
+- Created dedicated touch-friendly mobile top bar (`Menu` ☰, `ShopEase Nepal` logo, `Cart` 🛒 with item count badge).
+- Embedded full-width mobile sub-header search bar immediately below the top bar for instant product search.
+- Built side-drawer navigation (`w-[min(88vw,360px)]`) with backdrop overlay, body scroll lock (`overflow: hidden`), and `Escape` key close handler.
+- Organized mobile drawer content into clear scanable sections: **SHOP** (`Categories` accordion, `Wishlist`, `Cart`), **COMPANY** (`About`, `Contact`), **HELP** (`Delivery Coverage`, `Coworking Space`, `FAQ`), **ACCOUNT** (`Sign In` / `User Dashboard`), and **PREFERENCES** (`Theme Mode`).
+- Enforced 44px × 44px minimum touch targets across all interactive mobile controls.
 
 ### Product Cards (`ProductCard.jsx`)
 - Preserved 4:5 aspect ratio image containers to prevent Cumulative Layout Shift (CLS).
@@ -65,11 +66,12 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 | Surface / Area | Before | After | Reason for Change |
 |---|---|---|---|
+| Mobile Header | Compressed desktop header | Top Bar (`Menu`, `Logo`, `Cart`) + Sub-header Search | Touch-first mobile UX & instant search |
+| Mobile Drawer | Plain vertical link list | Categorized sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) with scroll lock & Escape listener | Fast scanning, touch targets & focus trap |
 | Primary Navigation | 6+ equally weighted links | 3 core links (`Categories`, `About`, `Contact`) | Reduced cognitive load & shopping focus |
 | Internal Status | `Live DB` badge visible in header | Removed from public navigation | Professional customer-facing presentation |
-| Search Input | Detached / misplaced | Integrated into action hierarchy | Prominent product discovery |
+| Search Input | Detached / misplaced | Integrated into desktop action group & mobile sub-header | Prominent product discovery |
 | Shopping Actions | Scattered buttons | Grouped icon controls (`Wishlist`, `Cart`, `Account`, `Theme`) | Clean visual hierarchy & action alignment |
-| Mobile Navigation | Uncategorized list | Categorized sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) | Fast scanning & mobile usability |
 | Navbar Auth UX | Unauthenticated: Login + Signup + Dashboard icon | Unauthenticated: `Sign In`. Authenticated: `User Dashboard` | Reduced navigation clutter & clearer state |
 | Focus States | Inconsistent browser default focus | Unified `.focus-ring` utility (`ring-2 ring-amber-500`) | Keyboard accessibility compliance |
 | Icon Buttons | Missing text or ARIA names | Explicit `aria-label` on all icon controls | Screen reader usability |
