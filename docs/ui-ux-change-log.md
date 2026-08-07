@@ -90,3 +90,43 @@ Accessible navigation header compliant with WCAG screen reader standards.
 - [x] Mobile tested
 - [x] Keyboard tested
 - [x] Build passed
+
+---
+
+## Change #004 — Navbar Authentication Simplification
+
+### Date
+2026-08-07
+
+### Area
+Navigation / Authentication UX (`src/components/Navbar.jsx`)
+
+### Problem
+Unauthenticated users were shown a User Dashboard/person icon even though they were not authenticated. The navbar also exposed separate Login and Signup actions, creating redundant authentication controls.
+
+### Change
+- Replaced separate Login/Signup navbar actions with a single `Sign In` CTA (`to="/user-login"`).
+- Displayed User Dashboard icon (`👤`) exclusively for authenticated users (`user !== null`).
+- Added explicit ARIA labels (`aria-label="Sign in"`, `aria-label="Open user dashboard"`).
+- Updated both desktop and mobile navigation menus to enforce the simplified authentication state.
+
+### UX Rationale
+Authentication actions should reflect the user's current state. Unauthenticated users need a single clear entry point into authentication (`Sign In`), while authenticated users need direct access to their account dashboard.
+
+### Expected Impact
+- Reduced navbar clutter and cognitive load.
+- Clear separation between visitor and authenticated experiences.
+- Accessible keyboard navigation and mobile menu state.
+
+### Files Changed
+- `src/components/Navbar.jsx`
+
+### Validation
+- [x] Logged-out state tested
+- [x] Logged-in state tested
+- [x] Logout state tested
+- [x] Desktop tested
+- [x] Mobile tested
+- [x] Keyboard tested
+- [x] Build passed
+- [x] Lint passed

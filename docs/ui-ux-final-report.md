@@ -34,7 +34,9 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 ### Navigation (`Navbar.jsx`)
 - Streamlined header structure with translucent glassmorphism background (`backdrop-blur-md`).
-- Added explicit `aria-label` tags on all icon buttons (`Wishlist`, `Cart`, `Theme toggle`, `Notifications`).
+- Simplified authentication state: Unauthenticated visitors see a single `Sign In` CTA (`to="/user-login"`), while authenticated users see the `User Dashboard` icon (`👤`).
+- Removed redundant `Login` + `Signup` button duplication and suppressed unauthenticated `User Dashboard` icon.
+- Added explicit `aria-label` tags on all icon buttons (`Wishlist`, `Cart`, `Theme toggle`, `Notifications`, `Sign in`, `Open user dashboard`).
 - Added high-contrast focus rings for keyboard users.
 
 ### Product Cards (`ProductCard.jsx`)
@@ -61,6 +63,7 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 | Surface / Area | Before | After | Reason for Change |
 |---|---|---|---|
+| Navbar Auth UX | Unauthenticated: Login + Signup + Dashboard icon | Unauthenticated: `Sign In`. Authenticated: `User Dashboard` | Reduced navigation clutter & clearer state |
 | Focus States | Inconsistent browser default focus | Unified `.focus-ring` utility (`ring-2 ring-amber-500`) | Keyboard accessibility compliance |
 | Icon Buttons | Missing text or ARIA names | Explicit `aria-label` on all icon controls | Screen reader usability |
 | Product Card | Unconstrained hover CTA | Keyboard-reachable CTAs with fixed 4:5 image ratio | Zero layout shift & accessibility |
