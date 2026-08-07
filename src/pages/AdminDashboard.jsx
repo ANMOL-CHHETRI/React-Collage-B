@@ -163,8 +163,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const fetchAdminData = async () => {
-      let orders = [];
-      let couponsList = [];
+      let orders
+      let couponsList
       try {
         const dbOrders = await api.getOrders();
         orders = dbOrders.map(o => ({

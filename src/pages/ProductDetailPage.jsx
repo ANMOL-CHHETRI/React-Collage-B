@@ -702,11 +702,13 @@ const [selectedImage, setSelectedImage] = useState(
 
               <div className="flex flex-wrap items-center gap-4 pt-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-md overflow-hidden h-11 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white">
+                <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden h-11 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white">
                   {/* Decrease quantity */}
                   <button
+                    type="button"
+                    aria-label="Decrease quantity"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                    className="w-10 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors focus-ring"
                   >
                     −
                   </button>
@@ -718,8 +720,10 @@ const [selectedImage, setSelectedImage] = useState(
 
                   {/* Increase quantity */}
                   <button
+                    type="button"
+                    aria-label="Increase quantity"
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-8 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                    className="w-10 h-11 flex items-center justify-center text-lg hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors focus-ring"
                   >
                     +
                   </button>

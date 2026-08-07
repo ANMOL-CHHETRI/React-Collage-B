@@ -198,7 +198,12 @@ const CartDrawer = () => {
           />
 
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Shopping Cart Drawer"
+              className="w-screen max-w-md bg-white dark:bg-slate-950 border-l border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col transform transition duration-300 animate-in slide-in-from-right"
+            >
               <div className="px-6 py-4 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 border-b border-slate-700 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-base font-extrabold text-white flex items-center gap-2">
@@ -211,11 +216,13 @@ const CartDrawer = () => {
                     )}
                   </h2>
                   <button
+                    type="button"
+                    aria-label="Close cart"
                     onClick={() => {
                       if (checkoutStep) setCheckoutStep(false);
                       else setIsCartOpen(false);
                     }}
-                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition cursor-pointer"
+                    className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition cursor-pointer focus-ring"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

@@ -48,6 +48,17 @@ const CategoryPage = () => {
     setIsFilterOpen(false)
   }, [categoryName, maxCategoryPrice])
 
+  // Handle Escape key to close mobile filter modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isFilterOpen) {
+        setIsFilterOpen(false)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isFilterOpen])
+
   const availableBadges = Array.from(
     new Set(categoryProducts.map(p => p.badge).filter(Boolean))
   )

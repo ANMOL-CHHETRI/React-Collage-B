@@ -199,8 +199,8 @@ const UserDashboard = () => {
   }
   useEffect(() => {
     const loadDashboardData = async () => {
-      let fetchedOrders = [];
-      let fetchedCoupons = [];
+      let fetchedOrders
+      let fetchedCoupons
       try {
         const dbOrders = await api.getOrders(user?.role === "admin" ? null : user?.username);
         fetchedOrders = dbOrders.map(o => ({

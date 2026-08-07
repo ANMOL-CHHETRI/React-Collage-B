@@ -313,7 +313,8 @@ const Navbar = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer"
+              aria-label="Toggle theme"
+              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer focus-ring"
               title="Toggle theme"
             >
               {theme === "dark" ? (
@@ -349,7 +350,8 @@ const Navbar = () => {
 
             <Link
               to="/wishlist"
-              className="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors duration-200 relative cursor-pointer"
+              aria-label={`Wishlist with ${wishlistCount} items`}
+              className="p-2 text-slate-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors duration-200 relative cursor-pointer focus-ring"
               title="Wishlist"
             >
               <svg
@@ -374,7 +376,8 @@ const Navbar = () => {
 
             <button
               onClick={() => setIsCartOpen(true)}
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer"
+              aria-label={`Open Cart with ${cartCount} items`}
+              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 relative cursor-pointer focus-ring"
             >
               <svg
                 className="w-5.5 h-5.5"

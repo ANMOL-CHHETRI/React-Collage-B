@@ -86,11 +86,13 @@ const ProductCard = ({ product }) => {
 
         {/* Wishlist Button */}
         <button
+          type="button"
+          aria-label={inWishlist ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           onClick={(e) => {
             e.preventDefault();
             toggleWishlist(product);
           }}
-          className={`absolute top-3 right-3 w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer ${
+          className={`absolute top-3 right-3 w-8 h-8 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer focus-ring ${
             inWishlist 
               ? "bg-red-500 text-white scale-110 shadow-red-300 dark:shadow-red-900" 
               : "bg-white/80 dark:bg-slate-800/80 text-slate-400 hover:text-red-500 hover:scale-110 hover:bg-white dark:hover:bg-slate-700"
