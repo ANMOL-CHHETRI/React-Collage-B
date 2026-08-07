@@ -664,46 +664,48 @@ const Navbar = () => {
         <>
           {/* Backdrop Overlay */}
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            className="fixed inset-0 h-dvh bg-slate-900/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Slide-over Side Drawer */}
-          <nav
+          <div
             id="mobile-navigation"
             aria-label="Mobile navigation"
-            className="fixed top-0 left-0 bottom-0 w-[min(88vw,360px)] bg-white dark:bg-slate-950 z-50 shadow-2xl p-6 overflow-y-auto md:hidden flex flex-col justify-between animate-in slide-in-from-left duration-250 border-r border-slate-100 dark:border-slate-800"
+            role="dialog"
+            aria-modal="true"
+            className="fixed top-0 left-0 bottom-0 h-dvh w-[min(88vw,360px)] bg-white dark:bg-slate-950 z-50 shadow-2xl overflow-hidden md:hidden flex flex-col border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-250"
           >
-            <div className="space-y-6">
-              {/* Drawer Top Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-                <Link
-                  to="/"
-                  className="flex items-center gap-2 group"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-md">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                  </div>
-                  <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                    ShopEase <span className="text-amber-600 font-semibold">Nepal</span>
-                  </span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  aria-label="Close navigation menu"
-                  className="p-2.5 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center justify-center focus-ring"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            {/* Drawer Top Header (fixed) */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-950">
+              <Link
+                to="/"
+                className="flex items-center gap-2 group"
+                onClick={() => setIsOpen(false)}
+              >
+                <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-md">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                </button>
-              </div>
+                </div>
+                <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                  ShopEase <span className="text-amber-600 font-semibold">Nepal</span>
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close navigation menu"
+                className="p-2.5 min-w-[44px] min-h-[44px] text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center justify-center focus-ring"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-              {/* Categorized Sections */}
+            {/* Drawer Navigation Body (scrollable) */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 min-h-0">
               {/* SHOP Section */}
               <div className="space-y-1">
                 <div className="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -822,46 +824,46 @@ const Navbar = () => {
                   FAQ
                 </NavLink>
               </div>
-            </div>
 
-            {/* ACCOUNT & PREFERENCES Section (Bottom of Drawer) */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
-              <div className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Account & Preferences
+              {/* ACCOUNT & PREFERENCES Section */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                <div className="px-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Account & Preferences
+                </div>
+                {user ? (
+                  <NavLink
+                    to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
+                    aria-label="Open user dashboard"
+                    className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    User Dashboard
+                  </NavLink>
+                ) : (
+                  <Link
+                    to="/user-login"
+                    aria-label="Sign in"
+                    className="w-full block text-center py-2.5 bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm cursor-pointer focus-ring"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                )}
+
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label="Toggle theme mode"
+                  className="w-full flex items-center justify-between py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+                >
+                  <span>Theme Mode</span>
+                  <span className="text-sm font-bold text-amber-600 capitalize">
+                    {theme}
+                  </span>
+                </button>
               </div>
-              {user ? (
-                <NavLink
-                  to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
-                  aria-label="Open user dashboard"
-                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
-                  onClick={() => setIsOpen(false)}
-                >
-                  User Dashboard
-                </NavLink>
-              ) : (
-                <Link
-                  to="/user-login"
-                  aria-label="Sign in"
-                  className="w-full block text-center py-2.5 bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm cursor-pointer focus-ring"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Sign In
-                </Link>
-              )}
-
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label="Toggle theme mode"
-                className="w-full flex items-center justify-between py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
-              >
-                <span>Theme Mode</span>
-                <span className="text-sm font-bold text-orange-600 capitalize">
-                  {theme}
-                </span>
-              </button>
             </div>
-          </nav>
+          </div>
         </>
       )}
     </nav>

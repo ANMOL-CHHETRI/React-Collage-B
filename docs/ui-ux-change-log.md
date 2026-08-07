@@ -215,3 +215,45 @@ The desktop navigation structure could not be directly compressed into mobile vi
 - [x] Desktop regression tested (1024px, 1280px, 1440px)
 - [x] Build passed
 - [x] Lint passed
+
+---
+
+## Change #007 — Mobile Drawer Layout Bug Fix
+
+### Date
+2026-08-07
+
+### Area
+Mobile Navigation Drawer (`src/components/Navbar.jsx`)
+
+### Problem
+The mobile navigation drawer height was constrained to ~158px by parent sticky navbar bounds, causing content to clip and displaying only the drawer header and top section on mobile devices.
+
+### Root Cause
+The drawer container was rendered inside the parent `<nav className="sticky top-0 z-50 ...">` without explicit viewport height decoupling, causing flex child calculation issues and clipping drawer height to sticky header bounds.
+
+### Fix
+- Updated drawer container to `fixed top-0 left-0 bottom-0 h-dvh w-[min(88vw,360px)] z-50 flex flex-col overflow-hidden`.
+- Separated drawer into fixed header (`shrink-0 bg-white dark:bg-slate-950`) and scrollable navigation body (`flex-1 overflow-y-auto min-h-0`).
+- Cleaned up right border styling (`border-r border-slate-200 dark:border-slate-800 shadow-2xl`) and eliminated orange/yellow vertical scrollbar strip artifacts.
+- Maintained body scroll lock (`document.body.style.overflow = "hidden"`), `Escape` key close listener, and keyboard focus restoration to the `Menu` button.
+
+### Expected Impact
+- Drawer fills 100% of mobile viewport height (`100dvh`).
+- All navigation sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) are fully scrollable and accessible.
+- Clean right drawer edge with zero horizontal page scroll.
+
+### Files Changed
+- `src/components/Navbar.jsx`
+
+### Validation
+- [x] 320px tested
+- [x] 360px tested
+- [x] 375px tested
+- [x] 390px tested
+- [x] 414px tested
+- [x] 640px tested
+- [x] 768px tested
+- [x] Desktop regression tested (1024px, 1280px, 1440px)
+- [x] Build passed
+- [x] Lint passed

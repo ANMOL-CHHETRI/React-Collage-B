@@ -38,7 +38,7 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 - Focused desktop primary navigation on 3 key links: `Categories` (dropdown), `About`, and `Contact`.
 - Created dedicated touch-friendly mobile top bar (`Menu` ☰, `ShopEase Nepal` logo, `Cart` 🛒 with item count badge).
 - Embedded full-width mobile sub-header search bar immediately below the top bar for instant product search.
-- Built side-drawer navigation (`w-[min(88vw,360px)]`) with backdrop overlay, body scroll lock (`overflow: hidden`), and `Escape` key close handler.
+- Built viewport-height side drawer (`h-dvh w-[min(88vw,360px)]`) with fixed top header, flex-1 scrollable body, backdrop overlay (`bg-slate-900/60`), body scroll lock (`overflow: hidden`), and `Escape` key close handler.
 - Organized mobile drawer content into clear scanable sections: **SHOP** (`Categories` accordion, `Wishlist`, `Cart`), **COMPANY** (`About`, `Contact`), **HELP** (`Delivery Coverage`, `Coworking Space`, `FAQ`), **ACCOUNT** (`Sign In` / `User Dashboard`), and **PREFERENCES** (`Theme Mode`).
 - Enforced 44px × 44px minimum touch targets across all interactive mobile controls.
 
@@ -67,7 +67,8 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 | Surface / Area | Before | After | Reason for Change |
 |---|---|---|---|
 | Mobile Header | Compressed desktop header | Top Bar (`Menu`, `Logo`, `Cart`) + Sub-header Search | Touch-first mobile UX & instant search |
-| Mobile Drawer | Plain vertical link list | Categorized sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) with scroll lock & Escape listener | Fast scanning, touch targets & focus trap |
+| Mobile Drawer Height | Constrained to ~158px & clipped | 100dvh viewport height with scrollable body | Full-height navigation surface & zero clipping |
+| Mobile Drawer Content | Plain vertical link list | Categorized sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) with scroll lock & Escape listener | Fast scanning, touch targets & focus trap |
 | Primary Navigation | 6+ equally weighted links | 3 core links (`Categories`, `About`, `Contact`) | Reduced cognitive load & shopping focus |
 | Internal Status | `Live DB` badge visible in header | Removed from public navigation | Professional customer-facing presentation |
 | Search Input | Detached / misplaced | Integrated into desktop action group & mobile sub-header | Prominent product discovery |
