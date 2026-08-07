@@ -12,6 +12,12 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
+            // Suppress terminal ECONNREFUSED noise when local backend is offline
+            if (err.code === 'ECONNREFUSED') return
+          })
+        }
       }
     }
   }
