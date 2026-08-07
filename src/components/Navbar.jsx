@@ -163,11 +163,11 @@ const Navbar = () => {
           </span>
         </div>
       )}
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="flex items-center gap-6">
+            <Link to="/" aria-label="ShopEase Nepal Homepage" className="flex items-center gap-2.5 group focus-ring rounded-xl p-1">
               <div className="bg-gradient-to-tr from-amber-500 to-orange-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-200">
                 <svg
                   className="w-5 h-5"
@@ -188,116 +188,107 @@ const Navbar = () => {
                 <span className="text-amber-600 font-semibold">Nepal</span>
               </span>
             </Link>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 text-[10px] font-extrabold text-slate-500 dark:text-slate-400 select-none shadow-sm transition-all duration-300">
-              <span className={`w-1.5 h-1.5 rounded-full ${dbConnected ? "bg-emerald-500 shadow-sm shadow-emerald-400" : "bg-orange-500 shadow-sm shadow-orange-400"} animate-pulse`} />
-              <span>{dbConnected ? "Live DB" : "Offline Cache"}</span>
-            </div>
-          </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-2">
-            <NavLink to="/about" className={linkClass}>
-              About
-            </NavLink>
-
-            {/* Categories Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown("features")}
-                className="flex items-center gap-1 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 py-1.5 px-3 rounded-full transition-colors duration-200 cursor-pointer"
-              >
-                Categories
-                <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === "features" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
+            {/* Desktop Primary Navigation */}
+            <div className="hidden md:flex items-center gap-1.5 ml-2">
+              {/* Categories Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown("features")}
+                  aria-expanded={openDropdown === "features"}
+                  aria-label="Toggle category menu"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/70 py-2 px-3.5 rounded-full transition-colors duration-200 cursor-pointer focus-ring"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  Categories
+                  <svg
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === "features" ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-              {openDropdown === "features" && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setOpenDropdown(null)}
-                  />
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 px-3 py-1 uppercase tracking-wider">
-                      Catalog
+                {openDropdown === "features" && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setOpenDropdown(null)}
+                    />
+                    <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 px-3 py-1 uppercase tracking-wider">
+                        Catalog Categories
+                      </div>
+                      {[
+                        {
+                          name: "Traditional Apparel",
+                          desc: "Dhaka clothes, Pashmina shawl",
+                        },
+                        {
+                          name: "Organic Tea & Coffee",
+                          desc: "Himalayan orthodox tea, local coffee",
+                        },
+                        {
+                          name: "Local Handicrafts",
+                          desc: "Handmade sculptures, pottery",
+                        },
+                        {
+                          name: "Herbs & Spices",
+                          desc: "Organic cardamom, honey, turmeric",
+                        },
+                      ].map((item) => (
+                        <Link
+                          key={item.name}
+                          to={`/category/${encodeURIComponent(item.name)}`}
+                          onClick={() => setOpenDropdown(null)}
+                          className="block px-3 py-2 rounded-xl hover:bg-amber-50/50 dark:hover:bg-amber-950/20 group transition-colors focus-ring"
+                        >
+                          <div className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                            {item.name}
+                          </div>
+                          <div className="text-xs text-slate-400 dark:text-slate-500 group-hover:text-amber-500/70 dark:group-hover:text-amber-400/75 transition-colors">
+                            {item.desc}
+                          </div>
+                        </Link>
+                      ))}
                     </div>
-                    {[
-                      {
-                        name: "Traditional Apparel",
-                        desc: "Dhaka clothes, Pashmina shawl",
-                      },
-                      {
-                        name: "Organic Tea & Coffee",
-                        desc: "Himalayan orthodox tea, local coffee",
-                      },
-                      {
-                        name: "Local Handicrafts",
-                        desc: "Handmade sculptures, pottery",
-                      },
-                      {
-                        name: "Herbs & Spices",
-                        desc: "Organic cardamom, honey, turmeric",
-                      },
-                    ].map((item) => (
-                      <Link
-                        key={item.name}
-                        to={`/category/${encodeURIComponent(item.name)}`}
-                        onClick={() => setOpenDropdown(null)}
-                        className="block px-3 py-2 rounded-xl hover:bg-amber-50/50 dark:hover:bg-amber-950/20 group transition-colors"
-                      >
-                        <div className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                          {item.name}
-                        </div>
-                        <div className="text-xs text-slate-400 dark:text-slate-500 group-hover:text-amber-500/70 dark:group-hover:text-amber-400/75 transition-colors">
-                          {item.desc}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </>
+                  </>
+                )}
+              </div>
+
+              <NavLink to="/about" className={linkClass}>
+                About
+              </NavLink>
+
+              {user?.role !== "admin" && (
+                <NavLink to="/contact" className={linkClass}>
+                  Contact
+                </NavLink>
               )}
             </div>
-
-            {user?.role !== "admin" && (
-              <NavLink to="/contact" className={linkClass}>
-                Contact
-              </NavLink>
-            )}
-            <NavLink to="/delivery-coverage" className={linkClass}>
-              Delivery Coverage
-            </NavLink>
-            <NavLink to="/coworking" className={linkClass}>
-              Coworking Space
-            </NavLink>
-            <NavLink to="/faq" className={linkClass}>
-              FAQ
-            </NavLink>
           </div>
 
-          {/* Right Section */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right Action Group */}
+          <div className="hidden md:flex items-center gap-3">
             {/* Search Bar */}
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
+                aria-label="Search products"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-48 lg:w-64 pl-10 pr-4 py-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400"
+                className="w-56 lg:w-72 pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400 focus-ring"
               />
               <svg
-                className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
+                className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -825,107 +816,139 @@ const Navbar = () => {
                 </svg>
               </form>
             </div>
-            <NavLink
-              to="/about"
-              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </NavLink>
-
-            <button
-              onClick={() => toggleDropdown("mobile-features")}
-              className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
-            >
-              <span>Categories</span>
-              <svg
-                className={`w-4 h-4 transition-transform duration-200 ${openDropdown === "mobile-features" ? "rotate-180" : ""}`}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {openDropdown === "mobile-features" && (
-              <div className="pl-6 space-y-1 py-1 border-l-2 border-slate-100 dark:border-slate-800 ml-4">
-                {[
-                  { name: "Traditional Apparel" },
-                  { name: "Organic Tea & Coffee" },
-                  { name: "Local Handicrafts" },
-                  { name: "Herbs & Spices" },
-                ].map((item) => (
-                  <Link
-                    key={item.name}
-                    to={`/category/${encodeURIComponent(item.name)}`}
-                    className="block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+            {/* SHOP Section */}
+            <div className="pt-2">
+              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Shop
               </div>
-            )}
-
-            <NavLink
-              to="/delivery-coverage"
-              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              Delivery Coverage
-            </NavLink>
-            <NavLink
-              to="/coworking"
-              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              Coworking Space
-            </NavLink>
-            <NavLink
-              to="/faq"
-              className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              FAQ
-            </NavLink>
-
-            {/* Cart link for mobile */}
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                setIsCartOpen(true);
-              }}
-              className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
-            >
-              <span>My Cart</span>
-              <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {cartCount}
-              </span>
-            </button>
-
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
-              {/* Theme Mode Toggle for Mobile */}
               <button
-                onClick={toggleTheme}
-                className="w-full flex items-center justify-between py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
+                type="button"
+                onClick={() => toggleDropdown("mobile-features")}
+                aria-expanded={openDropdown === "mobile-features"}
+                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
               >
-                <span>Theme Mode</span>
-                <span className="text-sm font-bold text-orange-600 capitalize">
-                  {theme}
-                </span>
+                <span>Categories</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${openDropdown === "mobile-features" ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </button>
 
+              {openDropdown === "mobile-features" && (
+                <div className="pl-6 space-y-1 py-1 border-l-2 border-slate-100 dark:border-slate-800 ml-4">
+                  {[
+                    { name: "Traditional Apparel" },
+                    { name: "Organic Tea & Coffee" },
+                    { name: "Local Handicrafts" },
+                    { name: "Herbs & Spices" },
+                  ].map((item) => (
+                    <Link
+                      key={item.name}
+                      to={`/category/${encodeURIComponent(item.name)}`}
+                      className="block py-2 px-3 text-sm text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              <Link
+                to="/wishlist"
+                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                <span>Wishlist</span>
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {wishlistCount}
+                </span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsCartOpen(true);
+                }}
+                className="flex items-center justify-between w-full py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+              >
+                <span>My Cart</span>
+                <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {cartCount}
+                </span>
+              </button>
+            </div>
+
+            {/* COMPANY Section */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Company
+              </div>
+              <NavLink
+                to="/about"
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                About Us
+              </NavLink>
+
+              <NavLink
+                to="/contact"
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </NavLink>
+            </div>
+
+            {/* HELP Section */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Help & Services
+              </div>
+              <NavLink
+                to="/delivery-coverage"
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                Delivery Coverage
+              </NavLink>
+              <NavLink
+                to="/coworking"
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                Coworking Space
+              </NavLink>
+              <NavLink
+                to="/faq"
+                className="block py-2 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
+                onClick={() => setIsOpen(false)}
+              >
+                FAQ
+              </NavLink>
+            </div>
+
+            {/* ACCOUNT & PREFERENCES Section */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <div className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Account & Settings
+              </div>
               {user ? (
                 <NavLink
                   to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
                   aria-label="Open user dashboard"
-                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900"
+                  className="block py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 focus-ring"
                   onClick={() => setIsOpen(false)}
                 >
                   User Dashboard
@@ -934,12 +957,24 @@ const Navbar = () => {
                 <Link
                   to="/user-login"
                   aria-label="Sign in"
-                  className="w-full text-center py-2.5 bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm cursor-pointer focus-ring"
+                  className="w-full block text-center py-2.5 bg-slate-950 dark:bg-slate-100 dark:text-slate-950 text-white font-medium rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm cursor-pointer focus-ring"
                   onClick={() => setIsOpen(false)}
                 >
                   Sign In
                 </Link>
               )}
+
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label="Toggle theme mode"
+                className="w-full flex items-center justify-between py-2.5 px-3 text-base font-medium text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer focus-ring"
+              >
+                <span>Theme Mode</span>
+                <span className="text-sm font-bold text-orange-600 capitalize">
+                  {theme}
+                </span>
+              </button>
             </div>
           </div>
         )}

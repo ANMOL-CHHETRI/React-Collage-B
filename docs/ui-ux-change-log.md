@@ -130,3 +130,43 @@ Authentication actions should reflect the user's current state. Unauthenticated 
 - [x] Keyboard tested
 - [x] Build passed
 - [x] Lint passed
+
+---
+
+## Change #005 — Navbar Information Architecture & Visual Hierarchy
+
+### Date
+2026-08-07
+
+### Area
+Navigation / Header Layout (`src/components/Navbar.jsx`)
+
+### Problem
+The navbar contained too many equally weighted links (About, Categories, Contact, Delivery Coverage, Coworking Space, FAQ) and an internal development badge (`Live DB`), creating visual clutter and weak ecommerce hierarchy.
+
+### Change
+- Removed the public `Live DB` badge from the header brand area.
+- Streamlined desktop primary navigation to 3 core items: `Categories` (dropdown), `About`, and `Contact`.
+- Moved secondary informational links (`Delivery Coverage`, `Coworking Space`, `FAQ`) out of the desktop header while preserving their routes, footer presence, and categorized mobile drawer placement.
+- Integrated search bar (width 224px–288px) into the right action group with `aria-label="Search products"` and focus states.
+- Grouped shopping actions (`Wishlist` `♡`, `Cart` `🛒`, `Sign In` / `User Dashboard` `👤`, `Theme Toggle` `☾`/`☀️`) with equal sizing, ARIA labels, and focus rings.
+- Categorized mobile navigation drawer into scanable sections: **SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, and **PREFERENCES**.
+
+### UX Rationale
+Ecommerce navigation must prioritize product discovery (`Categories`, `Search`, `Wishlist`, `Cart`). Removing secondary page clutter and grouping action controls establishes a clear, professional visual hierarchy.
+
+### Expected Impact
+- Reduced cognitive load.
+- Enhanced product discovery & search prominence.
+- Clearer ecommerce visual hierarchy.
+- Improved mobile drawer navigation.
+
+### Files Changed
+- `src/components/Navbar.jsx`
+
+### Validation
+- [x] Desktop tested
+- [x] Mobile tested
+- [x] Keyboard tested
+- [x] Build passed
+- [x] Lint passed

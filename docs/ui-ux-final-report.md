@@ -34,10 +34,12 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 ### Navigation (`Navbar.jsx`)
 - Streamlined header structure with translucent glassmorphism background (`backdrop-blur-md`).
+- Removed internal `Live DB` status badge from the public brand area.
+- Focused desktop primary navigation on 3 key links: `Categories` (dropdown), `About`, and `Contact`.
+- Moved secondary links (`Delivery Coverage`, `Coworking Space`, `FAQ`) into footer and categorized mobile drawer sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**).
+- Positioned inline search input (224px–288px width) with magnifying glass icon and `aria-label="Search products"`.
+- Grouped shopping actions (`Wishlist` `♡`, `Cart` `🛒`, `Sign In` / `User Dashboard` `👤`, `Theme Toggle` `☾`/`☀️`) with equal sizing, ARIA labels, and focus rings.
 - Simplified authentication state: Unauthenticated visitors see a single `Sign In` CTA (`to="/user-login"`), while authenticated users see the `User Dashboard` icon (`👤`).
-- Removed redundant `Login` + `Signup` button duplication and suppressed unauthenticated `User Dashboard` icon.
-- Added explicit `aria-label` tags on all icon buttons (`Wishlist`, `Cart`, `Theme toggle`, `Notifications`, `Sign in`, `Open user dashboard`).
-- Added high-contrast focus rings for keyboard users.
 
 ### Product Cards (`ProductCard.jsx`)
 - Preserved 4:5 aspect ratio image containers to prevent Cumulative Layout Shift (CLS).
@@ -63,6 +65,11 @@ ShopEase Nepal is a React 19 + Vite ecommerce application providing authentic Ne
 
 | Surface / Area | Before | After | Reason for Change |
 |---|---|---|---|
+| Primary Navigation | 6+ equally weighted links | 3 core links (`Categories`, `About`, `Contact`) | Reduced cognitive load & shopping focus |
+| Internal Status | `Live DB` badge visible in header | Removed from public navigation | Professional customer-facing presentation |
+| Search Input | Detached / misplaced | Integrated into action hierarchy | Prominent product discovery |
+| Shopping Actions | Scattered buttons | Grouped icon controls (`Wishlist`, `Cart`, `Account`, `Theme`) | Clean visual hierarchy & action alignment |
+| Mobile Navigation | Uncategorized list | Categorized sections (**SHOP**, **COMPANY**, **HELP**, **ACCOUNT**, **PREFERENCES**) | Fast scanning & mobile usability |
 | Navbar Auth UX | Unauthenticated: Login + Signup + Dashboard icon | Unauthenticated: `Sign In`. Authenticated: `User Dashboard` | Reduced navigation clutter & clearer state |
 | Focus States | Inconsistent browser default focus | Unified `.focus-ring` utility (`ring-2 ring-amber-500`) | Keyboard accessibility compliance |
 | Icon Buttons | Missing text or ARIA names | Explicit `aria-label` on all icon controls | Screen reader usability |
