@@ -196,3 +196,5 @@ React + Vite ecommerce frontend. Pure UI — no backend yet. Designed after vold
 | 2026-07-13 | Added global Reviews tab in AdminDashboard and product-specific Reviews tab in Seller Dashboard | Agent |
 | 2026-07-13 | Added user profile pictures rendering inside review cards across dashboards | Agent |
 | 2026-08-07 | Created .env with Google OAuth Client ID & Secret; added Google Identity Services script & GoogleSignInButton component to UserLoginPage | Agent |
+| 2026-08-08 | Transitioned from localStorage mock data to Firebase Firestore | Agent |
+| 2026-08-08 | Integrated Cloudinary for live image uploads across Admin and Seller dashboards | Agent |

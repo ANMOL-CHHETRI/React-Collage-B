@@ -5,6 +5,7 @@ import { useProducts } from "../context/ProductContext"
 import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
 import { api } from "../utils/api"
+import { uploadToCloudinary } from "../utils/cloudinary"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -41,14 +42,6 @@ const stats = [
   { label: "Total Orders", value: "1,842", change: "+8.2%", up: true, icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" },
   { label: "Total Products", value: "356", change: "+3.1%", up: true, icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
   { label: "Total Users", value: "4,320", change: "-2.4%", up: false, icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
-]
-
-const recentOrders = [
-  { id: "#ORD-NP-001", customer: "Aarav Sharma", product: "Premium Dhaka Topi", amount: "Rs. 1,200", status: "Delivered" },
-  { id: "#ORD-NP-002", customer: "Prerana Giri", product: "Himalayan Orthodox Tea", amount: "Rs. 850", status: "Processing" },
-  { id: "#ORD-NP-003", customer: "Sonam Sherpa", product: "Pashmina Cashmere Shawl", amount: "Rs. 9,500", status: "Shipped" },
-  { id: "#ORD-NP-004", customer: "Dinesh Chaudhary", product: "Wild Himalayan Honey", amount: "Rs. 1,500", status: "Pending" },
-  { id: "#ORD-NP-005", customer: "Karan Adhikari", product: "Gorkha Khukuri", amount: "Rs. 4,500", status: "Delivered" },
 ]
 
 const sidebarItems = [
@@ -114,6 +107,7 @@ const AdminDashboard = () => {
   const [form, setForm] = useState(emptyForm)
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("name")
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleAdminAvatarUpload = (e) => {
     const file = e.target.files[0];
@@ -163,41 +157,34 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const fetchAdminData = async () => {
-      let orders
-      let couponsList
       try {
         const dbOrders = await api.getOrders();
-        orders = dbOrders.map(o => ({
+        const orders = dbOrders.map(o => ({
           orderId: o.id,
           username: o.username,
+          fullName: o.fullName || o.customer,
           storeName: o.storeName,
           status: o.status,
           date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-          items: o.items.map(item => ({
+          items: (o.items || []).map(item => ({
             name: item.name,
             price: item.price,
             quantity: item.quantity,
             image: item.image
           })),
-          total: o.amount
+          amount: o.amount || `Rs. ${o.total?.toLocaleString()}`
         }));
+        setAdminOrders(orders);
       } catch (err) {
-        console.warn("Failed to fetch admin orders from API, checking local storage:", err);
-        const rawOrders = JSON.parse(localStorage.getItem("shopease_orders"));
-        orders = Array.isArray(rawOrders) ? rawOrders : [];
+        toastError("Failed to fetch admin orders.");
       }
 
       try {
         const dbCoupons = await api.getCoupons();
-        couponsList = dbCoupons;
+        setCoupons(dbCoupons);
       } catch (err) {
-        console.warn("Failed to fetch admin coupons from API, checking local storage:", err);
-        const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"));
-        couponsList = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+        toastError("Failed to fetch admin coupons.");
       }
-
-      setAdminOrders(orders);
-      setCoupons(couponsList);
     };
     fetchAdminData();
   }, [activeSection]);
@@ -278,12 +265,34 @@ const AdminDashboard = () => {
 
   const canModify = (product) => isAdmin || product.addedBy === "user"
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setForm({ ...form, image: ev.target.result, imageFile: file })
-    reader.readAsDataURL(file)
+    setIsUploading(true)
+    try {
+      const url = await uploadToCloudinary(file)
+      setForm({ ...form, image: url, imageFile: file })
+      success("Main image uploaded!")
+    } catch (err) {
+      toastError(err.message || "Failed to upload image")
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleGalleryUpload = async (e, field) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setIsUploading(true)
+    try {
+      const url = await uploadToCloudinary(file)
+      setForm({ ...form, [field]: url })
+      success("Gallery image uploaded!")
+    } catch (err) {
+      toastError(err.message || "Failed to upload image")
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleSave = (e) => {
@@ -311,6 +320,7 @@ const AdminDashboard = () => {
       form.image4,
     ].filter(Boolean),
   }
+    delete payload.imageFile;
     if (editing) {
       updateProduct(editing.id, payload)
       success("Product updated successfully")
@@ -480,7 +490,7 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                    {(adminOrders.length > 0 ? adminOrders : recentOrders).slice(0, 5).filter(order => order).map((order) => {
+                    {(adminOrders || []).slice(0, 5).filter(order => order).map((order) => {
                       const orderId = order.orderId || order.id || "#ORD-UNK";
                       const customer = order.fullName || order.customer || "Unknown Customer";
                         const product = order.product || (order.items && order.items[0] ? `${order.items[0].name}${order.items.length > 1 ? ` (+${order.items.length - 1} more)` : ''}` : "Unknown Product");
@@ -601,16 +611,21 @@ const AdminDashboard = () => {
                       <label className="block text-sm font-medium mb-1">
                         Gallery Image 2
                       </label>
-
-                      <input
-                        type="text"
-                        placeholder="/pashmina_side.png"
-                        value={form.image2}
-                        onChange={(e) =>
-                          setForm({ ...form, image2: e.target.value })
-                        }
-                        className="w-full rounded-lg border px-3 py-2"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="/pashmina_side.png"
+                          value={form.image2}
+                          onChange={(e) =>
+                            setForm({ ...form, image2: e.target.value })
+                          }
+                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                        />
+                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                          Upload
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image2')} />
+                        </label>
+                      </div>
                     </div>
 
                     {/* Gallery Image 3 */}
@@ -618,16 +633,21 @@ const AdminDashboard = () => {
                       <label className="block text-sm font-medium mb-1">
                         Gallery Image 3
                       </label>
-
-                      <input
-                        type="text"
-                        placeholder="/pashmina_closeup.png"
-                        value={form.image3}
-                        onChange={(e) =>
-                          setForm({ ...form, image3: e.target.value })
-                        }
-                        className="w-full rounded-lg border px-3 py-2"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="/pashmina_closeup.png"
+                          value={form.image3}
+                          onChange={(e) =>
+                            setForm({ ...form, image3: e.target.value })
+                          }
+                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                        />
+                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                          Upload
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image3')} />
+                        </label>
+                      </div>
                     </div>
 
                     {/* Gallery Image 4 */}
@@ -635,16 +655,21 @@ const AdminDashboard = () => {
                       <label className="block text-sm font-medium mb-1">
                         Gallery Image 4
                       </label>
-
-                      <input
-                        type="text"
-                        placeholder="/image4.png"
-                        value={form.image4}
-                        onChange={(e) =>
-                          setForm({ ...form, image4: e.target.value })
-                        }
-                        className="w-full rounded-lg border px-3 py-2"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="/image4.png"
+                          value={form.image4}
+                          onChange={(e) =>
+                            setForm({ ...form, image4: e.target.value })
+                          }
+                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                        />
+                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                          Upload
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image4')} />
+                        </label>
+                      </div>
                     </div>
                   </div>
                       <div>
@@ -652,8 +677,10 @@ const AdminDashboard = () => {
                         <textarea rows="2" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
                       </div>
                       <div className="flex gap-3 pt-2">
-                        <button type="submit" className="flex-1 bg-amber-600 text-white py-2.5 rounded-lg font-medium hover:bg-amber-700 transition cursor-pointer">{editing ? "Update" : "Create"}</button>
-                        <button type="button" onClick={() => setShowForm(false)} className="flex-1 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-slate-700 transition cursor-pointer">Cancel</button>
+                        <button type="submit" disabled={isUploading} className="flex-1 bg-amber-600 text-white py-2.5 rounded-lg font-medium hover:bg-amber-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isUploading ? "Uploading..." : (editing ? "Update" : "Create")}
+                        </button>
+                        <button type="button" disabled={isUploading} onClick={() => setShowForm(false)} className="flex-1 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-slate-700 transition cursor-pointer disabled:opacity-50">Cancel</button>
                       </div>
                     </form>
                   </div>
@@ -762,7 +789,7 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(adminOrders.length > 0 ? adminOrders : recentOrders).filter(order => order).map((order) => {
+                    {(adminOrders || []).filter(order => order).map((order) => {
                       const orderId = order.orderId || order.id || "#ORD-UNK";
                       const customer = order.fullName || order.customer || "Unknown Customer";
                       const product = order.product || (order.items && order.items[0] ? `${order.items[0].name}${order.items.length > 1 ? ` (+${order.items.length - 1} more)` : ''}` : "Unknown Product");
@@ -1374,9 +1401,9 @@ const AdminDashboard = () => {
                     onClick={() => {
                       const id = viewingOrder.orderId || viewingOrder.id;
                       let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
-                      if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
-                        currentOrders = [...recentOrders];
-                      }
+                        if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
+                          currentOrders = [];
+                        }
                       const updated = currentOrders.map(order => {
                         const oid = order.orderId || order.id;
                         if (oid === id) {

@@ -49,3 +49,7 @@ __pycache__/
 *.db-journal
 *.db-shm
 *.db-wal
+
+/.kilo
+/.agents
+/.docs 

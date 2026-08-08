@@ -38,6 +38,33 @@ const defaultTestimonials = [
   }
 ]
 
+const defaultUsers = [
+  {
+    name: "ShopEase Admin",
+    username: "admin",
+    email: "admin@shopease.com",
+    password: "admin",
+    role: "admin",
+    violations: 0,
+    banned: false,
+    address: "",
+    phone: "",
+    avatar: null
+  },
+  {
+    name: "Test User",
+    username: "user",
+    email: "user@shopease.com",
+    password: "user",
+    role: "user",
+    violations: 0,
+    banned: false,
+    address: "",
+    phone: "",
+    avatar: null
+  }
+]
+
 export const seedDatabase = async () => {
   try {
     // 1. Seed Categories
@@ -61,7 +88,6 @@ export const seedDatabase = async () => {
       console.log("Seeding products into Firestore...")
       const batch = writeBatch(db)
       defaultProducts.forEach((prod) => {
-        // Use prod.id as the document ID for consistent lookup or auto-generate
         const docRef = doc(productsCol, String(prod.id))
         batch.set(docRef, prod)
       })
@@ -81,6 +107,20 @@ export const seedDatabase = async () => {
       })
       await batch.commit()
       console.log("Testimonials seeded successfully.")
+    }
+
+    // 4. Seed Users (Admin/Test User)
+    const usersCol = collection(db, "users")
+    const usersSnap = await getDocs(usersCol)
+    if (usersSnap.empty) {
+      console.log("Seeding default users into Firestore...")
+      const batch = writeBatch(db)
+      defaultUsers.forEach((usr) => {
+        const docRef = doc(usersCol, usr.username)
+        batch.set(docRef, usr)
+      })
+      await batch.commit()
+      console.log("Users seeded successfully.")
     }
 
   } catch (error) {

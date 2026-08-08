@@ -225,16 +225,74 @@
 
 ---
 
+## Week 9: Profile Picture & Avatar Enhancements, Dashboards (Reviews Tab), and UI Improvements
+**Status:** 100% Complete
+
+### Tasks Completed
+- Profile Picture & Avatar Enhancements: Added custom avatar upload with Canvas-based compression to 200x200px to stay within localStorage limits.
+- Dynamic Preset Avatar Generator: Implemented dynamic color-coded preset generator for letters (A-Z) and numbers (0-9).
+- Global Avatar Integration: Displayed avatar pictures across Navbar, Profiles, and Reviews globally.
+- Dashboard Enhancements: Added global Reviews tab to the Admin Dashboard and product-specific Reviews tab to the Seller Dashboard.
+- UI & Navigation Polish: Relocated Logout button from main Navbar to dashboard sidebars, and fixed Dark Theme contrast issues on UserProfilePage.
+- Bug Fixes: Resolved a critical React parsing error in AdminDashboard.jsx.
+
+### Challenges
+- LocalStorage Storage Limits: Base64 image uploads can quickly exceed 5MB quota.
+- Tab Responsiveness: Dashboards tabs overflowed on small screens.
+
+### Solutions
+- Canvas compression: Resized uploaded custom images to exactly 200x200px to maintain minimal footprint.
+- Horizontal scrolling: Handled horizontal overflow for dashboard tab lists on mobile viewports.
+
+### Team Contributions
+| Member | Focus Area | Deliverables |
+| :--- | :--- | :--- |
+| **Anmol Chhetri (Lead)** | Project Oversight | Managed UI/UX transition, review tab integration, and logout relocations. |
+| **Sahil Tuladhar** | Backend Developer | Handled localStorage schemas and avatar upload compression. |
+| **Sarang Limbu** | Frontend Developer | Developed profile preset avatar generator and reviews tabs structure. |
+| **Sanskriti Maharjan** | UI Component Developer | Fixed Dark Theme contrast on UserProfilePage and mobile layouts. |
+| **Smriti Tamang** | QA & Testing | Tested file upload limits, custom/preset avatars, and verified the build. |
+
+---
+
+
+## Week 10: Cloud Database and Media Hosting Migration
+**Status:** 90% Complete
+
+### Tasks Completed
+- Database Migration: Transitioned the entire application from localStorage mock data to live Firebase Firestore.
+- Image Hosting: Integrated Cloudinary API to replace Base64 strings with direct, secure image uploads from the Admin and Seller dashboards.
+- Refactored contexts: Updated ProductContext and AuthContext to fetch and sync data with Firestore in real-time.
+- Updated Data Models: Stripped out unsupported object types (like File objects) before payload submission to Firestore.
+
+### Challenges
+- Handling asynchronous operations with Firebase alongside React state updates.
+- Ensuring Vite properly loaded .env variables for Cloudinary API integration.
+
+### Solutions
+- Enforced strict payload cleaning before database writes.
+- Restarted development server environments to ensure variables were successfully injected into the application context.
+
+### Team Contributions
+| Member | Focus Area | Deliverables |
+| :--- | :--- | :--- |
+| **Anmol Chhetri (Lead)** | Infrastructure | Managed Firebase NoSQL structure and Cloudinary integration architecture. |
+| **Sahil Tuladhar** | Backend Developer | Implemented Cloudinary direct upload utility and Firestore data sync. |
+| **Sarang Limbu** | Frontend Developer | Refactored form components for live image previews from Cloudinary URLs. |
+| **Sanskriti Maharjan** | UI Component Developer | Rebuilt form loading states during asynchronous uploads. |
+| **Smriti Tamang** | QA & Testing | Verified image uploads and confirmed live data fetches from Firestore. |
+
+
 ## Project Outlook & Remaining Tasks
 
 While the frontend and UI/UX flows are 100% complete, there are a few critical milestones left before the final launch of ShopEase Nepal:
 
 ### 1. Database Architecture & Setup
-- Designing and provisioning the primary relational database (e.g., MySQL or PostgreSQL) to store users, products, orders, and wishlist data.
-- Establishing secure connections and data models mapping directly to the frontend schemas.
+- COMPLETED: Transitioned from mock static data and local storage to a live Firebase Firestore NoSQL database.
+- COMPLETED: Integrated Cloudinary for secure, direct image uploads across Admin and Seller dashboards.
 
 ### 2. Backend REST API Integration
-- Currently, the application relies on mock static data and local storage for authentication, cart, and product management. The next major phase will connect the frontend to a live backend database.
+- The frontend is now successfully connected to live cloud services (Firebase and Cloudinary), handling Product CRUD and image hosting. User Auth via Firebase and Google OAuth is also integrated.
 - Endpoints to integrate include: User Auth, Admin Product CRUD, Order Processing, and Wishlist syncing.
 
 ### 3. Payment Gateway Setup

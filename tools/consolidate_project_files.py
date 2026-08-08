@@ -216,8 +216,37 @@ weeks_data = [
             ('Sanskriti Maharjan', 'UI Component Developer', 'Coded responsive consultation schedule request forms.'),
             ('Smriti Tamang', 'QA & Testing', 'Executed browser layout consistency checks on multiple screen configurations.')
         ]
+    },
+    {
+        'week': 9,
+        'phase': 'Profile Picture & Avatar Enhancements, Dashboards (Reviews Tab), and UI Improvements',
+        'progress': '100% Complete',
+        'tasks': [
+            'Profile Picture & Avatar Enhancements: Added custom avatar upload with Canvas-based compression to 200x200px to stay within localStorage limits.',
+            'Dynamic Preset Avatar Generator: Implemented dynamic color-coded preset generator for letters (A-Z) and numbers (0-9).',
+            'Global Avatar Integration: Displayed avatar pictures across Navbar, Profiles, and Reviews globally.',
+            'Dashboard Enhancements: Added global Reviews tab to the Admin Dashboard and product-specific Reviews tab to the Seller Dashboard.',
+            'UI & Navigation Polish: Relocated Logout button from main Navbar to dashboard sidebars, and fixed Dark Theme contrast issues on UserProfilePage.',
+            'Bug Fixes: Resolved a critical React parsing error in AdminDashboard.jsx.'
+        ],
+        'challenges': [
+            'LocalStorage Storage Limits: Base64 image uploads can quickly exceed 5MB quota.',
+            'Tab Responsiveness: Dashboards tabs overflowed on small screens.'
+        ],
+        'solutions': [
+            'Canvas compression: Resized uploaded custom images to exactly 200x200px to maintain minimal footprint.',
+            'Horizontal scrolling: Handled horizontal overflow for dashboard tab lists on mobile viewports.'
+        ],
+        'contribs': [
+            ('Anmol Chhetri (Lead)', 'Project Oversight', 'Managed UI/UX transition, review tab integration, and logout relocations.'),
+            ('Sahil Tuladhar', 'Backend Developer', 'Handled localStorage schemas and avatar upload compression.'),
+            ('Sarang Limbu', 'Frontend Developer', 'Developed profile preset avatar generator and reviews tabs structure.'),
+            ('Sanskriti Maharjan', 'UI Component Developer', 'Fixed Dark Theme contrast on UserProfilePage and mobile layouts.'),
+            ('Smriti Tamang', 'QA & Testing', 'Tested file upload limits, custom/preset avatars, and verified the build.')
+        ]
     }
 ]
+
 
 # ─── 2. GENERATE SINGLE WEEKLY_PROGRESS_LOG.MD ────────────────────────
 print("Generating WEEKLY_PROGRESS_LOG.md...")
@@ -308,16 +337,16 @@ for idx, w in enumerate(weeks_data):
         row_cells[2].text = item[2]
 
     log_doc.add_heading('5. LEADERSHIP REVIEW & STATUS REPORT', level=1)
-    if w['week'] < 8:
+    if w['week'] < 9:
         log_doc.add_paragraph(f"The project successfully completed Week {w['week']}, reaching {w['progress']}. The team focused heavily on {w['phase'].lower()}, resolving key challenges along the way.")
     else:
-        log_doc.add_paragraph('The project has successfully reached 100% completion. With core pages, checkout states, and the interactive Nepalese delivery map finalized, the platform now features a highly clean, premium workspace pass booking landing page integrated with the shopping cart, making it ready for a backend database hookup.')
+        log_doc.add_paragraph('The project has successfully reached 100% completion. With core pages, checkout states, and the interactive Nepalese delivery map finalized, the platform now features optimized custom profile pictures/preset avatars, and dedicated reviews tabs on both Admin and Seller dashboards, making it ready for a backend database hookup.')
 
     p2 = log_doc.add_paragraph()
     p2.add_run('Current Status: ').bold = True
     p2.add_run(f"{w['progress']}\n")
     p2.add_run('Next Milestone: ').bold = True
-    if w['week'] < 8:
+    if w['week'] < 9:
         p2.add_run(f"Proceed to Week {w['week']+1} objectives.")
     else:
         p2.add_run('Full database deployment and backend API gateway wiring.')

@@ -78,3 +78,21 @@
 - Backend API integration (future)
 - GitHub Pages deployment setup
 
+
+
+## 2026-08-08 — Cloudinary Integration & Firebase Setup
+
+### Done
+- Connected Firebase Database (Firestore) for live data
+- Integrated Cloudinary for secure image uploads via VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET
+- Added Cloudinary upload support to AdminDashboard.jsx (Main and Gallery images)
+- Added Cloudinary upload support to UserDashboard.jsx (Seller add product form)
+- Stripped imageFile (File objects) from Firebase payloads to ensure serializability
+- Updated .env and restarted Vite to apply environment variables
+
+### Errors
+- Initial image uploads failed silently because Vite wasn't picking up the .env changes until the dev server was restarted. Fixed by restarting Vite.
+
+### Remaining
+- Backend API integration (ongoing)
+- GitHub Pages deployment setup

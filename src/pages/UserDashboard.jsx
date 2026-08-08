@@ -7,6 +7,7 @@ import { useMemo } from "react"
 import { useToast } from "../context/ToastContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
 import { api } from "../utils/api"
+import { uploadToCloudinary } from "../utils/cloudinary"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -38,60 +39,6 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   )
 }
 
-const initialOrders = [
-  {
-    id: "#ORD-NP-92841",
-    storeName: "Palpa Weaver Cooperatives",
-    status: "Completed",
-    date: "Jun 15, 2026",
-    items: [
-      {
-        name: "Premium Dhaka Topi (Handwoven)",
-        attributes: "Size: Standard, Color: Traditional Red/Green",
-        price: 1200,
-        qty: 1,
-        image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg"
-      }
-    ]
-  },
-  {
-    id: "#ORD-NP-81724",
-    storeName: "Ilam Tea Gardens",
-    status: "Completed",
-    date: "Jun 10, 2026",
-    items: [
-      {
-        name: "Himalayan Orthodox Golden Tea",
-        attributes: "Package: 250g, Type: Organic Loose Leaf",
-        price: 850,
-        qty: 2,
-        image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
-      }
-    ]
-  },
-  {
-    id: "#ORD-NP-73918",
-    storeName: "Patan Craft Cooperatives",
-    status: "To Ship",
-    date: "Jun 20, 2026",
-    items: [
-      {
-        name: "Handmade Shakyamuni Buddha Statue",
-        attributes: "Material: Copper, Finish: 24k Gold Gilded",
-        price: 18500,
-        qty: 1,
-        image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
-      }
-    ]
-  }
-]
-
-const mockSellerCustomers = [
-  { id: 1, name: "Aarav Sharma", email: "aarav.s@example.com", totalOrders: 3, totalSpent: 4500, lastOrder: "Jun 15, 2026" },
-  { id: 2, name: "Sneha Thapa", email: "sneha.t@example.com", totalOrders: 1, totalSpent: 1200, lastOrder: "Jun 10, 2026" },
-  { id: 3, name: "Rabin Shrestha", email: "rabin.sh@example.com", totalOrders: 5, totalSpent: 18500, lastOrder: "May 22, 2026" },
-  { id: 4, name: "Pooja Karki", email: "pooja.k@example.com", totalOrders: 2, totalSpent: 3200, lastOrder: "May 10, 2026" },
-]
 
 const UserDashboard = () => {
   const { 
@@ -199,57 +146,34 @@ const UserDashboard = () => {
   }
   useEffect(() => {
     const loadDashboardData = async () => {
-      let fetchedOrders
-      let fetchedCoupons
       try {
         const dbOrders = await api.getOrders(user?.role === "admin" ? null : user?.username);
-        fetchedOrders = dbOrders.map(o => ({
+        const fetchedOrders = dbOrders.map(o => ({
           id: o.id,
           storeName: o.storeName || "ShopEase Official",
           status: o.status,
           date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-          items: o.items.map(item => ({
+          items: (o.items || []).map(item => ({
             name: item.name,
             attributes: "Qty: " + item.quantity,
             price: item.price,
             qty: item.quantity,
             image: item.image
           })),
-          username: o.username
+          username: o.username,
+          amount: o.amount
         }));
+        setRawOrders(fetchedOrders);
       } catch (err) {
-        console.warn("Failed to fetch dashboard orders from API, checking local storage:", err);
-        const rawDynamic = JSON.parse(localStorage.getItem("shopease_orders"));
-        const dynamicOrders = Array.isArray(rawDynamic) ? rawDynamic : [];
-        fetchedOrders = dynamicOrders.filter(o => o && (o.username === user?.username || o.fullName === user?.name || user?.username === "user")).map(o => ({
-          id: o.orderId || o.id || "#ORD-UNKNOWN",
-          storeName: o.storeName || "ShopEase Official",
-          status: o.status || "Processing",
-          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-          items: (Array.isArray(o.items) ? o.items : []).map(item => ({
-            name: item?.name || "Unknown Product",
-            attributes: "Qty: " + (item?.quantity || 1),
-            price: item?.price || 0,
-            qty: item?.quantity || 1,
-            image: item?.image
-          })),
-          username: o.username
-        }));
-        const baseOrders = user?.username === "user" ? initialOrders : [];
-        fetchedOrders = [...fetchedOrders, ...baseOrders];
+        toastError("Failed to fetch dashboard orders.");
       }
 
       try {
         const dbCoupons = await api.getCoupons();
-        fetchedCoupons = dbCoupons;
+        setCoupons(dbCoupons);
       } catch (err) {
-        console.warn("Failed to fetch dashboard coupons from API, checking local storage:", err);
-        const rawCoupons = JSON.parse(localStorage.getItem("shopease_coupons"));
-        fetchedCoupons = Array.isArray(rawCoupons) ? rawCoupons : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+        toastError("Failed to fetch dashboard coupons.");
       }
-
-      setRawOrders(fetchedOrders);
-      setCoupons(fetchedCoupons);
     };
 
     if (user) {
@@ -268,6 +192,28 @@ const UserDashboard = () => {
       return { ...order, items: validItems }
     }).filter(order => order.items && order.items.length > 0)
   }, [rawOrders, products])
+
+  const sellerCustomers = useMemo(() => {
+    const custMap = {};
+    rawOrders.forEach(o => {
+      const email = o.username || "unknown@example.com";
+      const name = o.fullName || o.username || "Unknown Customer";
+      if (!custMap[email]) {
+        custMap[email] = {
+          id: email,
+          name,
+          email,
+          totalOrders: 0,
+          totalSpent: 0,
+          lastOrder: o.date
+        };
+      }
+      custMap[email].totalOrders += 1;
+      const amtStr = String(o.amount || o.total || "0").replace(/[^0-9.]/g, "");
+      custMap[email].totalSpent += parseFloat(amtStr || 0);
+    });
+    return Object.values(custMap);
+  }, [rawOrders]);
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -316,13 +262,21 @@ const UserDashboard = () => {
   const [sellerForm, setSellerForm] = useState({ name: "", price: "", category: "Traditional Apparel", image: "", imageFile: null, description: "" })
   const [sellerSearch, setSellerSearch] = useState("")
   const [sellerSort, setSellerSort] = useState("name")
+  const [isUploading, setIsUploading] = useState(false)
 
-  const handleSellerImageUpload = (e) => {
+  const handleSellerImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setSellerForm({ ...sellerForm, image: ev.target.result, imageFile: file })
-    reader.readAsDataURL(file)
+    setIsUploading(true)
+    try {
+      const url = await uploadToCloudinary(file)
+      setSellerForm({ ...sellerForm, image: url, imageFile: file })
+      success("Image uploaded!")
+    } catch (err) {
+      toastError(err.message || "Failed to upload image")
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleSellerSave = (e) => {
@@ -1465,8 +1419,8 @@ const UserDashboard = () => {
                         className="flex-1 text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
                       />
                       <label className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center">
-                        Upload
-                        <input type="file" accept="image/*" className="hidden" onChange={handleSellerImageUpload} />
+                        {isUploading ? "..." : "Upload"}
+                        <input type="file" accept="image/*" className="hidden" onChange={handleSellerImageUpload} disabled={isUploading} />
                       </label>
                     </div>
                   </div>
@@ -1502,9 +1456,10 @@ const UserDashboard = () => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition cursor-pointer shadow"
+                    disabled={isUploading}
+                    className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition cursor-pointer shadow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {sellerEditing ? "Update Product" : "Add Product"}
+                    {isUploading ? "Uploading..." : (sellerEditing ? "Update Product" : "Add Product")}
                   </button>
                 </div>
               </form>
@@ -1789,12 +1744,12 @@ const UserDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-900">
-                    {mockSellerCustomers.map((c) => (
+                    {sellerCustomers.map((c) => (
                       <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition">
                         <td className="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold">
-                              {c.name[0]}
+                              {c.name ? c.name[0].toUpperCase() : '?'}
                             </div>
                             {c.name}
                           </div>
