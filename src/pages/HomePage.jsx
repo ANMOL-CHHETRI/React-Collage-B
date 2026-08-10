@@ -373,6 +373,19 @@ const HomePage = () => {
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("bagmati");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("name");
+  
+  const maxPrice = products.length ? Math.max(...products.map(p => p.price)) : 50000;
+  const [priceRange, setPriceRange] = useState(50000);
+
+  useEffect(() => {
+    if (products.length && priceRange === 50000) {
+      setPriceRange(maxPrice);
+    }
+  }, [products.length, maxPrice, priceRange]);
+
+  const availableCategories = ["All", ...new Set(products.map(p => p.category).filter(Boolean))];
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -385,12 +398,14 @@ const HomePage = () => {
 
   const filteredProducts = products.filter((p) => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return true;
-    return (
-      p.name.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query) ||
-      (p.description && p.description.toLowerCase().includes(query))
-    );
+    const matchesSearch = !query || p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
+    const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+    const matchesPrice = p.price <= priceRange;
+    return matchesSearch && matchesCategory && matchesPrice;
+  }).sort((a, b) => {
+    if (sortBy === "price_asc") return a.price - b.price;
+    if (sortBy === "price_desc") return b.price - a.price;
+    return a.name.localeCompare(b.name);
   });
 
 
@@ -469,7 +484,7 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="mb-12 max-w-md mx-auto">
+          <div className="mb-8 max-w-4xl mx-auto space-y-4">
             <div className="relative">
               <input
                 type="text"
@@ -493,6 +508,49 @@ const HomePage = () => {
                   </svg>
                 </button>
               )}
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-4 bg-white dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+              <div className="w-full md:w-1/3 flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Category</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5 transition-colors"
+                >
+                  {availableCategories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="w-full md:w-1/3 flex flex-col gap-1">
+                <label className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <span>Max Price</span>
+                  <span className="text-amber-600 dark:text-amber-400">Rs. {priceRange.toLocaleString()}</span>
+                </label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max={maxPrice} 
+                  value={priceRange} 
+                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-amber-500 my-1.5" 
+                />
+              </div>
+
+              <div className="w-full md:w-1/3 flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5 transition-colors"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="price_asc">Price (Low to High)</option>
+                  <option value="price_desc">Price (High to Low)</option>
+                </select>
+              </div>
             </div>
           </div>
 

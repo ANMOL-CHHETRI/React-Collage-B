@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "localId": "user-id-1",
+      "email": "admin@shopease.com",
+      "emailVerified": true,
+      "passwordHash": "J3i1... (base64 string)",
+      "salt": "a2... (base64 string)",
+      "displayName": "ShopEase Admin",
+      "photoUrl": "https://example.com/admin.png"
+    },
+    {
+      "localId": "user-id-2",
+      "email": "user@shopease.com",
+      "emailVerified": false,
+      "passwordHash": "K9z2... (base64 string)",
+      "salt": "b4... (base64 string)",
+      "displayName": "Test User"
+    }
+  ]
+}

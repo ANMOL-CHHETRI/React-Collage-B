@@ -55,7 +55,7 @@ export const api = {
     const snap = await getDocs(q);
     if (!snap.empty) throw new Error("Username already exists.");
     
-    const newUser = { name, username, email, password, role: "user", violations: 0, banned: false, address: "", phone: "", avatar: null };
+    const newUser = { name, username, email, password, role: "user", violations: 0, banned: false, address: "", phone: "", avatar: null, createdAt: new Date().toISOString() };
     const docRef = doc(collection(db, "users"), username); // use username as doc ID for easy lookup
     await setDoc(docRef, newUser);
     return { id: username, ...newUser };
@@ -82,12 +82,13 @@ export const api = {
   // Products
   getProducts: async () => {
     const snap = await getDocs(collection(db, "products"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   createProduct: async (product) => {
-    const docRef = await addDoc(collection(db, "products"), product);
-    return { id: docRef.id, ...product };
+    const newProduct = { ...product, createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "products"), newProduct);
+    return { id: docRef.id, ...newProduct };
   },
   
   updateProduct: async (id, updates) => {
@@ -106,12 +107,13 @@ export const api = {
   getReviews: async (productId) => {
     const q = query(collection(db, "reviews"), where("productId", "==", productId));
     const snap = await getDocs(q);
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   addReview: async (productId, review) => {
-    const docRef = await addDoc(collection(db, "reviews"), { ...review, productId });
-    return { id: docRef.id, ...review, productId };
+    const newReview = { ...review, productId, createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "reviews"), newReview);
+    return { id: docRef.id, ...newReview };
   },
 
   // Orders
@@ -121,12 +123,15 @@ export const api = {
       q = query(q, where("username", "==", username));
     }
     const snap = await getDocs(q);
-    return snap.docs.map(mapDoc);
+    const orders = snap.docs.map(mapDoc);
+    // Sort by date descending (newest first)
+    return orders.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   createOrder: async (order) => {
-    const docRef = await addDoc(collection(db, "orders"), order);
-    return { id: docRef.id, ...order };
+    const newOrder = { ...order, createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "orders"), newOrder);
+    return { id: docRef.id, ...newOrder };
   },
   
   updateOrderStatus: async (id, status) => {
@@ -136,13 +141,14 @@ export const api = {
 
   // Seller Applications
   applySeller: async (details) => {
-    const docRef = await addDoc(collection(db, "sellerApplications"), { ...details, status: "Pending" });
-    return { id: docRef.id, ...details, status: "Pending" };
+    const newDetails = { ...details, status: "Pending", createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "sellerApplications"), newDetails);
+    return { id: docRef.id, ...newDetails };
   },
   
   getSellerApplications: async () => {
     const snap = await getDocs(collection(db, "sellerApplications"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   reviewSellerApplication: async (username, status) => {
@@ -162,7 +168,7 @@ export const api = {
   
   getReportedAvatars: async () => {
     const snap = await getDocs(collection(db, "reportedAvatars"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   dismissAvatarReport: async (username) => {
@@ -183,7 +189,7 @@ export const api = {
   // Administrative / Users
   getUsers: async () => {
     const snap = await getDocs(collection(db, "users"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   updateUserViolations: async (username, delta) => {
@@ -224,12 +230,13 @@ export const api = {
   // Coupons
   getCoupons: async () => {
     const snap = await getDocs(collection(db, "coupons"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   createCoupon: async (coupon) => {
-    const docRef = await addDoc(collection(db, "coupons"), coupon);
-    return { id: docRef.id, ...coupon };
+    const newCoupon = { ...coupon, createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "coupons"), newCoupon);
+    return { id: docRef.id, ...newCoupon };
   },
   
   deleteCoupon: async (code) => {
@@ -244,11 +251,12 @@ export const api = {
   // Messages
   getMessages: async () => {
     const snap = await getDocs(collection(db, "messages"));
-    return snap.docs.map(mapDoc);
+    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
   },
   
   createMessage: async (msg) => {
-    const docRef = await addDoc(collection(db, "messages"), msg);
-    return { id: docRef.id, ...msg };
+    const newMsg = { ...msg, createdAt: new Date().toISOString() };
+    const docRef = await addDoc(collection(db, "messages"), newMsg);
+    return { id: docRef.id, ...newMsg };
   }
 };

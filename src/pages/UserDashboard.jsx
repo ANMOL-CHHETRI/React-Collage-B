@@ -8,6 +8,7 @@ import { useToast } from "../context/ToastContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
 import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
+import { LineChart, Line, PieChart, Pie, Cell, Tooltip, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -192,6 +193,30 @@ const UserDashboard = () => {
       return { ...order, items: validItems }
     }).filter(order => order.items && order.items.length > 0)
   }, [rawOrders, products])
+
+  const spendingData = useMemo(() => {
+    const monthly = {};
+    rawOrders.forEach(o => {
+      const date = o.date && o.date !== "Unknown Date" ? new Date(o.date) : new Date();
+      const month = date.toLocaleString('default', { month: 'short' });
+      const amount = typeof o.amount === 'string' ? parseFloat(o.amount.replace(/[^0-9.-]+/g,"")) : (o.amount || 0);
+      if (!monthly[month]) monthly[month] = 0;
+      monthly[month] += amount;
+    });
+    return Object.keys(monthly).map(month => ({ month, spending: monthly[month] }));
+  }, [rawOrders]);
+
+  const statusData = useMemo(() => {
+    const statusCounts = {};
+    rawOrders.forEach(o => {
+      const status = o.status || "Unknown";
+      if (!statusCounts[status]) statusCounts[status] = 0;
+      statusCounts[status]++;
+    });
+    return Object.keys(statusCounts).map(status => ({ name: status, value: statusCounts[status] }));
+  }, [rawOrders]);
+  
+  const PIE_COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6'];
 
   const sellerCustomers = useMemo(() => {
     const custMap = {};
@@ -612,6 +637,57 @@ const UserDashboard = () => {
             <div>
               <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Orders</h1>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
+            </div>
+          </div>
+
+          {/* Analytics Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2">
+            {/* Spending History Chart */}
+            <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-4">Spending History</h3>
+              <div className="h-56 w-full">
+                {spendingData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={spendingData}>
+                      <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `Rs.${val}`} />
+                      <Tooltip contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                      <Line type="monotone" dataKey="spending" stroke="#f59e0b" strokeWidth={3} dot={{ r: 4, fill: "#f59e0b", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-slate-400 text-sm">No spending data available.</div>
+                )}
+              </div>
+            </div>
+
+            {/* Order Status Chart */}
+            <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-4">Order Status Distribution</h3>
+              <div className="h-44 w-full">
+                {statusData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={statusData} cx="50%" cy="50%" innerRadius={50} outerRadius={70} paddingAngle={5} dataKey="value">
+                        {statusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ backgroundColor: theme === 'dark' ? '#0f172a' : '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-slate-400 text-sm">No orders yet.</div>
+                )}
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
+                {statusData.map((entry, index) => (
+                  <div key={entry.name} className="flex items-center gap-1.5 text-xs">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}></span>
+                    <span className="text-slate-600 dark:text-slate-400">{entry.name} ({entry.value})</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -6,6 +6,7 @@ import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
 import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false)
@@ -43,6 +44,24 @@ const stats = [
   { label: "Total Products", value: "356", change: "+3.1%", up: true, icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
   { label: "Total Users", value: "4,320", change: "-2.4%", up: false, icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
 ]
+
+const salesData = [
+  { name: 'Mon', sales: 12500, orders: 24 },
+  { name: 'Tue', sales: 18200, orders: 32 },
+  { name: 'Wed', sales: 15400, orders: 28 },
+  { name: 'Thu', sales: 22000, orders: 45 },
+  { name: 'Fri', sales: 28500, orders: 58 },
+  { name: 'Sat', sales: 34000, orders: 65 },
+  { name: 'Sun', sales: 31000, orders: 60 },
+]
+
+const statusData = [
+  { name: 'Delivered', value: 45 },
+  { name: 'Processing', value: 30 },
+  { name: 'Shipped', value: 15 },
+  { name: 'Pending', value: 10 },
+]
+const PIE_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#64748b']
 
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard" },
@@ -472,6 +491,58 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {/* Sales Chart */}
+                <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Revenue Over Time</h3>
+                  <div className="h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={salesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(val) => `Rs.${val/1000}k`} dx={-10} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                          itemStyle={{ color: '#fbbf24' }}
+                          formatter={(value) => [`Rs. ${value.toLocaleString()}`, 'Sales']}
+                        />
+                        <Line type="monotone" dataKey="sales" stroke="#d97706" strokeWidth={3} dot={{ r: 4, fill: '#d97706', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Order Status Chart */}
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Order Status</h3>
+                  <div className="h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={statusData}
+                          cx="50%"
+                          cy="45%"
+                          innerRadius={60}
+                          outerRadius={80}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {statusData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="transparent" />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                          itemStyle={{ color: '#f8fafc' }}
+                          formatter={(value) => [`${value}%`, 'Orders']}
+                        />
+                        <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }}/>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </div>
 
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800">
