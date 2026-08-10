@@ -1,7 +1,8 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { api } from "../utils/api"
+import { auth } from "../utils/firebase"
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 
 const AuthContext = createContext()
 
@@ -149,15 +150,19 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const loginWithGoogle = async (googleData) => {
+  const loginWithGoogle = async () => {
     setError("")
-    const email = googleData?.email
-    if (!email) {
-      setError("Unable to get account email from Google.")
-      return false
-    }
-
     try {
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      const googleData = result.user
+      
+      const email = googleData.email
+      if (!email) {
+        setError("Unable to get account email from Google.")
+        return false
+      }
+
       // First try to find existing user by email
       const usersList = await api.getUsers()
       const existingUser = usersList.find(u => u.email === email)
@@ -168,8 +173,8 @@ export const AuthProvider = ({ children }) => {
           return false
         }
         // Update avatar if needed
-        if (!existingUser.avatar && googleData.picture) {
-          await api.updateProfile(existingUser.username, { avatar: googleData.picture })
+        if (!existingUser.avatar && googleData.photoURL) {
+          await api.updateProfile(existingUser.username, { avatar: googleData.photoURL })
         }
         setUser(existingUser)
         localStorage.setItem("shopease_user", JSON.stringify(existingUser))
@@ -184,10 +189,10 @@ export const AuthProvider = ({ children }) => {
         finalUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
       }
 
-      const data = await api.register(googleData.name || "Google User", finalUsername, email, "")
-      if (googleData.picture) {
-        await api.updateProfile(finalUsername, { avatar: googleData.picture })
-        data.avatar = googleData.picture
+      const data = await api.register(googleData.displayName || "Google User", finalUsername, email, "")
+      if (googleData.photoURL) {
+        await api.updateProfile(finalUsername, { avatar: googleData.photoURL })
+        data.avatar = googleData.photoURL
       }
       
       setUser(data)
@@ -196,6 +201,7 @@ export const AuthProvider = ({ children }) => {
       return true
 
     } catch (err) {
+      console.error("Google Sign-In Error:", err)
       setError(err.message || "Failed to login with Google")
       return false
     }

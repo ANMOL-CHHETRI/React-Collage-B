@@ -65,6 +65,33 @@ const defaultUsers = [
   }
 ]
 
+const defaultOrders = [
+  {
+    orderId: "#ORD-9281",
+    username: "user",
+    fullName: "Ram Sharma",
+    storeName: "ShopEase Nepal",
+    status: "Pending",
+    date: new Date().toISOString(),
+    amount: "Rs. 2,800",
+    items: [
+      { name: "Gunyu Cholo", price: 2800, quantity: 1, image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg" }
+    ]
+  },
+  {
+    orderId: "#ORD-4192",
+    username: "user",
+    fullName: "Sita Khadka",
+    storeName: "ShopEase Nepal",
+    status: "Delivered",
+    date: new Date(Date.now() - 86400000 * 2).toISOString(),
+    amount: "Rs. 1,200",
+    items: [
+      { name: "Premium Dhaka Topi", price: 1200, quantity: 1, image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg" }
+    ]
+  }
+]
+
 export const seedDatabase = async () => {
   try {
     // 1. Seed Categories
@@ -121,6 +148,20 @@ export const seedDatabase = async () => {
       })
       await batch.commit()
       console.log("Users seeded successfully.")
+    }
+
+    // 5. Seed Orders
+    const ordersCol = collection(db, "orders")
+    const ordersSnap = await getDocs(ordersCol)
+    if (ordersSnap.empty) {
+      console.log("Seeding default orders into Firestore...")
+      const batch = writeBatch(db)
+      defaultOrders.forEach((ord) => {
+        const docRef = doc(ordersCol)
+        batch.set(docRef, ord)
+      })
+      await batch.commit()
+      console.log("Orders seeded successfully.")
     }
 
   } catch (error) {
