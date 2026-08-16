@@ -1,5 +1,16 @@
+# Dependencies
+node_modules/
+dist/
+dist-ssr/
+functions/lib/
+
+# Test & coverage output
+coverage/
+test-results/
+playwright-report/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,50 +18,46 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Environment & Secret Credentials
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
 *.local
 
-# Editor directories and files
+client_secret*.json
+*serviceAccount*.json
+*service-account*.json
+credentials*.json
+
+# Temporary & Editor Files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+~$*.docx
+.tmp/
+tmp_*
 
-# Playwright generated files
-playwright-report/
-test-results/
-
-# Environment files
-.env
-.env.local
-.env.*.local
-client_secret_*.json
-
-# Virtual environments
-.venv
-venv
+# Python & SQLite Cache
+.venv/
+venv/
 ENV/
 env/
-
-# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# SQLite temporary files
 *.db-journal
 *.db-shm
 *.db-wal
 
+# Agent & Skill metadata
 /.kilo
 /.agents
-/.docs 
-functions/lib/

@@ -21,7 +21,13 @@ const AdminLoginPage = () => {
   const { success } = useToast()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (user?.role === "admin") {
+      navigate("/admin/dashboard", { replace: true })
+    }
+  }, [user, navigate])
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (recoveryMode) {
@@ -39,7 +45,7 @@ const AdminLoginPage = () => {
 
     if (failedAttempts >= 6) return
 
-    const isSuccess = loginAdmin(username, password)
+    const isSuccess = await loginAdmin(username, password)
     if (!isSuccess) {
       setPassword("")
       const newCount = failedAttempts + 1
@@ -58,7 +64,6 @@ const AdminLoginPage = () => {
   }
 
   if (user?.role === "admin") {
-    navigate("/admin/dashboard", { replace: true })
     return null
   }
 

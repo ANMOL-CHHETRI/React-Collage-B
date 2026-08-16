@@ -20,8 +20,8 @@ service cloud.firestore {
 
     // 1. Users Collection rules
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if true;
+      allow create: if true;
       allow update: if (isOwner(userId) 
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'violations', 'banned']))
         || isAdmin();

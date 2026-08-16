@@ -30,19 +30,24 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState("")
   const navigate = useNavigate()
 
-  // Sync users list, applications, and reported avatars
+  // Sync users list, applications, and reported avatars (Admin only)
   const syncData = useCallback(async () => {
-    try {
-      const usersList = await api.getUsers()
-      setRegisteredUsers(usersList)
-      const apps = await api.getSellerApplications()
-      setSellerApplications(apps)
-      const avatars = await api.getReportedAvatars()
-      setReportedAvatars(avatars)
-    } catch (err) {
-      console.error("Failed to sync backend data", err)
+    if (!user || (user.role !== "admin" && user.role !== "sub-admin")) {
+      return
     }
-  }, [])
+    try {
+      const [usersList, apps, avatars] = await Promise.allSettled([
+        api.getUsers(),
+        api.getSellerApplications(),
+        api.getReportedAvatars()
+      ])
+      if (usersList.status === "fulfilled") setRegisteredUsers(usersList.value)
+      if (apps.status === "fulfilled") setSellerApplications(apps.value)
+      if (avatars.status === "fulfilled") setReportedAvatars(avatars.value)
+    } catch (err) {
+      console.warn("Admin sync skipped:", err)
+    }
+  }, [user])
 
   useEffect(() => {
     syncData()
