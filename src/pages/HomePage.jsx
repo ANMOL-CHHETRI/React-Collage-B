@@ -19,9 +19,9 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   }, [src]);
 
   return (
-    <div className="relative w-full h-full bg-slate-100 dark:bg-slate-900">
+    <div className="relative w-full h-full bg-slate-100 dark:bg-slate-800">
       {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-700 animate-pulse" />
       )}
       <img
         ref={imgRef}
@@ -78,28 +78,28 @@ const testimonials = [
   {
     name: "Aarav Sharma",
     location: "Kathmandu",
-    text: "Ordered a handwoven Dhaka Topi and Himalayan Coffee. Delivery took just 4 hours in Lalitpur. Outstanding quality and authentic Nepalese craftsmanship!",
+    text: "Ordered a handwoven Dhaka Topi and Himalayan Coffee. Delivery arrived promptly in Lalitpur with pristine packaging and genuine artisan quality.",
     rating: 5,
     avatar: "AS",
   },
   {
     name: "Prerana Giri",
     location: "Pokhara",
-    text: "The Himalayan Orthodox tea is incredibly fragrant. I chose Cash on Delivery, and the courier rider was polite and on time. Will order again!",
+    text: "The Himalayan Orthodox tea is exceptionally fragrant. Chose Cash on Delivery and the entire ordering process was smooth and reliable.",
     rating: 5,
     avatar: "PG",
   },
   {
     name: "Sonam Sherpa",
     location: "Namche Bazaar",
-    text: "Even up in the mountains, the delivery arrived in pristine condition within 4 days. Packaged beautifully and extremely sturdy.",
+    text: "Arrived safely in Solukhumbu within 4 days. Sturdy packaging and authentic handcrafted metalwork.",
     rating: 5,
     avatar: "SS",
   },
   {
     name: "Dinesh Chaudhary",
     location: "Birgunj",
-    text: "Best online shopping experience in Nepal. Genuine products, accurate descriptions, and transparent shipping charges. 5 stars!",
+    text: "Clear product details, transparent delivery times, and accurate descriptions. A dependable platform for authentic Nepali products.",
     rating: 5,
     avatar: "DC",
   },
@@ -113,43 +113,41 @@ const faqs = [
   },
   {
     q: "What is your delivery coverage area?",
-    a: "We deliver across all 7 provinces of Nepal, spanning major metropolitan hubs to remote hilly districts. You can use our interactive delivery map below to check delivery speeds and estimated rates for your province.",
+    a: "We deliver across all 7 provinces of Nepal, spanning major metropolitan hubs to regional districts. You can use our interactive delivery map below to check delivery speeds and estimated rates for your province.",
   },
   {
     q: "Can I pay online using eSewa, Khalti, or Fonepay?",
-    a: "We are currently integrating local Nepalese digital wallets (eSewa, Khalti, IPS, Fonepay). In the meantime, we offer 100% verified Cash on Delivery (COD) for maximum peace of mind.",
+    a: "We are currently integrating local Nepalese digital wallets (eSewa, Khalti, IPS, Fonepay). In the meantime, we offer verified Cash on Delivery (COD) across all service areas.",
   },
   {
     q: "Are the products sold on ShopEase Nepal authentic?",
-    a: "Yes, 100%. We source our handicrafts, teas, spices, and textiles directly from verified local artisan cooperatives, high-altitude farmers, and traditional workshops in Palpa, Ilam, Patan, and Taplejung.",
+    a: "Yes. We source our handicrafts, teas, spices, and textiles directly from verified local artisan cooperatives, high-altitude farmers, and traditional workshops in Palpa, Ilam, Patan, and Taplejung.",
   },
   {
     q: "How can I track my order status?",
-    a: "Upon placing a Cash on Delivery order, you will receive an instant order confirmation ID. You can track your package progress in real-time from your User Dashboard at any time.",
+    a: "Upon placing a Cash on Delivery order, you will receive an order confirmation ID. You can track your package progress in real-time from your User Dashboard at any time.",
   },
 ];
 
 // ── Trust Bar Items ────────────────────────────────────────────────────────────
 const TRUST_ITEMS = [
   { icon: "M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l4-2 4 2zM16 6v10l4 2V6a1 1 0 00-1-1h-2", label: "Free Delivery Over Rs. 1,500" },
-  { icon: "M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2z", label: "Cash on Delivery Available" },
-  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "100% Authentic Handcrafted" },
-  { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "Nationwide: All 7 Provinces" },
-  { icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z", label: "4.9 / 5 Customer Rating" },
-  { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "7-Day Easy Returns" },
+  { icon: "M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2z", label: "Cash on Delivery Nationwide" },
+  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Authentic Handcrafted Items" },
+  { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "Serving All 7 Provinces" },
+  { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "7-Day Return Policy" },
   { icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", label: "Supporting Himalayan Artisans" },
 ];
 
 const TrustBar = () => (
-  <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-y border-slate-200/80 dark:border-slate-800/80 py-3.5 no-print select-none">
+  <div className="relative overflow-hidden bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 py-3.5 no-print select-none">
     <div className="relative flex items-center" style={{ animation: "trustScroll 45s linear infinite", whiteSpace: "nowrap" }}>
       {[...TRUST_ITEMS, ...TRUST_ITEMS].map((item, i) => (
         <span
           key={i}
           className="inline-flex items-center gap-2 mx-2 sm:mx-4 px-3.5 py-1.5 rounded-full
-            bg-slate-50 dark:bg-slate-800/70
-            border border-slate-200/70 dark:border-slate-700/60
-            shadow-xs
+            bg-slate-50 dark:bg-slate-800/80
+            border border-slate-200 dark:border-slate-700
             text-xs font-semibold tracking-wide
             text-slate-700 dark:text-slate-300
             flex-shrink-0"
@@ -233,27 +231,23 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
   const quickTags = ["Dhaka Topi", "Orthodox Tea", "Handicrafts", "Wild Honey", "Khukuri"];
 
   return (
-    <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 lg:pt-14 lg:pb-20 overflow-hidden bg-gradient-to-b from-amber-500/5 via-transparent to-transparent dark:from-amber-950/10 dark:via-transparent dark:to-transparent">
-      {/* Ambient background decoration */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-400/10 dark:bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-72 h-72 bg-orange-400/10 dark:bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 lg:pt-14 lg:pb-20 bg-slate-50/50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: Brand Statement, Value, Quick Search & CTA */}
           <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
             
             {/* Eyebrow badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-900/50 text-amber-900 dark:text-amber-300 text-xs font-extrabold uppercase tracking-wider shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
               <span>Authentic Nepali Craft & Goods</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-black text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
               Celebrate Himalayan Heritage,{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-400">
+              <span className="text-amber-600 dark:text-amber-400">
                 Woven by Local Artisans
               </span>
             </h1>
@@ -265,7 +259,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
 
             {/* Quick Hero Search Experience */}
             <div className="max-w-xl mx-auto lg:mx-0 pt-1">
-              <div className="relative flex items-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent transition-all">
+              <div className="relative flex items-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent transition-all">
                 <div className="pl-4 text-slate-400 dark:text-slate-500">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -318,7 +312,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                       const el = document.getElementById("catalog");
                       if (el) el.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="text-[11px] font-medium px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-slate-600 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors cursor-pointer"
+                    className="text-[11px] font-medium px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-slate-600 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors cursor-pointer"
                   >
                     {tag}
                   </button>
@@ -330,7 +324,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4">
               <a
                 href="#catalog"
-                className="w-full sm:w-auto min-h-[48px] px-7 py-3.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-extrabold text-sm rounded-xl shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                className="w-full sm:w-auto min-h-[48px] px-7 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm rounded-xl shadow-xs transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>Explore Catalog</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -340,7 +334,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
 
               <a
                 href="#delivery"
-                className="w-full sm:w-auto min-h-[48px] px-6 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto min-h-[48px] px-6 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -351,11 +345,11 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
 
           </div>
 
-          {/* Right Column: Featured Product Interactive Card Slider */}
+          {/* Right Column: Featured Product Card Slider */}
           <div className="lg:col-span-5 relative">
             {activeProduct ? (
               <div 
-                className="relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-xl shadow-slate-200/50 dark:shadow-black/50 select-none touch-pan-y"
+                className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-xs select-none touch-pan-y"
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
@@ -363,7 +357,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
               >
                 {/* Top status bar inside card */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 text-amber-700 dark:text-amber-400 text-[11px] font-extrabold uppercase tracking-wide">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-700 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wide">
                     <span>👑 Featured Spotlight</span>
                   </div>
                   <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
@@ -372,23 +366,23 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                 </div>
 
                 {/* Product Showcase Image */}
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-slate-100 dark:bg-slate-800/80 mb-4">
+                <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-slate-100 dark:bg-slate-800 mb-4">
                   <ImageWithSkeleton
                     src={activeProduct.image}
                     alt={activeProduct.name}
                     className="w-full h-full object-cover"
                   />
                   {activeProduct.badge && (
-                    <span className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide shadow-md">
+                    <span className="absolute top-3 left-3 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs">
                       {activeProduct.badge}
                     </span>
                   )}
-                  <div className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
+                  <div className="absolute bottom-3 right-3 bg-slate-950/85 text-white text-xs font-bold px-3 py-1 rounded-full border border-white/15">
                     Rs. {activeProduct.price?.toLocaleString()}
                   </div>
                 </div>
 
-                {/* Info & Fast Action */}
+                {/* Info & Action */}
                 <div className="space-y-2">
                   <span className="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400 tracking-wider">
                     {activeProduct.category}
@@ -427,7 +421,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                   type="button"
                   onClick={handlePrev}
                   aria-label="Previous featured product"
-                  className="absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                  className="absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -437,7 +431,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                   type="button"
                   onClick={handleNext}
                   aria-label="Next featured product"
-                  className="absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                  className="absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -452,7 +446,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                       type="button"
                       onClick={() => setCurrentIndex(i)}
                       aria-label={`Go to slide ${i + 1}`}
-                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
                         i === currentIndex ? "bg-amber-500 w-6" : "bg-slate-200 dark:bg-slate-700 w-2 hover:bg-slate-300"
                       }`}
                     />
@@ -460,7 +454,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                 </div>
               </div>
             ) : (
-              <div className="h-96 rounded-3xl bg-slate-100 dark:bg-slate-900 animate-pulse" />
+              <div className="h-96 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             )}
           </div>
 
@@ -520,7 +514,7 @@ const HomePage = () => {
         if (sortBy === "price_asc") return (a.price || 0) - (b.price || 0);
         if (sortBy === "price_desc") return (b.price || 0) - (a.price || 0);
         if (sortBy === "name") return a.name.localeCompare(b.name);
-        return (a.id || 0) - (b.id || 0); // Default featured
+        return (a.id || 0) - (b.id || 0);
       });
   }, [products, searchQuery, selectedCategory, priceRange, sortBy]);
 
@@ -547,12 +541,12 @@ const HomePage = () => {
       <TrustBar />
 
       {/* 3. Curated Category Discovery */}
-      <section className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800/80 transition-colors duration-300">
+      <section className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12">
             <div>
-              <span className="inline-flex items-center gap-2 text-xs font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1.5">
+              <span className="inline-flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1.5">
                 <span className="w-4 h-0.5 bg-amber-500 rounded-full" />
                 Curated Collections
               </span>
@@ -580,20 +574,20 @@ const HomePage = () => {
               <Link
                 key={cat.name}
                 to={`/category/${encodeURIComponent(cat.name)}`}
-                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-200/70 dark:border-slate-800"
+                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
               >
                 <ImageWithSkeleton
                   src={cat.image}
                   alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 
-                {/* Gradient overlay for clear contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent transition-opacity duration-300" />
+                {/* Gradient overlay for clear text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity duration-300" />
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-left">
-                  <span className="inline-block bg-amber-500/95 text-white text-[9px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
+                  <span className="inline-block bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
                     {cat.count}
                   </span>
                   <h3 className="text-sm sm:text-base font-extrabold text-white leading-tight">
@@ -602,13 +596,6 @@ const HomePage = () => {
                   <p className="text-[11px] text-slate-200/90 hidden sm:block line-clamp-1 mt-0.5 font-normal">
                     {cat.subtitle}
                   </p>
-                </div>
-
-                {/* Hover circle arrow */}
-                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:scale-105">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
                 </div>
               </Link>
             ))}
@@ -620,15 +607,12 @@ const HomePage = () => {
       {/* 4. Product Catalog & Live Filter Discovery Suite */}
       <section
         id="catalog"
-        className="py-16 sm:py-20 bg-slate-50/60 dark:bg-slate-900/30 transition-colors duration-300"
+        className="py-16 sm:py-20 bg-slate-50/60 dark:bg-slate-900/40 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-3">
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-3 border border-amber-200 dark:border-amber-900/60">
               Authentic Nepali Catalog
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -652,9 +636,9 @@ const HomePage = () => {
                     key={cat}
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-150 shrink-0 cursor-pointer flex items-center gap-1.5 ${
                       isActive
-                        ? "bg-amber-500 text-white shadow-md shadow-amber-500/25"
+                        ? "bg-amber-500 text-white shadow-xs"
                         : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                     }`}
                   >
@@ -668,7 +652,7 @@ const HomePage = () => {
             </div>
 
             {/* Search Input & Secondary Filter Row */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
               
               <div className="relative">
                 <input
@@ -677,7 +661,7 @@ const HomePage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Filter catalog products"
-                  className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700/80 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm transition-all"
+                  className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm transition-all"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -703,7 +687,7 @@ const HomePage = () => {
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-400">
                     <span className="uppercase tracking-wider text-[10px] text-slate-400">Max Budget</span>
-                    <span className="text-amber-600 dark:text-amber-400 font-extrabold">Rs. {priceRange.toLocaleString()}</span>
+                    <span className="text-amber-600 dark:text-amber-400 font-bold">Rs. {priceRange.toLocaleString()}</span>
                   </div>
                   <input
                     type="range"
@@ -723,7 +707,7 @@ const HomePage = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl focus:ring-2 focus:ring-amber-500 p-2.5 transition-colors cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl focus:ring-2 focus:ring-amber-500 p-2.5 transition-colors cursor-pointer"
                   >
                     <option value="featured">Featured / Default</option>
                     <option value="name">Product Name (A-Z)</option>
@@ -764,16 +748,16 @@ const HomePage = () => {
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto shadow-xs">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500">
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div className="text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto shadow-xs">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-black text-slate-800 dark:text-slate-200">
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
                 No products match your criteria
               </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-sm mx-auto">
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 max-w-sm mx-auto">
                 Try widening your price range, searching with fewer terms, or clearing your category filters.
               </p>
               <button
@@ -795,71 +779,59 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 5. Artisan Heritage & Social Impact Feature Banner */}
-      <section className="py-16 sm:py-20 bg-slate-950 text-white relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-950/30 via-slate-900 to-amber-950/30 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* 5. Artisan Heritage Feature Banner */}
+      <section className="py-16 sm:py-20 bg-slate-900 text-white border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            <div className="lg:col-span-6 space-y-4">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                Artisan Empowerment
+            <div className="lg:col-span-6 space-y-4 text-center lg:text-left">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-widest">
+                <span>Artisan Empowerment</span>
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
                 From Nepal's High Hills Directly to Your Doorstep
               </h2>
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                By purchasing through ShopEase Nepal, you directly support over 150+ generational weavers in Palpa, organic tea pickers in Ilam, and bronze artisans in Lalitpur with fair and transparent compensation.
+                By purchasing through ShopEase Nepal, you directly support generational weavers in Palpa, organic tea pickers in Ilam, and bronze artisans in Patan with fair compensation and safe nationwide delivery.
               </p>
-
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-amber-400">100%</div>
-                  <div className="text-[11px] font-medium text-slate-300">Authentic Sourced</div>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-amber-400">7</div>
-                  <div className="text-[11px] font-medium text-slate-300">Provinces Served</div>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-amber-400">24-48h</div>
-                  <div className="text-[11px] font-medium text-slate-300">Valley Express</div>
-                </div>
-              </div>
             </div>
 
             <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
               
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
-                  🏔️
+              <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
                 </div>
-                <h4 className="font-extrabold text-sm text-white">Highland Organics</h4>
+                <h3 className="font-bold text-sm text-white">Highland Organics</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Pure high-altitude orthodox teas and wild herbs from organic certified estates.
+                  Single-origin orthodox teas and wild Himalayan harvests from organic estates.
                 </p>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
-                  🧵
+              <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  </svg>
                 </div>
-                <h4 className="font-extrabold text-sm text-white">Handwoven Dhaka</h4>
+                <h3 className="font-bold text-sm text-white">Handwoven Dhaka</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Traditional geometric motifs hand-loomed with natural fibers and zero synthetic dyes.
+                  Traditional geometric patterns loomed with authentic natural fibers.
                 </p>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
-                  🛡️
+              <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
                 </div>
-                <h4 className="font-extrabold text-sm text-white">Doorstep COD</h4>
+                <h3 className="font-bold text-sm text-white">Doorstep COD</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Inspect your goods first, then pay in cash to the delivery rider safely.
+                  Inspect your goods upon delivery and pay cash directly to the courier rider.
                 </p>
               </div>
 
@@ -873,7 +845,7 @@ const HomePage = () => {
       {/* 6. Interactive Nationwide Delivery Map */}
       <section
         id="delivery"
-        className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 transition-colors duration-300"
+        className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NepalDeliveryMap
@@ -884,20 +856,18 @@ const HomePage = () => {
       </section>
 
       {/* 7. Verified Customer Testimonials */}
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900 text-white relative overflow-hidden transition-colors duration-300">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="py-16 sm:py-20 bg-slate-50/60 dark:bg-slate-900/30 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center mb-12 sm:mb-16">
-            <span className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 backdrop-blur-sm">
-              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-              Customer Experiences
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-3 border border-amber-200 dark:border-amber-900/60">
+              Customer Feedback
             </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
               Loved by Shoppers Across Nepal
             </h2>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1.5">
-              Verified feedback from Kathmandu to remote mountain valleys.
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5">
+              Authentic experiences from Kathmandu to regional mountain districts.
             </p>
           </div>
 
@@ -905,29 +875,28 @@ const HomePage = () => {
             {testimonials.map((t) => (
               <div
                 key={t.name}
-                className="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:bg-white/10 hover:-translate-y-1.5 transition-all duration-300 group shadow-xs"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 shadow-xs"
               >
-                <div className="absolute top-2 right-3 text-5xl text-amber-500/15 font-serif leading-none select-none">"</div>
                 <div>
-                  <div className="flex items-center gap-1 mb-3.5" aria-label={`Rating: ${t.rating} out of 5 stars`}>
+                  <div className="flex items-center gap-1 mb-3" aria-label={`Rating: ${t.rating} out of 5 stars`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-100 leading-relaxed italic mb-6">
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed italic mb-6">
                     &ldquo;{t.text}&rdquo;
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-                  <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-xs shrink-0">
+                <div className="flex items-center gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+                  <div className="w-9 h-9 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xs shrink-0">
                     {t.avatar}
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-xs sm:text-sm">{t.name}</h4>
-                    <span className="text-[11px] text-slate-300">{t.location}, Nepal</span>
+                    <h3 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{t.name}</h3>
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500">{t.location}, Nepal</span>
                   </div>
                 </div>
               </div>
@@ -940,15 +909,12 @@ const HomePage = () => {
       {/* 8. Frequently Asked Questions & Support CTA */}
       <section
         id="faq"
-        className="py-16 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300 relative"
+        className="py-16 sm:py-20 bg-white dark:bg-slate-950 transition-colors duration-300"
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           
-          <div className="text-center mb-10 sm:mb-14">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-3">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="text-center mb-10 sm:mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-widest mb-3 border border-amber-200 dark:border-amber-900/60">
               Help & Support
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -967,15 +933,15 @@ const HomePage = () => {
                   key={faq.q}
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     isOpen
-                      ? "border-amber-300 dark:border-amber-800/80 shadow-sm bg-amber-50/20 dark:bg-amber-950/10"
-                      : "border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900"
+                      ? "border-amber-500/40 bg-amber-50/20 dark:bg-amber-950/10"
+                      : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : faq.q)}
                     aria-expanded={isOpen}
-                    className="w-full flex items-start justify-between gap-4 px-5 py-4 sm:px-6 sm:py-4.5 text-left text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 cursor-pointer"
+                    className="w-full flex items-start justify-between gap-4 px-5 py-4 sm:px-6 sm:py-4.5 text-left text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 cursor-pointer"
                   >
                     <span className="flex-1 leading-snug">{faq.q}</span>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 ${
@@ -988,7 +954,7 @@ const HomePage = () => {
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 pb-4.5 sm:px-6 sm:pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-amber-100/60 dark:border-amber-900/30 pt-3">
+                    <div className="px-5 pb-4.5 sm:px-6 sm:pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-3">
                       {faq.a}
                     </div>
                   )}
@@ -998,16 +964,16 @@ const HomePage = () => {
           </div>
 
           {/* Direct Support Contact Callout */}
-          <div className="mt-10 sm:mt-12 text-center p-6 sm:p-8 rounded-3xl bg-amber-500/10 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40">
-            <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mb-1">
+          <div className="mt-10 sm:mt-12 text-center p-6 sm:p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-1">
               Have questions about your order or customized bulk gifts?
-            </h4>
+            </h3>
             <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">
               Our Kathmandu support team is available Sunday–Friday from 9:00 AM to 6:00 PM.
             </p>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               <span>Contact Support Team</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
