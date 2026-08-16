@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
@@ -6,6 +6,7 @@ import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
 
+// ── ImageWithSkeleton for safe loading with fallback and referrerPolicy ───────
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(!src);
@@ -18,9 +19,9 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   }, [src]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-slate-100 dark:bg-slate-900">
       {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
+        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />
       )}
       <img
         ref={imgRef}
@@ -44,52 +45,54 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
   );
 };
 
+// ── Category Definitions ───────────────────────────────────────────────────────
 const categories = [
   {
     name: "Traditional Apparel",
-    image:
-      "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg",
-    count: "12 Items",
+    image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg",
+    subtitle: "Dhaka Topis, Saree & Traditional Attire",
+    count: "Handwoven",
   },
   {
     name: "Organic Tea & Coffee",
-    image:
-      "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
-    count: "8 Items",
+    image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
+    subtitle: "Ilam Orthodox Tea & Himalayan Beans",
+    count: "100% Organic",
   },
   {
     name: "Local Handicrafts",
-    image:
-      "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
-    count: "15 Items",
+    image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
+    subtitle: "Patan Statues, Singing Bowls & Woodwork",
+    count: "Artisan Made",
   },
   {
     name: "Herbs & Spices",
-    image:
-      "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
-    count: "10 Items",
+    image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
+    subtitle: "Wild Himalayan Honey, Shilajit & Spices",
+    count: "Pure Natural",
   },
 ];
 
+// ── Testimonials ───────────────────────────────────────────────────────────────
 const testimonials = [
   {
     name: "Aarav Sharma",
     location: "Kathmandu",
-    text: "Ordered a handwoven Dhaka Topi and Himalayan Coffee. The delivery took just 4 hours in Lalitpur. Outstanding quality and pure Nepalese authenticity!",
+    text: "Ordered a handwoven Dhaka Topi and Himalayan Coffee. Delivery took just 4 hours in Lalitpur. Outstanding quality and authentic Nepalese craftsmanship!",
     rating: 5,
     avatar: "AS",
   },
   {
     name: "Prerana Giri",
     location: "Pokhara",
-    text: "The Himalayan Orthodox tea is incredibly fragrant. I chose Cash on Delivery, and the courier rider was polite. Will order again!",
+    text: "The Himalayan Orthodox tea is incredibly fragrant. I chose Cash on Delivery, and the courier rider was polite and on time. Will order again!",
     rating: 5,
     avatar: "PG",
   },
   {
     name: "Sonam Sherpa",
     location: "Namche Bazaar",
-    text: "Even out here, the Gorkha Khukuri was delivered within 4 days. Packaged beautifully and extremely sturdy.",
+    text: "Even up in the mountains, the delivery arrived in pristine condition within 4 days. Packaged beautifully and extremely sturdy.",
     rating: 5,
     avatar: "SS",
   },
@@ -102,65 +105,56 @@ const testimonials = [
   },
 ];
 
+// ── FAQs ───────────────────────────────────────────────────────────────────────
 const faqs = [
   {
     q: "How does Cash on Delivery (COD) work?",
-    a: "You can place your order online without paying anything upfront. Once our courier partner delivers the package to your doorstep anywhere in Nepal, you pay the total order amount in cash to the delivery rider.",
+    a: "You can place your order online without paying anything upfront. Once our courier partner delivers the package to your doorstep anywhere in Nepal, you pay the total order amount in cash directly to the delivery rider.",
   },
   {
     q: "What is your delivery coverage area?",
-    a: "We deliver to all major cities and towns across Nepal's 7 provinces. You can use our interactive delivery map to check delivery times and shipping rates for your province.",
+    a: "We deliver across all 7 provinces of Nepal, spanning major metropolitan hubs to remote hilly districts. You can use our interactive delivery map below to check delivery speeds and estimated rates for your province.",
   },
   {
     q: "Can I pay online using eSewa, Khalti, or Fonepay?",
-    a: "We are currently integrating local Nepalese payment gateways (eSewa, Khalti, IPS, Fonepay). For now, we only support Cash on Delivery (COD) to ensure a safe shopping experience.",
+    a: "We are currently integrating local Nepalese digital wallets (eSewa, Khalti, IPS, Fonepay). In the meantime, we offer 100% verified Cash on Delivery (COD) for maximum peace of mind.",
   },
   {
     q: "Are the products sold on ShopEase Nepal authentic?",
-    a: "Yes, 100%. We source our handicraft, tea, spices, and clothing items directly from local artisans, farmers, and certified cooperatives in districts like Palpa, Ilam, Patan, and Taplejung.",
+    a: "Yes, 100%. We source our handicrafts, teas, spices, and textiles directly from verified local artisan cooperatives, high-altitude farmers, and traditional workshops in Palpa, Ilam, Patan, and Taplejung.",
   },
   {
     q: "How can I track my order status?",
-    a: "Upon placing a Cash on Delivery order, you will receive an order confirmation ID (e.g. #ORD-NP-10824). Our support team will call you to confirm your address, and you can view your shipping progress in your Account Dashboard.",
+    a: "Upon placing a Cash on Delivery order, you will receive an instant order confirmation ID. You can track your package progress in real-time from your User Dashboard at any time.",
   },
 ];
 
-// ── Trust Bar marquee (glassmorphism) ──
+// ── Trust Bar Items ────────────────────────────────────────────────────────────
 const TRUST_ITEMS = [
   { icon: "M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l4-2 4 2zM16 6v10l4 2V6a1 1 0 00-1-1h-2", label: "Free Delivery Over Rs. 1,500" },
-  { icon: "M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2z", label: "Cash on Delivery" },
-  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "100% Authentic Products" },
-  { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "All 7 Provinces" },
-  { icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z", label: "4.9 / 5 Rating" },
-  { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "7-Day Returns" },
-  { icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", label: "Supporting Local Artisans" },
+  { icon: "M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2z", label: "Cash on Delivery Available" },
+  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "100% Authentic Handcrafted" },
+  { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "Nationwide: All 7 Provinces" },
+  { icon: "M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z", label: "4.9 / 5 Customer Rating" },
+  { icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15", label: "7-Day Easy Returns" },
+  { icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", label: "Supporting Himalayan Artisans" },
 ];
 
 const TrustBar = () => (
-  <div className="relative overflow-hidden no-print">
-    {/* Glass background layer */}
-    <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/70 backdrop-blur-xl" />
-    {/* Top accent line */}
-    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
-    {/* Bottom accent line */}
-    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 dark:via-amber-400/20 to-transparent" />
-
-    {/* Scroll content */}
-    <div className="relative py-3 flex items-center" style={{ animation: "trustScroll 40s linear infinite", whiteSpace: "nowrap" }}>
+  <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-y border-slate-200/80 dark:border-slate-800/80 py-3.5 no-print select-none">
+    <div className="relative flex items-center" style={{ animation: "trustScroll 45s linear infinite", whiteSpace: "nowrap" }}>
       {[...TRUST_ITEMS, ...TRUST_ITEMS].map((item, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-2 mx-3 px-4 py-1.5 rounded-full
-            bg-white/50 dark:bg-white/[0.06]
-            border border-slate-200/60 dark:border-white/[0.08]
-            shadow-sm shadow-slate-200/40 dark:shadow-black/20
-            backdrop-blur-md
-            text-[11px] font-semibold tracking-wide
-            text-slate-600 dark:text-slate-300
-            transition-colors duration-300
+          className="inline-flex items-center gap-2 mx-2 sm:mx-4 px-3.5 py-1.5 rounded-full
+            bg-slate-50 dark:bg-slate-800/70
+            border border-slate-200/70 dark:border-slate-700/60
+            shadow-xs
+            text-xs font-semibold tracking-wide
+            text-slate-700 dark:text-slate-300
             flex-shrink-0"
         >
-          <svg className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
           </svg>
           {item.label}
@@ -171,36 +165,41 @@ const TrustBar = () => (
   </div>
 );
 
-
-const HeroCarousel = ({ products, addToCart }) => {
+// ── Hero Section with Carousel & Direct Discovery ─────────────────────────────
+const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragStart, setDragStart] = useState(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [heroSearch, setHeroSearch] = useState("");
+
+  const heroProducts = useMemo(() => {
+    if (!products.length) return [];
+    return products.slice(0, 5);
+  }, [products]);
 
   useEffect(() => {
-    if (isDragging) return;
+    if (isDragging || heroProducts.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % products.length);
-    }, 4500);
+      setCurrentIndex((prev) => (prev + 1) % heroProducts.length);
+    }, 5500);
     return () => clearInterval(timer);
-  }, [currentIndex, products.length, isDragging]);
-
-  if (!products.length) return null;
+  }, [currentIndex, heroProducts.length, isDragging]);
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
+    if (!heroProducts.length) return;
+    setCurrentIndex((prev) => (prev - 1 + heroProducts.length) % heroProducts.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % products.length);
+    if (!heroProducts.length) return;
+    setCurrentIndex((prev) => (prev + 1) % heroProducts.length);
   };
 
   const handlePointerDown = (e) => {
     if (e.button !== undefined && e.button !== 0) return;
     setDragStart(e.clientX);
     setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e) => {
@@ -208,401 +207,673 @@ const HeroCarousel = ({ products, addToCart }) => {
     setDragOffset(e.clientX - dragStart);
   };
 
-  const handlePointerUp = (e) => {
+  const handlePointerUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (error) {
-      console.warn("releasePointerCapture failed", error);
-    }
-
-    const minSwipeDistance = 50;
+    const minSwipeDistance = 45;
     if (dragOffset < -minSwipeDistance) {
       handleNext();
     } else if (dragOffset > minSwipeDistance) {
       handlePrev();
     }
-
     setDragStart(null);
     setDragOffset(0);
   };
 
+  const activeProduct = heroProducts[currentIndex] || heroProducts[0];
+
+  const handleSearchKeyPress = (e) => {
+    if (e.key === "Enter" && onSearchSubmit) {
+      onSearchSubmit(heroSearch);
+      const catalogEl = document.getElementById("catalog");
+      if (catalogEl) catalogEl.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const quickTags = ["Dhaka Topi", "Orthodox Tea", "Handicrafts", "Wild Honey", "Khukuri"];
+
   return (
-    <section className="relative pt-24 pb-24 md:pt-32 md:pb-32 overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
-       {/* Background image slider */}
-       <div className="absolute inset-0 z-0 overflow-hidden">
-          <div 
-             className={`flex h-full ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
-             style={{ 
-                transform: `translateX(calc(-${currentIndex * (100 / products.length)}% + ${dragOffset}px))`,
-                width: `${products.length * 100}%`
-             }}
-          >
-             {products.map((p, idx) => (
-                <div 
-                   key={`bg-${p.id || idx}`} 
-                   className="h-full flex-shrink-0 relative"
-                   style={{ width: `${100 / products.length}%` }}
-                >
-                   <img 
-                      src={p.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"} 
-                      referrerPolicy="no-referrer" 
-                      alt="" 
-                      className="w-full h-full object-cover opacity-15 dark:opacity-20 blur-2xl scale-110" 
-                   />
-                   <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white dark:from-slate-950/80 dark:to-slate-950" />
+    <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 lg:pt-14 lg:pb-20 overflow-hidden bg-gradient-to-b from-amber-500/5 via-transparent to-transparent dark:from-amber-950/10 dark:via-transparent dark:to-transparent">
+      {/* Ambient background decoration */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-400/10 dark:bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-72 h-72 bg-orange-400/10 dark:bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column: Brand Statement, Value, Quick Search & CTA */}
+          <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
+            
+            {/* Eyebrow badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/80 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-900/50 text-amber-900 dark:text-amber-300 text-xs font-extrabold uppercase tracking-wider shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span>Authentic Nepali Craft & Goods</span>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-black text-slate-900 dark:text-white tracking-tight leading-[1.12]">
+              Celebrate Himalayan Heritage,{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-400">
+                Woven by Local Artisans
+              </span>
+            </h1>
+
+            {/* Subheading */}
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              Shop authentic handwoven Dhaka textiles, single-origin Ilam teas, sacred Patan bronze sculptures, and pure Himalayan herbs with 100% Cash on Delivery across Nepal.
+            </p>
+
+            {/* Quick Hero Search Experience */}
+            <div className="max-w-xl mx-auto lg:mx-0 pt-1">
+              <div className="relative flex items-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm focus-within:ring-2 focus-within:ring-amber-500 focus-within:border-transparent transition-all">
+                <div className="pl-4 text-slate-400 dark:text-slate-500">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-             ))}
-          </div>
-       </div>
-
-       {/* Slide container */}
-       <div 
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-       >
-          <div 
-             className={`flex ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
-             style={{ 
-                transform: `translateX(calc(-${currentIndex * (100 / products.length)}% + ${dragOffset}px))`,
-                width: `${products.length * 100}%`
-             }}
-          >
-             {products.map((product, idx) => (
-                <div 
-                   key={product.id || idx} 
-                   className="flex-shrink-0 flex flex-col md:flex-row items-center gap-12 py-4 px-12 md:px-20"
-                   style={{ width: `${100 / products.length}%` }}
+                <input
+                  type="text"
+                  placeholder="Search products, teas, Dhaka items..."
+                  value={heroSearch}
+                  onChange={(e) => setHeroSearch(e.target.value)}
+                  onKeyDown={handleSearchKeyPress}
+                  aria-label="Search ShopEase products"
+                  className="w-full py-3.5 pl-3 pr-24 text-sm bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
+                />
+                {heroSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setHeroSearch("")}
+                    aria-label="Clear search"
+                    className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer mr-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onSearchSubmit) onSearchSubmit(heroSearch);
+                    const el = document.getElementById("catalog");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="mr-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
-                   <div className="flex-1 space-y-6 text-center md:text-left">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
-                         <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                         <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                           Featured Product
-                         </span>
-                      </div>
-                      <h1 className="text-[44px] md:text-[60px] font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight line-clamp-2">
-                        {product.name}
-                      </h1>
-                      
-                      {/* Rating in Carousel */}
-                      <div className="flex items-center justify-center md:justify-start gap-1.5 pt-1">
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <svg key={s} className={`w-4 h-4 ${s <= 4 ? "text-amber-400" : "text-slate-300 dark:text-slate-700"}`} fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                        </div>
-                        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400">4.4 (5 reviews)</span>
-                      </div>
+                  Search
+                </button>
+              </div>
 
-                      <p className="text-base md:text-lg text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-xl line-clamp-3 mx-auto md:mx-0">
-                        {product.description}
-                      </p>
-                      <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-500 pt-2">
-                         Rs. {product.price.toLocaleString()}
-                      </div>
-                      <div className="pt-4 flex justify-center md:justify-start gap-4" onPointerDown={(e) => e.stopPropagation()}>
-                        <button onClick={() => addToCart(product)} className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition duration-200 cursor-pointer transform hover:-translate-y-0.5">
-                          Add to Cart
-                        </button>
-                        <Link to={`/product/${product.id}`} className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold px-8 py-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition duration-200 cursor-pointer">
-                          View Details
-                        </Link>
-                      </div>
-                   </div>
-                   <div className="flex-1 w-full max-w-md mx-auto">
-                      <div className="relative rounded-3xl overflow-hidden aspect-square shadow-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
-                          <ImageWithSkeleton src={product.image} alt={product.name} className="w-full h-full object-cover transform hover:scale-105 transition duration-700" />
-                          {product.badge && (
-                             <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-extrabold px-4 py-1.5 rounded-full uppercase shadow-md shadow-red-900/20">
-                                {product.badge}
-                             </div>
-                          )}
-                      </div>
-                   </div>
-                </div>
-             ))}
+              {/* Keyword Quick Tags */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 mt-2.5">
+                <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mr-1">Popular:</span>
+                {quickTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      setHeroSearch(tag);
+                      if (onSearchSubmit) onSearchSubmit(tag);
+                      const el = document.getElementById("catalog");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-[11px] font-medium px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-slate-600 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 transition-colors cursor-pointer"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Primary Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4">
+              <a
+                href="#catalog"
+                className="w-full sm:w-auto min-h-[48px] px-7 py-3.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-extrabold text-sm rounded-xl shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              >
+                <span>Explore Catalog</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </a>
+
+              <a
+                href="#delivery"
+                className="w-full sm:w-auto min-h-[48px] px-6 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <span>Delivery Coverage Map</span>
+              </a>
+            </div>
+
           </div>
-       </div>
 
-       {/* Navigation Arrow Actions */}
-       <button 
-          onClick={handlePrev}
-          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full flex items-center justify-center bg-white/40 dark:bg-slate-900/40 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200/50 dark:border-slate-700/50 shadow-md backdrop-blur-md text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-500 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-pointer"
-          aria-label="Previous slide"
-       >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-       </button>
-       <button 
-          onClick={handleNext}
-          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full flex items-center justify-center bg-white/40 dark:bg-slate-900/40 hover:bg-white/80 dark:hover:bg-slate-900/80 border border-slate-200/50 dark:border-slate-700/50 shadow-md backdrop-blur-md text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-500 transition-all duration-200 transform hover:scale-105 active:scale-95 cursor-pointer"
-          aria-label="Next slide"
-       >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-       </button>
+          {/* Right Column: Featured Product Interactive Card Slider */}
+          <div className="lg:col-span-5 relative">
+            {activeProduct ? (
+              <div 
+                className="relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-xl shadow-slate-200/50 dark:shadow-black/50 select-none touch-pan-y"
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              >
+                {/* Top status bar inside card */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 text-amber-700 dark:text-amber-400 text-[11px] font-extrabold uppercase tracking-wide">
+                    <span>👑 Featured Spotlight</span>
+                  </div>
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                    {currentIndex + 1} / {heroProducts.length}
+                  </span>
+                </div>
 
-       {/* Pagination dots */}
-       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20 overflow-x-auto max-w-[90vw] px-4 py-2 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          {products.map((_, i) => (
-             <button 
-                key={i} 
-                onClick={() => setCurrentIndex(i)} 
-                className={`h-2.5 shrink-0 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${i === currentIndex ? 'bg-amber-500 w-8' : 'bg-slate-300 dark:bg-slate-700 w-2.5 hover:bg-slate-400 dark:hover:bg-slate-600'}`} 
-                aria-label={`Go to slide ${i + 1}`}
-             />
-          ))}
-       </div>
+                {/* Product Showcase Image */}
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-slate-100 dark:bg-slate-800/80 mb-4">
+                  <ImageWithSkeleton
+                    src={activeProduct.image}
+                    alt={activeProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {activeProduct.badge && (
+                    <span className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide shadow-md">
+                      {activeProduct.badge}
+                    </span>
+                  )}
+                  <div className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
+                    Rs. {activeProduct.price?.toLocaleString()}
+                  </div>
+                </div>
+
+                {/* Info & Fast Action */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-bold uppercase text-amber-600 dark:text-amber-400 tracking-wider">
+                    {activeProduct.category}
+                  </span>
+                  <Link to={`/product/${activeProduct.id}`} className="block">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug hover:text-amber-600 dark:hover:text-amber-400 transition-colors line-clamp-1">
+                      {activeProduct.name}
+                    </h3>
+                  </Link>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    {activeProduct.description}
+                  </p>
+
+                  <div className="pt-3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => addToCart(activeProduct)}
+                      className="flex-1 min-h-[44px] bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      </svg>
+                      Add to Cart
+                    </button>
+                    <Link
+                      to={`/product/${activeProduct.id}`}
+                      className="min-h-[44px] px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-colors flex items-center justify-center"
+                    >
+                      Details
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Arrow Controls */}
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  aria-label="Previous featured product"
+                  className="absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  aria-label="Next featured product"
+                  className="absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </button>
+
+                {/* Pagination Dots */}
+                <div className="flex justify-center gap-1.5 pt-3">
+                  {heroProducts.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setCurrentIndex(i)}
+                      aria-label={`Go to slide ${i + 1}`}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        i === currentIndex ? "bg-amber-500 w-6" : "bg-slate-200 dark:bg-slate-700 w-2 hover:bg-slate-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="h-96 rounded-3xl bg-slate-100 dark:bg-slate-900 animate-pulse" />
+            )}
+          </div>
+
+        </div>
+      </div>
     </section>
   );
 };
 
+// ── Main HomePage Component ───────────────────────────────────────────────────
 const HomePage = () => {
-
   const { products } = useProducts();
+  const { addToCart } = useCart();
 
   const [openFaq, setOpenFaq] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("bagmati");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("name");
+  const [sortBy, setSortBy] = useState("featured");
   
-  const maxPrice = products.length ? Math.max(...products.map(p => p.price)) : 50000;
+  const maxProductPrice = useMemo(() => {
+    return products.length ? Math.max(...products.map(p => p.price || 0)) : 50000;
+  }, [products]);
+
   const [priceRange, setPriceRange] = useState(50000);
 
   useEffect(() => {
-    if (products.length && priceRange === 50000) {
-      setPriceRange(maxPrice);
+    if (products.length && maxProductPrice > 0) {
+      setPriceRange(maxProductPrice);
     }
-  }, [products.length, maxPrice, priceRange]);
+  }, [products.length, maxProductPrice]);
 
-  const availableCategories = ["All", ...new Set(products.map(p => p.category).filter(Boolean))];
+  const availableCategories = useMemo(() => {
+    return ["All", ...new Set(products.map(p => p.category).filter(Boolean))];
+  }, [products]);
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
+    const timer = setTimeout(() => setLoading(false), 350);
     return () => clearTimeout(timer);
   }, []);
 
-  // Cart context states
-  const { addToCart } = useCart();
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter((p) => {
+        const query = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          !query ||
+          p.name.toLowerCase().includes(query) ||
+          (p.category && p.category.toLowerCase().includes(query)) ||
+          (p.description && p.description.toLowerCase().includes(query));
+        const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+        const matchesPrice = (p.price || 0) <= priceRange;
+        return matchesSearch && matchesCategory && matchesPrice;
+      })
+      .sort((a, b) => {
+        if (sortBy === "price_asc") return (a.price || 0) - (b.price || 0);
+        if (sortBy === "price_desc") return (b.price || 0) - (a.price || 0);
+        if (sortBy === "name") return a.name.localeCompare(b.name);
+        return (a.id || 0) - (b.id || 0); // Default featured
+      });
+  }, [products, searchQuery, selectedCategory, priceRange, sortBy]);
 
-  const filteredProducts = products.filter((p) => {
-    const query = searchQuery.toLowerCase().trim();
-    const matchesSearch = !query || p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
-    const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
-    const matchesPrice = p.price <= priceRange;
-    return matchesSearch && matchesCategory && matchesPrice;
-  }).sort((a, b) => {
-    if (sortBy === "price_asc") return a.price - b.price;
-    if (sortBy === "price_desc") return b.price - a.price;
-    return a.name.localeCompare(b.name);
-  });
+  const handleHeroSearch = (query) => {
+    setSearchQuery(query);
+  };
 
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("All");
+    setPriceRange(maxProductPrice);
+    setSortBy("featured");
+  };
+
+  const isFiltered = searchQuery !== "" || selectedCategory !== "All" || priceRange < maxProductPrice || sortBy !== "featured";
 
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans selection:bg-amber-500 selection:text-white overflow-x-hidden transition-colors duration-300">
-      <HeroCarousel products={products} addToCart={addToCart} />
+      
+      {/* 1. Hero Section with Carousel & Direct Search */}
+      <HeroSection products={products} addToCart={addToCart} onSearchSubmit={handleHeroSearch} />
+
+      {/* 2. Trust Bar Marquee */}
       <TrustBar />
 
-      <section className="bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 py-20 transition-colors duration-300">
+      {/* 3. Curated Category Discovery */}
+      <section className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800/80 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-2 mb-12">
-          {/* <div className="flex flex-col md:flex-row md:items-end justify-between mb-12"> */}
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12">
             <div>
-              <span className="inline-flex items-center gap-2 text-xs font-extrabold text-amber-600 uppercase tracking-widest mb-2">
-                <span className="w-5 h-px bg-amber-500" />
-                Shop By Category
-                <span className="w-5 h-px bg-amber-500" />
+              <span className="inline-flex items-center gap-2 text-xs font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1.5">
+                <span className="w-4 h-0.5 bg-amber-500 rounded-full" />
+                Curated Collections
               </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Curated Local Collections
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                Shop by Regional Category
               </h2>
-              <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">Explore authentic Nepali goods by category</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
+                Handcrafted textiles, organic Himalayan harvests, and artisanal traditions.
+              </p>
             </div>
-            <Link to="/category/Traditional%20Apparel" className="hidden md:inline-flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition group mt-4 md:mt-0">
-              View All
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+
+            <Link
+              to="/category/Traditional%20Apparel"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors group mt-3 md:mt-0"
+            >
+              <span>View All Categories</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {categories.map((cat) => (
               <Link
                 key={cat.name}
                 to={`/category/${encodeURIComponent(cat.name)}`}
-                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-200/70 dark:border-slate-800"
               >
                 <ImageWithSkeleton
                   src={cat.image}
                   alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                 />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                
+                {/* Gradient overlay for clear contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent transition-opacity duration-300" />
+                
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <span className="inline-block bg-amber-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider mb-2">
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-left">
+                  <span className="inline-block bg-amber-500/95 text-white text-[9px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
                     {cat.count}
                   </span>
-                  <h3 className="text-sm font-extrabold text-white leading-tight">{cat.name}</h3>
+                  <h3 className="text-sm sm:text-base font-extrabold text-white leading-tight">
+                    {cat.name}
+                  </h3>
+                  <p className="text-[11px] text-slate-200/90 hidden sm:block line-clamp-1 mt-0.5 font-normal">
+                    {cat.subtitle}
+                  </p>
                 </div>
-                {/* Hover arrow */}
-                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+
+                {/* Hover circle arrow */}
+                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:scale-105">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
               </Link>
             ))}
           </div>
+
         </div>
       </section>
 
+      {/* 4. Product Catalog & Live Filter Discovery Suite */}
       <section
         id="catalog"
-        className="py-20 bg-slate-50 dark:bg-slate-900/30 transition-colors duration-300"
+        className="py-16 sm:py-20 bg-slate-50/60 dark:bg-slate-900/30 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              Featured Products
+          
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-3">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              Authentic Nepali Catalog
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Authentic Nepalese Goods
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+              Featured Products & Local Crafts
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mt-2">
-              Handpicked, sustainable items supporting rural communities across Nepal.
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-2">
+              Every order supports local artisan families and verified farmers across Nepal.
             </p>
           </div>
 
-          <div className="mb-8 max-w-4xl mx-auto space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search products by name or category..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-800 rounded-full bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm shadow-sm transition-all duration-300"
-              />
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
-                >
-                  <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+          {/* Discovery Control Center */}
+          <div className="mb-10 max-w-5xl mx-auto space-y-4">
+            
+            {/* Category Chips Bar */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {availableCategories.map((cat) => {
+                const isActive = selectedCategory === cat;
+                const count = cat === "All" ? products.length : products.filter(p => p.category === cat).length;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-amber-500 text-white shadow-md shadow-amber-500/25"
+                        : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                    }`}
+                  >
+                    <span>{cat}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? "bg-white/25 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400"}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-4 bg-white dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
-              <div className="w-full md:w-1/3 flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Category</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5 transition-colors"
-                >
-                  {availableCategories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
+            {/* Search Input & Secondary Filter Row */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-4">
               
-              <div className="w-full md:w-1/3 flex flex-col gap-1">
-                <label className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  <span>Max Price</span>
-                  <span className="text-amber-600 dark:text-amber-400">Rs. {priceRange.toLocaleString()}</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max={maxPrice} 
-                  value={priceRange} 
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-amber-500 my-1.5" 
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search catalog by product name, category, or region..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Filter catalog products"
+                  className="w-full pl-11 pr-10 py-3 border border-slate-200 dark:border-slate-700/80 rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm transition-all"
                 />
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    aria-label="Clear product filter query"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  >
+                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
 
-              <div className="w-full md:w-1/3 flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sort By</label>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2.5 transition-colors"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="price_asc">Price (Low to High)</option>
-                  <option value="price_desc">Price (High to Low)</option>
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 items-center">
+                {/* Max Price Range Slider */}
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-400">
+                    <span className="uppercase tracking-wider text-[10px] text-slate-400">Max Budget</span>
+                    <span className="text-amber-600 dark:text-amber-400 font-extrabold">Rs. {priceRange.toLocaleString()}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxProductPrice}
+                    value={priceRange}
+                    onChange={(e) => setPriceRange(Number(e.target.value))}
+                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                </div>
+
+                {/* Sort Option */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+                    Sort Products
+                  </label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl focus:ring-2 focus:ring-amber-500 p-2.5 transition-colors cursor-pointer"
+                  >
+                    <option value="featured">Featured / Default</option>
+                    <option value="name">Product Name (A-Z)</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                  </select>
+                </div>
               </div>
+
+              {/* Status Row */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                <span>
+                  Showing <strong className="text-slate-800 dark:text-slate-200">{filteredProducts.length}</strong> of {products.length} products
+                </span>
+                {isFiltered && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Reset All Filters</span>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
             </div>
+
           </div>
 
+          {/* Product Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <svg
-                className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">
-                No products found
+            <div className="text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl mx-auto shadow-xs">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-200">
+                No products match your criteria
               </h3>
-              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1">
-                Try resetting the filters or modifying your search query.
+              <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1 max-w-sm mx-auto">
+                Try widening your price range, searching with fewer terms, or clearing your category filters.
               </p>
               <button
-                onClick={() => {
-                  setSearchQuery("");
-                }}
-                className="mt-4 bg-amber-500 text-white font-semibold text-xs px-4.5 py-2 rounded-full hover:bg-amber-600 transition shadow cursor-pointer"
+                type="button"
+                onClick={handleResetFilters}
+                className="mt-5 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition-all shadow-xs cursor-pointer"
               >
-                Reset Search
+                Reset Filters
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 items-stretch">
               {filteredProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
+
         </div>
       </section>
 
+      {/* 5. Artisan Heritage & Social Impact Feature Banner */}
+      <section className="py-16 sm:py-20 bg-slate-950 text-white relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-950/30 via-slate-900 to-amber-950/30 pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div className="lg:col-span-6 space-y-4">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                Artisan Empowerment
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                From Nepal's High Hills Directly to Your Doorstep
+              </h2>
+              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                By purchasing through ShopEase Nepal, you directly support over 150+ generational weavers in Palpa, organic tea pickers in Ilam, and bronze artisans in Lalitpur with fair and transparent compensation.
+              </p>
+
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400">100%</div>
+                  <div className="text-[11px] font-medium text-slate-300">Authentic Sourced</div>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400">7</div>
+                  <div className="text-[11px] font-medium text-slate-300">Provinces Served</div>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400">24-48h</div>
+                  <div className="text-[11px] font-medium text-slate-300">Valley Express</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                  🏔️
+                </div>
+                <h4 className="font-extrabold text-sm text-white">Highland Organics</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Pure high-altitude orthodox teas and wild herbs from organic certified estates.
+                </p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                  🧵
+                </div>
+                <h4 className="font-extrabold text-sm text-white">Handwoven Dhaka</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Traditional geometric motifs hand-loomed with natural fibers and zero synthetic dyes.
+                </p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm space-y-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                  🛡️
+                </div>
+                <h4 className="font-extrabold text-sm text-white">Doorstep COD</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Inspect your goods first, then pay in cash to the delivery rider safely.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 6. Interactive Nationwide Delivery Map */}
       <section
         id="delivery"
-        className="py-20 bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800 transition-colors duration-300"
+        className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 transition-colors duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NepalDeliveryMap
@@ -612,119 +883,139 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900 relative overflow-hidden transition-colors duration-300">
+      {/* 7. Verified Customer Testimonials */}
+      <section className="py-16 sm:py-24 bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900 text-white relative overflow-hidden transition-colors duration-300">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 backdrop-blur-sm">
               <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-              Customer Reviews
+              Customer Experiences
             </span>
-            <h2 className="text-3xl font-extrabold text-white tracking-tight">
-              What Our Customers Say
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+              Loved by Shoppers Across Nepal
             </h2>
-            <p className="text-slate-100 text-sm mt-2">Real feedback from verified shoppers across Nepal</p>
+            <p className="text-slate-300 text-xs sm:text-sm mt-1.5">
+              Verified feedback from Kathmandu to remote mountain valleys.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {testimonials.map((t, i) => (
+            {testimonials.map((t) => (
               <div
                 key={t.name}
-                className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 flex flex-col justify-between hover:bg-white/10 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
+                className="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:bg-white/10 hover:-translate-y-1.5 transition-all duration-300 group shadow-xs"
               >
-                {/* Decorative quote mark */}
-                <div className="absolute top-3 right-4 text-6xl text-amber-500/10 font-serif leading-none group-hover:text-amber-500/20 transition-colors duration-300">"</div>
+                <div className="absolute top-2 right-3 text-5xl text-amber-500/15 font-serif leading-none select-none">"</div>
                 <div>
-                  <div className="flex items-center gap-0.5 mb-4">
+                  <div className="flex items-center gap-1 mb-3.5" aria-label={`Rating: ${t.rating} out of 5 stars`}>
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <p className="text-sm text-slate-100 italic leading-relaxed mb-6">
+                  <p className="text-xs sm:text-sm text-slate-100 leading-relaxed italic mb-6">
                     &ldquo;{t.text}&rdquo;
                   </p>
                 </div>
+
                 <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-xs font-extrabold text-white shadow-md flex-shrink-0">
+                  <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-xs font-black text-white shadow-xs shrink-0">
                     {t.avatar}
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-sm">{t.name}</h4>
-                    <span className="text-xs text-slate-300">{t.location}, Nepal</span>
+                    <h4 className="font-bold text-white text-xs sm:text-sm">{t.name}</h4>
+                    <span className="text-[11px] text-slate-300">{t.location}, Nepal</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
         </div>
       </section>
 
+      {/* 8. Frequently Asked Questions & Support CTA */}
       <section
         id="faq"
-        className="py-24 bg-white dark:bg-slate-950 transition-colors duration-300 relative"
+        className="py-16 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300 relative"
       >
-        {/* Faint background pattern */}
-        <div className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #f59e0b 1px, transparent 0)", backgroundSize: "24px 24px" }} />
-        <div className="max-w-3xl mx-auto px-6 relative">
-          <div className="text-center mb-14">
-            <span className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              Help Desk
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 relative z-10">
+          
+          <div className="text-center mb-10 sm:mb-14">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-extrabold uppercase tracking-widest mb-3">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Help & Support
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               Frequently Asked Questions
             </h2>
-            <p className="text-slate-400 dark:text-slate-500 text-sm mt-2">
-              Everything you need to know about shopping with us
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5">
+              Clear answers regarding Cash on Delivery, shipping, and authentic products.
             </p>
           </div>
 
           <div className="space-y-3">
-            {faqs.map((faq) => (
-              <div
-                key={faq.q}
-                className={`rounded-2xl border overflow-hidden transition-all duration-300 ${
-                  openFaq === faq.q
-                    ? "border-amber-200 dark:border-amber-800/50 shadow-md shadow-amber-50 dark:shadow-amber-950/20"
-                    : "border-slate-100 dark:border-slate-800"
-                }`}
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === faq.q ? null : faq.q)}
-                  className={`w-full flex items-start justify-between gap-4 px-6 py-5 text-left text-sm cursor-pointer transition-all duration-200 ${
-                    openFaq === faq.q
-                      ? "bg-amber-50 dark:bg-amber-950/20 font-extrabold text-amber-700 dark:text-amber-400"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/70"
+            {faqs.map((faq) => {
+              const isOpen = openFaq === faq.q;
+              return (
+                <div
+                  key={faq.q}
+                  className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                    isOpen
+                      ? "border-amber-300 dark:border-amber-800/80 shadow-sm bg-amber-50/20 dark:bg-amber-950/10"
+                      : "border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900"
                   }`}
                 >
-                  <span className="flex-1 leading-snug">{faq.q}</span>
-                  <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                    openFaq === faq.q ? "bg-amber-500 text-white rotate-180" : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
-                  }`}>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </button>
-                {openFaq === faq.q && (
-                  <div className="px-6 pb-5 pt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed bg-amber-50/50 dark:bg-amber-950/10 border-t border-amber-100 dark:border-amber-900/30 animate-in slide-in-from-top-1 duration-200">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : faq.q)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-start justify-between gap-4 px-5 py-4 sm:px-6 sm:py-4.5 text-left text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 cursor-pointer"
+                  >
+                    <span className="flex-1 leading-snug">{faq.q}</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 ${
+                      isOpen ? "bg-amber-500 text-white rotate-180" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                    }`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-5 pb-4.5 sm:px-6 sm:pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-amber-100/60 dark:border-amber-900/30 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* CTA below FAQ */}
-          <div className="mt-12 text-center p-8 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/10 border border-amber-100 dark:border-amber-900/30">
-            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-4">Still have questions? Our support team is here to help.</p>
-            <Link to="/contact" className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm hover:-translate-y-0.5">
-              Contact Support
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+          {/* Direct Support Contact Callout */}
+          <div className="mt-10 sm:mt-12 text-center p-6 sm:p-8 rounded-3xl bg-amber-500/10 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40">
+            <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mb-1">
+              Have questions about your order or customized bulk gifts?
+            </h4>
+            <p className="text-slate-500 dark:text-slate-400 text-xs mb-4">
+              Our Kathmandu support team is available Sunday–Friday from 9:00 AM to 6:00 PM.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs transition-all cursor-pointer"
+            >
+              <span>Contact Support Team</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
+
         </div>
       </section>
 
