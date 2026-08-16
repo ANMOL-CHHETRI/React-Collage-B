@@ -11,7 +11,7 @@ window.addEventListener('error', e => {
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <BrowserRouter basename={import.meta.env.BASE_URL}>
     <App />
   </BrowserRouter>
 );

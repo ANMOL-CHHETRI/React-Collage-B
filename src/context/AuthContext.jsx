@@ -153,6 +153,9 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     setError("")
     try {
+      if (!auth) {
+        throw new Error("Firebase Authentication is not configured. Please set your Firebase credentials.")
+      }
       const provider = new GoogleAuthProvider()
       const result = await signInWithPopup(auth, provider)
       const googleData = result.user

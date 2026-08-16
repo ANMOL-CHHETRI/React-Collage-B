@@ -21,6 +21,10 @@ const setConnected = (status) => {
 
 export const checkBackendHealth = async () => {
   try {
+    if (!db) {
+      setConnected(false);
+      return false;
+    }
     // A simple read to verify connection
     await getDoc(doc(db, "_health", "check"));
     setConnected(true);

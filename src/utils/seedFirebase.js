@@ -93,6 +93,10 @@ const defaultOrders = [
 ]
 
 export const seedDatabase = async () => {
+  if (!db) {
+    console.warn("Firestore db is not initialized, skipping database seeding.")
+    return
+  }
   try {
     // 1. Seed Categories
     const categoriesCol = collection(db, "categories")
