@@ -1,0 +1,37 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
+    }
+
+    function isUnder10MB() {
+      return request.resource.size <= 10 * 1024 * 1024;
+    }
+
+    // 1. Collage Images: collages/{collageId}/{imageId}/{fileName}
+    match /collages/{collageId}/{imageId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage() && isUnder10MB();
+      allow delete: if isAuthenticated();
+    }
+
+    // 2. User Avatars: avatars/{userId}/{fileName}
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isImage() && isUnder10MB();
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 3. Product Images (Admin only)
+    match /products/{productId}/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAuthenticated() && isImage() && isUnder10MB();
+    }
+  }
+}
