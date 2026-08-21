@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { onConnectionChange } from "../utils/api";
+import { ImageWithSkeleton } from "./ImageWithSkeleton";
 
 const Navbar = () => {
   const location = useLocation();
@@ -547,9 +548,9 @@ const Navbar = () => {
                     title="User Dashboard"
                     className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 cursor-pointer focus-ring"
                   >
-                    {user.avatar ? (
-                      <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
-                        <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                    {(user.avatar || user.photoURL) ? (
+                      <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                        <ImageWithSkeleton src={user.avatar || user.photoURL} alt="Profile" className="w-full h-full object-cover" fallbackType="avatar" />
                       </div>
                     ) : (
                       <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-[10px] uppercase border border-slate-200 dark:border-slate-700">

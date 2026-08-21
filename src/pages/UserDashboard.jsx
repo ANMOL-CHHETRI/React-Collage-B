@@ -445,10 +445,10 @@ const UserDashboard = () => {
         <div className="mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
           <div className="flex items-center gap-3">
             <div className="relative group w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase overflow-hidden">
-              {user?.avatar ? (
-                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              {(user?.avatar || user?.photoURL) ? (
+                <ImageWithSkeleton src={user.avatar || user.photoURL} alt="Profile" className="w-full h-full object-cover" fallbackType="avatar" />
               ) : (
-                user?.name ? user.name[0] : "S"
+                user?.name ? user.name[0] : user?.username ? user.username[0] : "U"
               )}
               <label className="absolute inset-0 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-[8px] font-bold">
                  Upload
@@ -915,10 +915,10 @@ const UserDashboard = () => {
             {/* Avatar Section */}
             <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100 dark:border-slate-800">
                <div className="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center overflow-hidden border-2 border-orange-200 dark:border-orange-900/50">
-                  {user?.avatar ? (
-                    <img src={user.avatar} className="w-full h-full object-cover" />
+                  {(user?.avatar || user?.photoURL) ? (
+                    <ImageWithSkeleton src={user.avatar || user.photoURL} alt="Avatar" className="w-full h-full object-cover" fallbackType="avatar" />
                   ) : (
-                    <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">{user?.name?.[0] || "S"}</span>
+                    <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">{user?.name?.[0] || user?.username?.[0] || "U"}</span>
                   )}
                </div>
                <div className="flex flex-col gap-2 w-full sm:w-auto">

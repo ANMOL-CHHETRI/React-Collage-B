@@ -189,21 +189,15 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogleData = async (googleProfile) => {
     setError("")
     setLoading(true)
     try {
-      if (!auth) {
-        throw new Error("Firebase Authentication is not configured. Please set your Firebase credentials.")
-      }
-      const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-      const googleData = result.user
-      
-      const email = googleData.email
+      const email = googleProfile?.email
+      const name = googleProfile?.name || "Google User"
+      const photoURL = googleProfile?.picture || googleProfile?.photoURL || null
       if (!email) {
-        setError("Unable to get account email from Google.")
-        return false
+        throw new Error("Unable to get account email from Google profile.")
       }
 
       let usersList = []
@@ -220,18 +214,17 @@ export const AuthProvider = ({ children }) => {
           setError("Your account has been banned due to violations.")
           return false
         }
-        // Update avatar if needed
-        if (!existingUser.avatar && googleData.photoURL) {
+        if (photoURL && (!existingUser.avatar || existingUser.avatar !== photoURL)) {
           try {
-            await api.updateProfile(existingUser.username, { avatar: googleData.photoURL })
+            await api.updateProfile(existingUser.username, { avatar: photoURL, photoURL })
           } catch (e) {
             console.warn("Avatar sync note:", e)
           }
         }
         const canonicalUser = { 
           ...existingUser, 
-          avatar: existingUser.avatar || googleData.photoURL,
-          photoURL: googleData.photoURL || existingUser.avatar,
+          avatar: photoURL || existingUser.avatar,
+          photoURL: photoURL || existingUser.photoURL || existingUser.avatar,
           role: (existingUser.role || "user").toLowerCase() 
         }
         setUser(canonicalUser)
@@ -240,7 +233,7 @@ export const AuthProvider = ({ children }) => {
         return true
       }
 
-      // Create new account
+      // Create new account with Google details
       const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "")
       let finalUsername = baseUsername || "google_user"
       if ((usersList || []).some((u) => u.username === finalUsername)) {
@@ -248,21 +241,21 @@ export const AuthProvider = ({ children }) => {
       }
 
       let data = {
-        name: googleData.displayName || "Google User",
+        name,
         username: finalUsername,
         email,
         role: "user",
-        avatar: googleData.photoURL || null,
-        photoURL: googleData.photoURL || null
+        avatar: photoURL || null,
+        photoURL: photoURL || null
       }
 
       try {
         const created = await api.register(
-          googleData.displayName || "Google User",
+          name,
           finalUsername,
           email,
           "",
-          googleData.photoURL || null
+          photoURL || null
         )
         data = { ...data, ...created }
       } catch (err) {
@@ -271,14 +264,52 @@ export const AuthProvider = ({ children }) => {
 
       const canonicalUser = { 
         ...data, 
-        avatar: data.avatar || googleData.photoURL,
-        photoURL: googleData.photoURL || data.avatar,
+        avatar: photoURL || data.avatar,
+        photoURL: photoURL || data.photoURL,
         role: (data.role || "user").toLowerCase() 
       }
       setUser(canonicalUser)
       localStorage.setItem("shopease_user", JSON.stringify(canonicalUser))
       if (typeof navigate === "function") navigate("/")
       return true
+
+    } catch (err) {
+      console.error("Google Sign-In Error:", err)
+      setError(err.message || "Failed to login with Google")
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loginWithGoogle = async () => {
+    setError("")
+    setLoading(true)
+    try {
+      if (!auth) {
+        throw new Error("Firebase Authentication is not configured. Please set your Firebase credentials.")
+      }
+      const provider = new GoogleAuthProvider()
+      provider.addScope("profile")
+      provider.addScope("email")
+      const result = await signInWithPopup(auth, provider)
+      const googleData = result.user
+      
+      const email = googleData.email
+      if (!email) {
+        setError("Unable to get account email from Google.")
+        return false
+      }
+
+      const photoURL = googleData.photoURL || (Array.isArray(googleData.providerData) && googleData.providerData[0]?.photoURL) || null
+      const displayName = googleData.displayName || "Google User"
+
+      return await loginWithGoogleData({
+        email,
+        name: displayName,
+        picture: photoURL,
+        photoURL
+      })
 
     } catch (err) {
       console.error("Google Sign-In Error:", err)
@@ -470,6 +501,7 @@ export const AuthProvider = ({ children }) => {
         loginUser,
         login,
         loginWithGoogle,
+        loginWithGoogleData,
         changePassword,
         adminResetUserPassword,
         userSetNewPassword,
