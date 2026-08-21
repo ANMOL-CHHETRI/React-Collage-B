@@ -1,8 +1,8 @@
 # REST API Documentation — React-Collage-B
 
 Base URL:
-* **Production**: `https://us-central1-shop-ease-database.cloudfunctions.net/api/api/v1`
-* **Local Emulator**: `http://127.0.0.1:5001/shop-ease-database/us-central1/api/api/v1`
+* **Production**: `https://us-central1-shopease-nepal-anmol-196e7.cloudfunctions.net/api/api/v1`
+* **Local Emulator**: `http://127.0.0.1:5001/shopease-nepal-anmol-196e7/us-central1/api/api/v1`
 
 ---
 
@@ -151,11 +151,36 @@ Content-Type: application/json
 
 ---
 
-### ── Reactions ──
-* `GET /api/v1/collages/:id/reactions`
-  * **Auth**: Public
-* `POST /api/v1/collages/:id/reactions`
-  * **Auth**: Authenticated
-  * **Body**: `{ "type": "like" | "heart" | "celebrate" }`
-* `DELETE /api/v1/collages/:id/reactions`
-  * **Auth**: Authenticated (Removes active reaction)
+### ── Audit Logs ──
+* `GET /api/v1/audit-logs`
+  * **Auth**: `admin` role required
+  * **Rate Limit**: Strict (30 req/min)
+  * **Query**: `?limit=20&startAfter=doc_id_xyz`
+  * **Response**:
+    ```json
+    {
+      "data": [
+        {
+          "id": "log-123",
+          "actorId": "admin-uid",
+          "action": "UPDATE_USER_ROLE",
+          "targetType": "user",
+          "targetId": "target-uid",
+          "metadata": { "previousRole": "viewer", "newRole": "editor" },
+          "createdAt": "2026-08-21T10:00:00.000Z"
+        }
+      ],
+      "hasMore": false
+    }
+    ```
+
+---
+
+## 4. Observability & Rate Limiting Headers
+
+Every API response includes:
+* `X-Request-ID`: Client-provided or server-generated UUID for end-to-end request tracing.
+* `X-RateLimit-Limit`: Maximum allowable requests per 60-second window (120 for standard, 30 for mutations).
+* `X-RateLimit-Remaining`: Remaining request quota for the active client IP/user.
+* `X-RateLimit-Reset`: Seconds remaining until window reset.
+

@@ -113,7 +113,7 @@ firebase emulators:start
 
 ### Configured Ports
 * **Emulator Suite UI**: `http://localhost:4000`
-* **Cloud Functions API**: `http://127.0.0.1:5001/shop-ease-database/us-central1/api/api/v1`
+* **Cloud Functions API**: `http://127.0.0.1:5001/shopease-nepal-anmol-196e7/us-central1/api/api/v1`
 * **Firestore Emulator**: `localhost:8080`
 * **Authentication Emulator**: `localhost:9099`
 * **Storage Emulator**: `localhost:9199`

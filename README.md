@@ -30,40 +30,20 @@ npm run build   # Builds client to dist/
 ### 4. Run Backend Tests
 ```bash
 cd functions
-npm run test    # Runs Vitest suite (14/14 tests)
-```
-
----
-
-## 📂 Repository Structure
-
-```
-React-Collage-B/
-├── .github/                 # GitHub Actions CI/CD workflows
-├── docs/                    # Organized documentation
-│   ├── architecture/        # Frontend & routing SOPs
-│   ├── backend/             # Backend architecture & REST API documentation
-│   ├── development/         # Developer notes & credentials guide
-│   ├── reports/             # Internship reports & weekly progress logs
-│   └── ui-ux/               # UI/UX audit & redesign logs
-├── functions/               # Firebase Cloud Functions (Express 5 + TypeScript + Admin SDK)
-├── public/                  # Static assets & cultural photography
-├── QA/                      # Playwright test specs & execution reports
-├── src/                     # React 19 + Tailwind CSS 4 frontend application
-├── tools/                   # Maintenance scripts & archived utilities
-├── firebase.json            # Firebase emulators & hosting config
-├── firestore.rules          # Production security rules
-├── firestore.indexes.json   # Composite query indexes
-├── storage.rules            # Firebase Cloud Storage security rules
-└── package.json             # Root dependencies & scripts
+npm run test    # Runs Vitest suite (41/41 tests passing)
 ```
 
 ---
 
 ## 📚 Documentation Index
 
-* 📖 **Backend Guide**: [docs/backend/BACKEND.md](docs/backend/BACKEND.md)
+* 🏛️ **System Architecture**: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)
+* 📖 **Backend Operations Guide**: [docs/backend/BACKEND.md](docs/backend/BACKEND.md)
 * 📡 **REST API Reference**: [docs/backend/API.md](docs/backend/API.md)
+* 🚀 **Production Deployment Runbook**: [docs/deployment/DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)
+* ✅ **Production Readiness Checklist**: [docs/deployment/PRODUCTION_CHECKLIST.md](docs/deployment/PRODUCTION_CHECKLIST.md)
+* 🛡️ **Backup & Disaster Recovery**: [docs/deployment/BACKUP_AND_RECOVERY.md](docs/deployment/BACKUP_AND_RECOVERY.md)
+* 🔒 **Final Security & Compliance Audit**: [docs/audits/FINAL_SECURITY_AUDIT.md](docs/audits/FINAL_SECURITY_AUDIT.md)
 * 🔐 **Login & Test Credentials**: [docs/development/CREDENTIALS.md](docs/development/CREDENTIALS.md)
 * 🎨 **UI/UX Audit & Design**: [docs/ui-ux/ui-ux-audit.md](docs/ui-ux/ui-ux-audit.md)
 * 📝 **Internship Reports**: [docs/reports/internship/](docs/reports/internship/)
