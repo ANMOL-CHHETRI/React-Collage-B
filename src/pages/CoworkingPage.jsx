@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useToast } from "../context/ToastContext";
+import { DEFAULT_PRODUCT_FALLBACK } from "../utils/imageUrl";
 
 // Local ImageWithSkeleton as per architecture invariants
 const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
@@ -26,10 +27,8 @@ const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
         onError={() => setError(true)}
         src={
           error
-            ? fallbackSrc ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-            : src ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
+            ? fallbackSrc || DEFAULT_PRODUCT_FALLBACK
+            : src || DEFAULT_PRODUCT_FALLBACK
         }
         alt={alt}
         className={`${className} transition-opacity duration-300 ${loaded || error ? "opacity-100" : "opacity-0"}`}

@@ -11,25 +11,29 @@ import { ImageWithSkeleton } from "../components/ImageWithSkeleton";
 const categories = [
   {
     name: "Traditional Apparel",
-    image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg",
+    gradient: "from-amber-600 to-orange-700 dark:from-amber-700 dark:to-orange-900",
+    iconPath: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01",
     subtitle: "Dhaka Topis, Saree & Traditional Attire",
     count: "Handwoven",
   },
   {
     name: "Organic Tea & Coffee",
-    image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
+    gradient: "from-emerald-600 to-teal-700 dark:from-emerald-700 dark:to-teal-900",
+    iconPath: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
     subtitle: "Ilam Orthodox Tea & Himalayan Beans",
     count: "100% Organic",
   },
   {
     name: "Local Handicrafts",
-    image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
+    gradient: "from-amber-700 to-amber-900 dark:from-amber-800 dark:to-amber-950",
+    iconPath: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z",
     subtitle: "Patan Statues, Singing Bowls & Woodwork",
     count: "Artisan Made",
   },
   {
     name: "Herbs & Spices",
-    image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
+    gradient: "from-red-600 to-orange-700 dark:from-red-700 dark:to-orange-900",
+    iconPath: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
     subtitle: "Wild Himalayan Honey, Shilajit & Spices",
     count: "Pure Natural",
   },
@@ -416,7 +420,28 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                 </div>
               </div>
             ) : (
-              <div className="h-96 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div className="relative bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-slate-100 dark:to-slate-900 rounded-2xl border border-amber-200/60 dark:border-slate-800 p-6 sm:p-8 shadow-xs text-center space-y-4">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </div>
+                <div className="space-y-1.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-700 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wide">
+                    👑 Direct Artisan Marketplace
+                  </span>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white pt-1">
+                    Authentic Himalayan Crafts
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    Connecting Nepali traditional weavers, organic tea plantations, and generational bronze sculptors directly with customers nationwide.
+                  </p>
+                </div>
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">✓ 100% Cash on Delivery</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">✓ 7 Provinces Covered</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -536,26 +561,30 @@ const HomePage = () => {
               <Link
                 key={cat.name}
                 to={`/category/${encodeURIComponent(cat.name)}`}
-                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
+                className={`group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-800 bg-gradient-to-br ${cat.gradient} p-4 sm:p-5 flex flex-col justify-between`}
               >
-                <ImageWithSkeleton
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                
-                {/* Gradient overlay for clear text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity duration-300" />
-                
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-left">
-                  <span className="inline-block bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-1.5 shadow-xs">
+                {/* Decorative background motif & glowing orb */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500" />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "20px 20px" }} />
+
+                {/* Top Badge & Vector Icon */}
+                <div className="relative z-10 flex items-start justify-between">
+                  <span className="inline-block bg-white/20 backdrop-blur-xs text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-white/20">
                     {cat.count}
                   </span>
+                  <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 group-hover:scale-110 transition-transform duration-300">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d={cat.iconPath} />
+                    </svg>
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div className="relative z-10 text-left">
                   <h3 className="text-sm sm:text-base font-extrabold text-white leading-tight">
                     {cat.name}
                   </h3>
-                  <p className="text-[11px] text-slate-200/90 hidden sm:block line-clamp-1 mt-0.5 font-normal">
+                  <p className="text-[11px] text-white/80 hidden sm:block line-clamp-2 mt-1 font-normal leading-snug">
                     {cat.subtitle}
                   </p>
                 </div>

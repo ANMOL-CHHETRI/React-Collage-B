@@ -1,23 +1,23 @@
 import { collection, getDocs, writeBatch, doc } from "firebase/firestore"
 import { db } from "./firebase"
-import { defaultProducts } from "../data/productsData"
+import { DEFAULT_CATEGORY_FALLBACK, DEFAULT_PRODUCT_FALLBACK } from "./imageUrl"
 
 const defaultCategories = [
   {
     name: "Traditional Apparel",
-    image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg"
+    image: DEFAULT_CATEGORY_FALLBACK
   },
   {
     name: "Organic Tea & Coffee",
-    image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
+    image: DEFAULT_CATEGORY_FALLBACK
   },
   {
     name: "Local Handicrafts",
-    image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
+    image: DEFAULT_CATEGORY_FALLBACK
   },
   {
     name: "Herbs & Spices",
-    image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg"
+    image: DEFAULT_CATEGORY_FALLBACK
   }
 ]
 
@@ -75,7 +75,7 @@ const defaultOrders = [
     date: new Date().toISOString(),
     amount: "Rs. 2,800",
     items: [
-      { name: "Gunyu Cholo", price: 2800, quantity: 1, image: "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg" }
+      { name: "Gunyu Cholo", price: 2800, quantity: 1, image: DEFAULT_PRODUCT_FALLBACK }
     ]
   },
   {
@@ -87,7 +87,7 @@ const defaultOrders = [
     date: new Date(Date.now() - 86400000 * 2).toISOString(),
     amount: "Rs. 1,200",
     items: [
-      { name: "Premium Dhaka Topi", price: 1200, quantity: 1, image: "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg" }
+      { name: "Premium Dhaka Topi", price: 1200, quantity: 1, image: DEFAULT_PRODUCT_FALLBACK }
     ]
   }
 ]
@@ -112,19 +112,8 @@ export const seedDatabase = async () => {
       console.log("Categories seeded successfully.")
     }
 
-    // 2. Seed Products
-    const productsCol = collection(db, "products")
-    const productsSnap = await getDocs(productsCol)
-    if (productsSnap.empty) {
-      console.log("Seeding products into Firestore...")
-      const batch = writeBatch(db)
-      defaultProducts.forEach((prod) => {
-        const docRef = doc(productsCol, String(prod.id))
-        batch.set(docRef, prod)
-      })
-      await batch.commit()
-      console.log("Products seeded successfully.")
-    }
+    // 2. Real Products Policy — Products are imported exclusively via tools/import_real_products.mjs
+    // Zero prototype mock products are seeded automatically.
 
     // 3. Seed Testimonials
     const testimonialsCol = collection(db, "testimonials")

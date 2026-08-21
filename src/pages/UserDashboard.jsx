@@ -8,6 +8,7 @@ import { OrderCardUserSkeleton } from "../components/Skeleton"
 import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
 import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
+import { DEFAULT_PRODUCT_FALLBACK } from "../utils/imageUrl"
 import { LineChart, Line, PieChart, Pie, Cell, Tooltip, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 
@@ -277,7 +278,7 @@ const UserDashboard = () => {
       name: sellerForm.name,
       price: parsedPrice,
       category: sellerForm.category,
-      image: sellerForm.image || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg",
+      image: sellerForm.image || DEFAULT_PRODUCT_FALLBACK,
       description: sellerForm.description,
       badge: null
     }
