@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -60,27 +60,26 @@ const UserLoginPage = () => {
   );
 
   /* ── Mobile Easter egg (10 clicks on icon) ── */
-  const [iconClicks, setIconClicks] = useState(0);
-  const iconResetRef = React.useRef(null);
+  const iconClicksRef = useRef(0);
+  const iconResetRef = useRef(null);
 
   const handleIconClick = () => {
     if (iconResetRef.current) clearTimeout(iconResetRef.current);
-    iconResetRef.current = setTimeout(() => setIconClicks(0), 3000);
+    iconResetRef.current = setTimeout(() => {
+      iconClicksRef.current = 0;
+    }, 3000);
     
-    setIconClicks(prev => {
-      const next = prev + 1;
-      if (next >= 10) {
-        navigate("/admin-login");
-        return 0;
-      }
-      return next;
-    });
+    iconClicksRef.current += 1;
+    if (iconClicksRef.current >= 10) {
+      iconClicksRef.current = 0;
+      navigate("/admin-login");
+    }
   };
 
   /* ── 4-corner Easter egg ── */
   const [cornersHit, setCornersHit] = useState(new Set());
   const [cornerFlash, setCornerFlash] = useState(null); // which corner is flashing
-  const cornerResetRef = React.useRef(null);
+  const cornerResetRef = useRef(null);
 
   const handleCornerClick = (corner) => {
     // Flash effect
@@ -152,7 +151,7 @@ const UserLoginPage = () => {
   };
 
   /* ── Login submit ── */
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     /* Recovery flow */
@@ -184,8 +183,7 @@ const UserLoginPage = () => {
       setError("Account locked. Use Forgot Password to reset."); return;
     }
 
-    const cur = username;
-    const ok = login(username, password);
+    const ok = await login(username, password);
     if (!ok) {
       setPassword("");
       const n = failedAttempts + 1;

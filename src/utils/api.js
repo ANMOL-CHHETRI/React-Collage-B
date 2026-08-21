@@ -28,7 +28,7 @@ export const checkBackendHealth = async () => {
     await getDoc(doc(db, "_health", "check"));
     setConnected(true);
     return true;
-  } catch (e) {
+  } catch {
     setConnected(false);
     return false;
   }

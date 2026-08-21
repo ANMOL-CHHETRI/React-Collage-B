@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 // JWT Helper
 const parseJwt = (token) => {
@@ -25,14 +25,14 @@ const GoogleSignInButton = ({ onGoogleSuccess, dark = false }) => {
     import.meta.env.VITE_GOOGLE_CLIENT_ID ||
     "633391699225-qq38jdvn78oaf7pd4l92uj9542s2djhh.apps.googleusercontent.com";
 
-  const handleCredentialResponse = (response) => {
+  const handleCredentialResponse = useCallback((response) => {
     if (response?.credential) {
       const decoded = parseJwt(response.credential);
       if (decoded && onGoogleSuccess) {
         onGoogleSuccess(decoded);
       }
     }
-  };
+  }, [onGoogleSuccess]);
 
   useEffect(() => {
     let intervalId = null;
@@ -79,7 +79,7 @@ const GoogleSignInButton = ({ onGoogleSuccess, dark = false }) => {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [clientId, dark]);
+  }, [clientId, dark, handleCredentialResponse]);
 
   // Fallback interactive Google Sign-In button if GIS hasn't rendered yet or in custom view
   const handleFallbackClick = () => {

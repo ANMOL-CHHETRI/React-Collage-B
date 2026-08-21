@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProducts } from "../context/ProductContext";
 import { useCart } from "../context/CartContext";
@@ -6,44 +6,11 @@ import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
+import { ImageWithSkeleton } from "../components/ImageWithSkeleton";
 import { api } from "../utils/api";
 import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
 import CheckoutModal from "../components/CheckoutModal";
-
-// ── Skeleton image loader ───────────────────────────────────────────────────
-const ImageWithSkeleton = ({ src, alt, className }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(!src);
-  const imgRef = useRef(null);
-  
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) setLoaded(true);
-  }, [src]);
-
-  return (
-    <div className="relative w-full h-full">
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={
-          error
-            ? "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-            : src
-        }
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${loaded || error ? "opacity-100" : "opacity-0"}`}
-        loading="lazy"
-      />
-    </div>
-  );
-};
 
 // ── Star display ────────────────────────────────────────────────────────────
 const Stars = ({ rating, size = "w-4 h-4" }) => (
@@ -425,12 +392,8 @@ const ProductDetailPage = () => {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { user } = useAuth();
 
-  const product = products.find((p) => p.id === Number(id));
+  const product = products.find((p) => String(p.id) === String(id) || Number(p.id) === Number(id));
   const [loading, setLoading] = useState(true);
-  // Selected image for the gallery
-const [selectedImage, setSelectedImage] = useState(
-  product?.images?.[0] || product?.image
-);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [reviews, setReviews] = useState([]);
   // Quantity selected by the customer
@@ -495,7 +458,7 @@ const [selectedImage, setSelectedImage] = useState(
         if (stored) {
           try {
             setReviews(JSON.parse(stored));
-          } catch (e) {
+          } catch {
             setReviews(MOCK_REVIEWS);
           }
         } else {
@@ -597,15 +560,15 @@ const [selectedImage, setSelectedImage] = useState(
               <div className="aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
                 <ImageWithSkeleton
                   src={
-                    product.images
-                      ? product.images[activeImgIndex]
-                      : product.image
+                    Array.isArray(product.images) && product.images.length > 0
+                      ? product.images[activeImgIndex] || product.images[0]
+                      : product.image || product.imageUrl || product.downloadUrl
                   }
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-110 cursor-zoom-in"
                 />
               </div>
-              {product.images && product.images.length > 1 && (
+              {Array.isArray(product.images) && product.images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   {product.images.map((img, idx) => (
                     <button

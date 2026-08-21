@@ -57,7 +57,6 @@ export const CartProvider = ({ children }) => {
         .map((item) => item.id);
       return [...stillValid, ...newlyAdded];
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartItems]);
 
   const addToCart = (product, quantity = 1) => {

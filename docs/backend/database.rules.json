@@ -1,72 +1,44 @@
 {
   "rules": {
-    // 1. Users Node Rules
     "users": {
       "$uid": {
-        // A user can read/write their own profile data, or administrators can read/write it
         ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
         ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
-        
-        // Ensure standard fields cannot be modified maliciously on updates
         "role": {
           ".validate": "newData.val() === 'user' || root.child('users').child(auth.uid).child('role').val() === 'admin'"
         }
       }
     },
-    
-    // 2. Products Node Rules
     "products": {
-      // Anyone can read catalog products
       ".read": "true",
-      // Only admins can write products
       ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
     },
-    
-    // 3. Reviews Node Rules
     "reviews": {
-      // Reviews are readable by anyone
       ".read": "true",
-      // Authenticated users can write a review
       ".write": "auth != null"
     },
-    
-    // 4. Orders Node Rules
     "orders": {
       "$orderId": {
-        // Users can view their own orders; admins can view all orders
         ".read": "auth != null && (data.child('username').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
-        // Authenticated users can create orders for themselves; admins can edit orders
         ".write": "auth != null && ((!data.exists() && newData.child('username').val() === auth.uid) || root.child('users').child(auth.uid).child('role').val() === 'admin')"
       }
     },
-    
-    // 5. Seller Applications Node Rules
     "seller_applications": {
       "$username": {
         ".read": "auth != null && (auth.uid === $username || root.child('users').child(auth.uid).child('role').val() === 'admin')",
         ".write": "auth != null && (auth.uid === $username || root.child('users').child(auth.uid).child('role').val() === 'admin')"
       }
     },
-    
-    // 6. Reported Avatars Node Rules
     "reported_avatars": {
       ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
       ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
     },
-    
-    // 7. Coupons Node Rules
     "coupons": {
-      // Logged in users can look up coupon details
       ".read": "auth != null",
-      // Only admins can add or remove coupons
       ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
     },
-    
-    // 8. Contact Messages Node Rules
     "messages": {
-      // Only admins can read customer feedback contact messages
       ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
-      // Public guest submissions are permitted
       ".write": "true"
     }
   }

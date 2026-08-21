@@ -1,0 +1,310 @@
+{
+  "timestamp": "2026-08-21T09:02:11.733Z",
+  "mode": "DRY_RUN",
+  "summary": {
+    "totalChecks": 37,
+    "passed": 37,
+    "warnings": 0,
+    "errors": 0,
+    "repaired": 0
+  },
+  "findings": [
+    {
+      "category": "assets",
+      "name": "Asset public/bhadgauletopi.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 20280
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/daura_suruwal.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 24467
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/dhakasaree.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 44664
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/gunyo-choli.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 16651
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/hakupatasi.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 31184
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/login-banner.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 1704379
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/logo.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 135343
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/nepal_coworking_hero.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 872083
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/nepal_coworking_lounge.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 984879
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/nepal_coworking_meeting.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 828195
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/nepal_coworking_open.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 960831
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/pashima_closeup.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 487273
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/pashmina_closeup.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 487273
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/pashmina_shawl.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 790822
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/pashmina_side.png",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 524203
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/peacock_window.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 1199565
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/shilajit.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 830668
+      }
+    },
+    {
+      "category": "assets",
+      "name": "Asset public/singing_bowl.jpg",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 816096
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/d4/16/12/d4161...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/56/d0/7f/56d07...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/f2/df/28/f2df2...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/aa/a0/66/aaa06...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /pashmina_shawl.png",
+      "status": "PASS",
+      "details": {
+        "path": "/pashmina_shawl.png"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/09/41/ae/0941a...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/09/41/ae/0941aefdc7b7a3151698e1c3dcc3853d.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/28/c6/48/28c64...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Remote Image https://i.pinimg.com/736x/63/0d/01/630d0...",
+      "status": "PASS",
+      "details": {
+        "url": "https://i.pinimg.com/736x/63/0d/01/630d013345d875610fec89f4c28dd2b6.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /daura_suruwal.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/daura_suruwal.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /gunyo-choli.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/gunyo-choli.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /hakupatasi.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/hakupatasi.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /bhadgauletopi.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/bhadgauletopi.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /dhakasaree.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/dhakasaree.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /peacock_window.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/peacock_window.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /shilajit.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/shilajit.jpg"
+      }
+    },
+    {
+      "category": "catalog",
+      "name": "Catalog Image /singing_bowl.jpg",
+      "status": "PASS",
+      "details": {
+        "path": "/singing_bowl.jpg"
+      }
+    },
+    {
+      "category": "security",
+      "name": "firestore.rules structure",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 3489
+      }
+    },
+    {
+      "category": "security",
+      "name": "storage.rules structure",
+      "status": "PASS",
+      "details": {
+        "sizeBytes": 1160
+      }
+    },
+    {
+      "category": "backend",
+      "name": "functions package.json dependencies",
+      "status": "PASS",
+      "details": {
+        "firebaseAdmin": "^12.0.0",
+        "firebaseFunctions": "^5.0.0"
+      }
+    }
+  ]
+}

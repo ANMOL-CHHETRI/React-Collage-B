@@ -26,11 +26,11 @@ const CategoryPage = () => {
   }, [categoryName])
 
   const categoryProducts = products.filter(
-    (p) => p.category.toLowerCase() === decodedCategory.toLowerCase()
+    (p) => (p?.category || "").toLowerCase() === (decodedCategory || "").toLowerCase()
   )
 
   const maxCategoryPrice = categoryProducts.length 
-    ? Math.max(...categoryProducts.map(p => p.price)) 
+    ? Math.max(...categoryProducts.map(p => p.price || 0)) 
     : 50000;
 
   const [priceRange, setPriceRange] = useState(50000)
@@ -46,7 +46,7 @@ const CategoryPage = () => {
     setSelectedBadges([])
     setMinRating(0)
     setIsFilterOpen(false)
-  }, [categoryName, maxCategoryPrice])
+  }, [categoryName, maxCategoryPrice, categoryProducts.length])
 
   // Handle Escape key to close mobile filter modal
   useEffect(() => {
@@ -71,7 +71,9 @@ const CategoryPage = () => {
         if (parsed.length) {
           return parsed.reduce((sum, r) => sum + r.rating, 0) / parsed.length;
         }
-      } catch (e) {}
+      } catch {
+        // Ignore invalid storage json
+      }
     }
     return 4.4;
   };

@@ -1,42 +1,14 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
 import { useToast } from "../context/ToastContext"
 import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
+import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
+import { ErrorBoundary } from "../components/ErrorBoundary"
 import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
-
-const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(!src)
-  const imgRef = useRef(null)
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true)
-    }
-  }, [src])
-
-  return (
-    <div className="relative w-full h-full">
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-gray-200 dark:bg-slate-800 animate-pulse rounded-lg" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
-        loading="lazy"
-      />
-    </div>
-  )
-}
 
 const stats = [
   { label: "Total Revenue", value: "Rs. 4,82,500", change: "+12.5%", up: true, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
@@ -95,13 +67,9 @@ const AdminDashboard = () => {
     user, 
     logoutAdmin, 
     registeredUsers, 
-    updateUserViolations, 
-    toggleUserBan, 
     theme,
     toggleTheme,
     changePassword,
-    setExactUserViolations,
-    autoCalculateViolations,
     adminResetUserPassword,
     updateAdminProfile,
     reportedAvatars,
@@ -194,7 +162,7 @@ const AdminDashboard = () => {
           amount: o.amount || `Rs. ${o.total?.toLocaleString()}`
         }));
         setAdminOrders(orders);
-      } catch (err) {
+      } catch {
         toastError("Failed to fetch admin orders.");
       }
 
@@ -202,11 +170,18 @@ const AdminDashboard = () => {
         const dbCoupons = await api.getCoupons();
         setCoupons(dbCoupons);
       } catch (err) {
-        toastError("Failed to fetch admin coupons.");
+        console.warn("Failed to fetch admin coupons:", err);
+      }
+
+      try {
+        const dbMessages = await api.getMessages();
+        setAdminMessages(dbMessages);
+      } catch (err) {
+        console.warn("Failed to fetch admin messages:", err);
       }
     };
     fetchAdminData();
-  }, [activeSection]);
+  }, [activeSection, toastError]);
 
   // Loading state
   const [loading, setLoading] = useState(true)
@@ -224,7 +199,9 @@ const AdminDashboard = () => {
           const avg = parsed.reduce((sum, r) => sum + r.rating, 0) / parsed.length
           return { avg: avg.toFixed(1), count: parsed.length }
         }
-      } catch (e) {}
+      } catch {
+        // Ignore invalid storage json
+      }
     }
     return { avg: "4.4", count: 3 }
   }
@@ -252,7 +229,7 @@ const AdminDashboard = () => {
 
 
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault()
     setPasswordMessage({ type: "", text: "" })
 
@@ -261,14 +238,14 @@ const AdminDashboard = () => {
       return
     }
 
-    const result = changePassword("admin", currentPassword, newPassword)
-    if (result.success) {
-      success(result.message)
+    const result = await changePassword("admin", currentPassword, newPassword)
+    if (result && result.success) {
+      success(result.message || "Password updated successfully")
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
     } else {
-      toastError(result.message)
+      toastError(result?.message || "Password update failed")
     }
   }
 
@@ -461,6 +438,7 @@ const AdminDashboard = () => {
         </header>
 
         <main className="flex-1 p-6 overflow-y-auto">
+          <ErrorBoundary title="Admin Panel Section Error">
           {/* ===== DASHBOARD SECTION ===== */}
           {activeSection === "dashboard" && (
             <>
@@ -1276,7 +1254,9 @@ const AdminDashboard = () => {
                   return (
                     <div key={product.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-6">
                       <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                        <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" referrerPolicy="no-referrer" />
+                        <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                          <ImageWithSkeleton src={product.images?.[0] || product.image} alt={product.name} className="w-full h-full object-cover" />
+                        </div>
                         <div>
                           <h3 className="text-sm font-bold text-slate-900 dark:text-white">{product.name}</h3>
                           <p className="text-xs text-slate-500 dark:text-slate-400">{productReviews.length} Reviews</p>
@@ -1292,7 +1272,7 @@ const AdminDashboard = () => {
                                 <div className="flex items-center gap-2">
                                   <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden shrink-0">
                                     {review.avatar && (review.avatar.startsWith('data:') || review.avatar.startsWith('http')) ? (
-                                      <img src={review.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                      <ImageWithSkeleton src={review.avatar} alt="Avatar" className="w-full h-full object-cover" fallbackType="avatar" />
                                     ) : (
                                       <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
                                         {review.avatar || review.name.charAt(0).toUpperCase()}
@@ -1371,6 +1351,7 @@ const AdminDashboard = () => {
               )}
             </div>
           )}
+          </ErrorBoundary>
         </main>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useToast } from "../context/ToastContext"
@@ -22,7 +22,7 @@ const AdminLoginPage = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user?.role === "admin") {
+    if (user && (user.role === "admin" || (user.role || "").toLowerCase() === "admin")) {
       navigate("/admin/dashboard", { replace: true })
     }
   }, [user, navigate])
@@ -31,7 +31,7 @@ const AdminLoginPage = () => {
     e.preventDefault()
 
     if (recoveryMode) {
-      if (verifyAdminIdentity(email, phone)) {
+      if (typeof verifyAdminIdentity === "function" && verifyAdminIdentity(email, phone)) {
         setFailedAttempts(0)
         setRecoveryMode(false)
         localStorage.removeItem("shopease_failed_admin_login")
@@ -67,7 +67,7 @@ const AdminLoginPage = () => {
     return null
   }
 
-  if (user?.role === "user") {
+  if (user && user.role === "user") {
     return (
       <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300 ${dark ? "bg-slate-950" : "bg-white"}`}>
         <div className={`rounded-2xl shadow-xl p-8 w-full max-w-md text-center border ${dark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"}`}>
@@ -88,11 +88,10 @@ const AdminLoginPage = () => {
     <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300 ${dark ? "bg-slate-950" : "bg-purple-50"}`}>
       <div className="w-full max-w-3xl">
 
-        {/*hero */}
+        {/* Hero */}
         <div className="relative bg-linear-to-br from-amber-950 to-amber-900 rounded-t-3xl pt-10 pb-24 px-8 text-center overflow-hidden">
-          {/* soft dot texture */}
           <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(circle,_white_1px,_transparent_1px)] [background-size:16px_16px]" />
-          <h2 className="relative text-white/90 text-sm font-bold tracking-[0.3em] uppercase mb-3">ShopeEase Nepal</h2>
+          <h2 className="relative text-white/90 text-sm font-bold tracking-[0.3em] uppercase mb-3">ShopEase Nepal</h2>
           <h1 className="relative text-white text-2xl md:text-3xl font-bold">
             Hello <span className="inline-block">👋</span> Welcome!
           </h1>
@@ -136,7 +135,7 @@ const AdminLoginPage = () => {
                     <div>
                       <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-700"}`}>Email/Username</label>
                       <input type="text" required value={username}
-                        placeholder="tallman@gmail.com"
+                        placeholder="admin"
                         onChange={e=>{ setUsername(e.target.value); setError("") }}
                         className={`w-full px-4 py-2.5 rounded-lg border outline-none transition text-sm ${dark ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"}`}
                         autoComplete="off" />
@@ -172,7 +171,7 @@ const AdminLoginPage = () => {
                 )}
 
                 <button type="submit"
-                  className="w-full bg-gradient-to-r from-amber-950 to-amber-800 hover:from-amber-900 to-amber-900 text-white py-3 rounded-lg font-semibold transition cursor-pointer shadow-md hover:shadow-lg">
+                  className="w-full bg-linear-to-r from-amber-950 to-amber-800 hover:from-amber-900 hover:to-amber-900 text-white py-3 rounded-lg font-semibold transition cursor-pointer shadow-md hover:shadow-lg">
                   {recoveryMode ? "Verify Identity" : "LogIn"}
                 </button>
               </form>
@@ -186,9 +185,6 @@ const AdminLoginPage = () => {
                 </Link>
               </div>
             </div>
-
-            {/* Illustration side (decorative, hidden on small screens) */}
-            
           </div>
         </div>
       </div>

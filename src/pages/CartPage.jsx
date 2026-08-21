@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import CheckoutModal from "../components/CheckoutModal"
 import ConfirmDialog from "../components/ConfirmDialog"
+import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
@@ -148,12 +149,13 @@ const CartPage = () => {
                     key={item.id}
                     className="bg-white rounded-xl p-4 flex items-center gap-4 border border-slate-100 shadow-sm"
                   >
-                    <img
-                      referrerPolicy="no-referrer"
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 rounded-lg object-cover"
-                    />
+                    <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                      <ImageWithSkeleton
+                        src={item.image || item.images?.[0] || item.imageUrl || item.downloadUrl}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>

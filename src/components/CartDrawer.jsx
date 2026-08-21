@@ -1,47 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { provincesData } from "../data/provincesData";
 import { api } from "../utils/api";
-
-// Local ImageWithSkeleton for cart items
-const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(!src);
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true);
-    }
-  }, [src]);
-
-  return (
-    <div className={`relative ${className}`}>
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-lg" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={
-          error
-            ? fallbackSrc ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-            : src ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-        }
-        alt={alt}
-        className={`w-full h-full object-cover rounded-lg transition-opacity duration-300 ${
-          loaded || error ? "opacity-100" : "opacity-0"
-        }`}
-        loading="lazy"
-      />
-    </div>
-  );
-};
+import { ImageWithSkeleton } from "./ImageWithSkeleton";
 
 const CartDrawer = () => {
   const { user } = useAuth();

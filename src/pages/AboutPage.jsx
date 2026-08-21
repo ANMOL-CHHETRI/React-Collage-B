@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 const features = [
   {
@@ -175,7 +174,6 @@ const team = [
 
 const AboutPage = () => {
   const navigate = useNavigate();
-  const { theme } = useAuth();
 
   return (
     <div className="bg-white dark:bg-slate-950 min-h-screen">

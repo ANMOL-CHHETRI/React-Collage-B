@@ -14,11 +14,10 @@ const Navbar = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const [dbConnected, setDbConnected] = useState(false);
 
   useEffect(() => {
-    return onConnectionChange((status) => {
-      setDbConnected(status);
+    return onConnectionChange(() => {
+      // DB connection listener
     });
   }, []);
 
@@ -49,7 +48,7 @@ const Navbar = () => {
   };
 
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, logout, registeredUsers, theme, toggleTheme } = useAuth();
+  const { user, registeredUsers, theme, toggleTheme } = useAuth();
   const { wishlistCount } = useWishlist();
 
   const [readNotifications, setReadNotifications] = useState(() => {

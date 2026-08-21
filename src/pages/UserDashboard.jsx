@@ -1,44 +1,14 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useCart } from "../context/CartContext"
 import { useProducts } from "../context/ProductContext"
-import { useMemo } from "react"
 import { useToast } from "../context/ToastContext"
 import { OrderCardUserSkeleton } from "../components/Skeleton"
+import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
 import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
 import { LineChart, Line, PieChart, Pie, Cell, Tooltip, ResponsiveContainer, XAxis, YAxis } from "recharts"
-
-const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(!src)
-  const imgRef = useRef(null)
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true)
-    }
-  }, [src])
-
-  return (
-    <div className="relative w-full h-full">
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={error ? (fallbackSrc || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg") : (src || "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg")}
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${(loaded || error) ? "opacity-100" : "opacity-0"}`}
-        loading="lazy"
-      />
-    </div>
-  )
-}
 
 
 const UserDashboard = () => {
@@ -165,14 +135,14 @@ const UserDashboard = () => {
           amount: o.amount
         }));
         setRawOrders(fetchedOrders);
-      } catch (err) {
+      } catch {
         toastError("Failed to fetch dashboard orders.");
       }
 
       try {
         const dbCoupons = await api.getCoupons();
         setCoupons(dbCoupons);
-      } catch (err) {
+      } catch {
         toastError("Failed to fetch dashboard coupons.");
       }
     };
@@ -180,19 +150,11 @@ const UserDashboard = () => {
     if (user) {
       loadDashboardData();
     }
-  }, [user]);
+  }, [user, toastError]);
 
   const orders = useMemo(() => {
-    return rawOrders.map(order => {
-      const validItems = (order.items || []).filter(item => 
-        products.some(p => {
-          if (!p?.name || !item?.name) return false;
-          return p.name.toLowerCase() === item.name.toLowerCase() || item.name.toLowerCase().includes(p.name.toLowerCase())
-        })
-      )
-      return { ...order, items: validItems }
-    }).filter(order => order.items && order.items.length > 0)
-  }, [rawOrders, products])
+    return (rawOrders || []).filter(Boolean)
+  }, [rawOrders])
 
   const spendingData = useMemo(() => {
     const monthly = {};

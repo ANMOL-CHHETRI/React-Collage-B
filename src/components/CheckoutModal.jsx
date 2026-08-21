@@ -61,6 +61,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
         total: finalTotal,
         estDays: "2-4 Days",
         status: "Processing",
+        promoCode: promoCode || "",
         date: new Date().toISOString()
       };
 
@@ -69,6 +70,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
         username: user?.username || "guest",
         storeName: "ShopEase Official",
         status: "Processing",
+        promoCode: promoCode || "",
         date: new Date().toISOString(),
         items: itemsToCheckout.map(item => ({
           name: item.name,

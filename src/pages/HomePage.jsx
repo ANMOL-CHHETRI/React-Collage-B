@@ -1,49 +1,11 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
 import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
-
-// ── ImageWithSkeleton for safe loading with fallback and referrerPolicy ───────
-const ImageWithSkeleton = ({ src, alt, className, fallbackSrc }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(!src);
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      setLoaded(true);
-    }
-  }, [src]);
-
-  return (
-    <div className="relative w-full h-full bg-slate-100 dark:bg-slate-800">
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-700 animate-pulse" />
-      )}
-      <img
-        ref={imgRef}
-        referrerPolicy="no-referrer"
-        onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        src={
-          error
-            ? fallbackSrc ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-            : src ||
-              "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg"
-        }
-        alt={alt}
-        className={`${className} transition-opacity duration-300 ${loaded || error ? "opacity-100" : "opacity-0"}`}
-        loading="lazy"
-        onDragStart={(e) => e.preventDefault()}
-        draggable="false"
-      />
-    </div>
-  );
-};
+import { ImageWithSkeleton } from "../components/ImageWithSkeleton";
 
 // ── Category Definitions ───────────────────────────────────────────────────────
 const categories = [
