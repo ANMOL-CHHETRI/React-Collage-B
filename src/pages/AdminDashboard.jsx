@@ -43,6 +43,7 @@ const sidebarItems = [
   { id: "coupons", label: "Coupons" },
   { id: "reviews", label: "Reviews" },
   { id: "messages", label: "Messages" },
+  { id: "audit-logs", label: "Audit Logs" },
   { id: "settings", label: "Settings" },
 ]
 
@@ -135,6 +136,7 @@ const AdminDashboard = () => {
   }  // Dynamic Data state
   const [adminOrders, setAdminOrders] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
+  const [auditLogs, setAuditLogs] = useState([])
   const [viewingOrder, setViewingOrder] = useState(null)
   const [adminNote, setAdminNote] = useState("")
   
@@ -178,6 +180,13 @@ const AdminDashboard = () => {
         setAdminMessages(dbMessages);
       } catch (err) {
         console.warn("Failed to fetch admin messages:", err);
+      }
+
+      try {
+        const logRes = await api.getAuditLogs(50);
+        setAuditLogs(logRes.data || (Array.isArray(logRes) ? logRes : []));
+      } catch (err) {
+        console.warn("Failed to fetch audit logs:", err);
       }
     };
     fetchAdminData();
@@ -1342,6 +1351,77 @@ const AdminDashboard = () => {
                           </td>
                           <td className="py-4 px-4 text-gray-600 dark:text-gray-400 max-w-md">
                             {msg.message || ""}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AUDIT LOGS */}
+          {activeSection === "audit-logs" && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Admin Activity & Audit Logs</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Immutable security tracing of privileged backend actions and mutations.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const logRes = await api.getAuditLogs(50);
+                      setAuditLogs(logRes.data || (Array.isArray(logRes) ? logRes : []));
+                      success("Audit logs refreshed");
+                    } catch {
+                      toastError("Failed to refresh audit logs");
+                    }
+                  }}
+                  className="px-4 py-2 bg-amber-900 text-white rounded-xl text-sm font-semibold hover:bg-amber-950 transition cursor-pointer"
+                >
+                  Refresh Logs
+                </button>
+              </div>
+
+              {auditLogs.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <p className="text-base font-semibold">No audit logs recorded yet.</p>
+                  <p className="text-xs text-gray-400 mt-1">Privileged admin events will automatically appear here.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-100 dark:border-slate-800 text-gray-400 text-xs uppercase tracking-wider">
+                        <th className="py-3 px-4">Timestamp</th>
+                        <th className="py-3 px-4">Actor</th>
+                        <th className="py-3 px-4">Action</th>
+                        <th className="py-3 px-4">Target Type</th>
+                        <th className="py-3 px-4">Target ID</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50 dark:divide-slate-850">
+                      {auditLogs.map((log, index) => (
+                        <tr key={log.id || index} className="hover:bg-gray-50/50 dark:hover:bg-slate-950/20 transition">
+                          <td className="py-3.5 px-4 font-mono text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            {log.createdAt ? new Date(log.createdAt).toLocaleString() : "Recent"}
+                          </td>
+                          <td className="py-3.5 px-4 font-semibold text-gray-800 dark:text-white whitespace-nowrap">
+                            {log.actorId || "System"}
+                          </td>
+                          <td className="py-3.5 px-4 font-bold text-amber-700 dark:text-amber-500">
+                            {log.action}
+                          </td>
+                          <td className="py-3.5 px-4 text-gray-600 dark:text-gray-300">
+                            {log.targetType}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-xs text-gray-500 dark:text-gray-400">
+                            {log.targetId}
                           </td>
                         </tr>
                       ))}

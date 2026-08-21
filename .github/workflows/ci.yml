@@ -1,0 +1,46 @@
+name: Continuous Integration & Verification
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  test-and-verify:
+    name: Lint, Build, and Test Matrix
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Frontend Linter Check
+        run: npm run lint
+
+      - name: Frontend Production Build
+        run: npm run build
+
+      - name: Install Backend Functions Dependencies
+        run: cd functions && npm ci && cd ..
+
+      - name: Backend TypeScript Build
+        run: cd functions && npm run build && cd ..
+
+      - name: Backend Vitest Test Suite
+        run: cd functions && npm run test && cd ..
+
+      - name: Run Static Integrity & Asset Checks
+        run: |
+          node tools/audit_and_repair.mjs --dry-run
+          node tools/firebase-image-audit.mjs --dry-run
+          node tools/repair-counters.mjs --dry-run

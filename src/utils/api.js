@@ -435,4 +435,35 @@ export const api = {
     const docRef = await addDoc(collection(db, "messages"), newMsg);
     return { id: docRef.id, ...newMsg };
   },
+
+  // Audit Logs
+  getAuditLogs: async (limit = 20, startAfter = null) => {
+    try {
+      const token = await auth?.currentUser?.getIdToken();
+      const params = new URLSearchParams({ limit: String(limit) });
+      if (startAfter) params.append("startAfter", startAfter);
+
+      const res = await fetch(`${FUNCTIONS_API_BASE}/audit-logs?${params.toString()}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("Audit logs API fetch error, checking Firestore fallback:", e);
+    }
+
+    if (!db) return { data: [], hasMore: false };
+    try {
+      const q = query(collection(db, "auditLogs"));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(mapDoc).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      return { data: data.slice(0, limit), hasMore: data.length > limit };
+    } catch {
+      return { data: [], hasMore: false };
+    }
+  },
 };

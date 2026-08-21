@@ -445,4 +445,37 @@ describe("React-Collage-B Live Backend Test Suite (37 Tests)", () => {
       expect(res.body.error).toHaveProperty("message");
     });
   });
+
+  // Group 8: Production Observability, Rate Limiting & Audit Logs
+  describe("8. Observability, Security Headers & Audit Logs", () => {
+    it("returns X-Request-ID and X-RateLimit headers on responses", async () => {
+      const res = await request(app).get("/health");
+      expect(res.status).toBe(200);
+      expect(res.headers).toHaveProperty("x-request-id");
+      expect(res.headers).toHaveProperty("x-ratelimit-limit");
+      expect(res.headers).toHaveProperty("x-ratelimit-remaining");
+    });
+
+    it("preserves incoming X-Request-ID header", async () => {
+      const customId = "trace-client-12345";
+      const res = await request(app).get("/health").set("X-Request-ID", customId);
+      expect(res.status).toBe(200);
+      expect(res.headers["x-request-id"]).toBe(customId);
+    });
+
+    it("allows admin to fetch audit logs", async () => {
+      const res = await request(app)
+        .get("/api/v1/audit-logs")
+        .set("Authorization", "Bearer valid-token-admin");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("data");
+    });
+
+    it("forbids non-admin from fetching audit logs (403)", async () => {
+      const res = await request(app)
+        .get("/api/v1/audit-logs")
+        .set("Authorization", "Bearer valid-token-editor");
+      expect(res.status).toBe(403);
+    });
+  });
 });
