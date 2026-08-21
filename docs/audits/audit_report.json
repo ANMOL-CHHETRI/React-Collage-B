@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-21T09:02:11.733Z",
+  "timestamp": "2026-08-21T09:09:52.147Z",
   "mode": "DRY_RUN",
   "summary": {
     "totalChecks": 37,
@@ -286,7 +286,7 @@
       "name": "firestore.rules structure",
       "status": "PASS",
       "details": {
-        "sizeBytes": 3489
+        "sizeBytes": 3943
       }
     },
     {

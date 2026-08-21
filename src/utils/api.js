@@ -180,7 +180,7 @@ export const api = {
     return { id: userDoc.id, ...userData };
   },
 
-  register: async (name, username, email, password) => {
+  register: async (name, username, email, password, avatar = null) => {
     if (!db) throw new Error("Firestore database is not initialized. Check your Firebase credentials in .env");
     const q = query(collection(db, "users"), where("username", "==", username));
     const snap = await getDocs(q);
@@ -196,7 +196,7 @@ export const api = {
       banned: false,
       address: "",
       phone: "",
-      avatar: null,
+      avatar: avatar || null,
       createdAt: new Date().toISOString(),
     };
     const docRef = doc(collection(db, "users"), username);
@@ -218,10 +218,15 @@ export const api = {
 
   updateProfile: async (username, updatedDetails) => {
     if (!db) return updatedDetails;
-    const userRef = doc(db, "users", username);
-    await updateDoc(userRef, updatedDetails);
-    const snap = await getDoc(userRef);
-    return { id: snap.id, ...snap.data() };
+    try {
+      const userRef = doc(db, "users", username);
+      await updateDoc(userRef, updatedDetails);
+      const snap = await getDoc(userRef);
+      return { id: snap.id, ...snap.data() };
+    } catch (err) {
+      console.warn("Firestore updateProfile note (continuing with local update):", err);
+      return { id: username, username, ...updatedDetails };
+    }
   },
 
   // Products

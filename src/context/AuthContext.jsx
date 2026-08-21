@@ -206,9 +206,14 @@ export const AuthProvider = ({ children }) => {
         return false
       }
 
-      // First try to find existing user by email
-      const usersList = await api.getUsers()
-      const existingUser = usersList.find(u => u.email === email)
+      let usersList = []
+      try {
+        usersList = await api.getUsers()
+      } catch (e) {
+        console.warn("Could not fetch remote users list, using local fallback:", e)
+      }
+
+      const existingUser = (usersList || []).find(u => u.email === email)
 
       if (existingUser) {
         if (existingUser.banned) {
@@ -217,7 +222,11 @@ export const AuthProvider = ({ children }) => {
         }
         // Update avatar if needed
         if (!existingUser.avatar && googleData.photoURL) {
-          await api.updateProfile(existingUser.username, { avatar: googleData.photoURL })
+          try {
+            await api.updateProfile(existingUser.username, { avatar: googleData.photoURL })
+          } catch (e) {
+            console.warn("Avatar sync note:", e)
+          }
         }
         const canonicalUser = { 
           ...existingUser, 
@@ -234,18 +243,38 @@ export const AuthProvider = ({ children }) => {
       // Create new account
       const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "")
       let finalUsername = baseUsername || "google_user"
-      if (usersList.some((u) => u.username === finalUsername)) {
+      if ((usersList || []).some((u) => u.username === finalUsername)) {
         finalUsername = `${baseUsername}_${Math.floor(1000 + Math.random() * 9000)}`
       }
 
-      const data = await api.register(googleData.displayName || "Google User", finalUsername, email, "")
-      if (googleData.photoURL) {
-        await api.updateProfile(finalUsername, { avatar: googleData.photoURL })
-        data.avatar = googleData.photoURL
-        data.photoURL = googleData.photoURL
+      let data = {
+        name: googleData.displayName || "Google User",
+        username: finalUsername,
+        email,
+        role: "user",
+        avatar: googleData.photoURL || null,
+        photoURL: googleData.photoURL || null
       }
-      
-      const canonicalUser = { ...data, role: (data.role || "user").toLowerCase() }
+
+      try {
+        const created = await api.register(
+          googleData.displayName || "Google User",
+          finalUsername,
+          email,
+          "",
+          googleData.photoURL || null
+        )
+        data = { ...data, ...created }
+      } catch (err) {
+        console.warn("Firestore registration note (proceeding with local session):", err)
+      }
+
+      const canonicalUser = { 
+        ...data, 
+        avatar: data.avatar || googleData.photoURL,
+        photoURL: googleData.photoURL || data.avatar,
+        role: (data.role || "user").toLowerCase() 
+      }
       setUser(canonicalUser)
       localStorage.setItem("shopease_user", JSON.stringify(canonicalUser))
       if (typeof navigate === "function") navigate("/")
