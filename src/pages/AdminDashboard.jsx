@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { useProducts } from "../context/ProductContext"
@@ -10,29 +10,6 @@ import { api } from "../utils/api"
 import { uploadToCloudinary } from "../utils/cloudinary"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 
-const stats = [
-  { label: "Total Revenue", value: "Rs. 4,82,500", change: "+12.5%", up: true, icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
-  { label: "Total Orders", value: "1,842", change: "+8.2%", up: true, icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" },
-  { label: "Total Products", value: "356", change: "+3.1%", up: true, icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
-  { label: "Total Users", value: "4,320", change: "-2.4%", up: false, icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
-]
-
-const salesData = [
-  { name: 'Mon', sales: 12500, orders: 24 },
-  { name: 'Tue', sales: 18200, orders: 32 },
-  { name: 'Wed', sales: 15400, orders: 28 },
-  { name: 'Thu', sales: 22000, orders: 45 },
-  { name: 'Fri', sales: 28500, orders: 58 },
-  { name: 'Sat', sales: 34000, orders: 65 },
-  { name: 'Sun', sales: 31000, orders: 60 },
-]
-
-const statusData = [
-  { name: 'Delivered', value: 45 },
-  { name: 'Processing', value: 30 },
-  { name: 'Shipped', value: 15 },
-  { name: 'Pending', value: 10 },
-]
 const PIE_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#64748b']
 
 const sidebarItems = [
@@ -192,6 +169,97 @@ const AdminDashboard = () => {
     fetchAdminData();
   }, [activeSection, toastError]);
 
+  // Dynamic calculations for truth-enforced metrics
+  const totalRevenue = useMemo(() => {
+    return (adminOrders || []).reduce((sum, o) => {
+      const status = (o.status || "").toLowerCase();
+      if (status === "cancelled" || status.startsWith("failed")) return sum;
+      const amtStr = String(o.amount || o.total || "0").replace(/[^0-9.]/g, "");
+      const val = parseFloat(amtStr) || 0;
+      return sum + val;
+    }, 0);
+  }, [adminOrders]);
+
+  const totalOrdersCount = (adminOrders || []).length;
+  const totalProductsCount = (products || []).length;
+  const totalUsersCount = (registeredUsers || []).length;
+
+  const dynamicStats = useMemo(() => {
+    return [
+      {
+        label: "Total Revenue",
+        value: `Rs. ${totalRevenue.toLocaleString()}`,
+        change: totalOrdersCount > 0 ? `${totalOrdersCount} orders` : "0 orders",
+        up: true,
+        icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      },
+      {
+        label: "Total Orders",
+        value: totalOrdersCount.toLocaleString(),
+        change: totalOrdersCount > 0 ? "Active orders" : "No orders yet",
+        up: totalOrdersCount > 0,
+        icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+      },
+      {
+        label: "Total Products",
+        value: totalProductsCount.toLocaleString(),
+        change: totalProductsCount > 0 ? "Catalog items" : "Empty catalog",
+        up: totalProductsCount > 0,
+        icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+      },
+      {
+        label: "Total Users",
+        value: totalUsersCount.toLocaleString(),
+        change: totalUsersCount > 0 ? "Registered users" : "0 users",
+        up: totalUsersCount > 0,
+        icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+      }
+    ];
+  }, [totalRevenue, totalOrdersCount, totalProductsCount, totalUsersCount]);
+
+  const dynamicSalesData = useMemo(() => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayMap = {
+      'Mon': { name: 'Mon', sales: 0, orders: 0 },
+      'Tue': { name: 'Tue', sales: 0, orders: 0 },
+      'Wed': { name: 'Wed', sales: 0, orders: 0 },
+      'Thu': { name: 'Thu', sales: 0, orders: 0 },
+      'Fri': { name: 'Fri', sales: 0, orders: 0 },
+      'Sat': { name: 'Sat', sales: 0, orders: 0 },
+      'Sun': { name: 'Sun', sales: 0, orders: 0 },
+    };
+
+    (adminOrders || []).forEach((o) => {
+      if (o.date && o.date !== "Unknown Date") {
+        const d = new Date(o.date);
+        if (!isNaN(d.getTime())) {
+          const dayName = days[d.getDay()];
+          if (dayMap[dayName]) {
+            const amtStr = String(o.amount || o.total || "0").replace(/[^0-9.]/g, "");
+            const val = parseFloat(amtStr) || 0;
+            dayMap[dayName].sales += val;
+            dayMap[dayName].orders += 1;
+          }
+        }
+      }
+    });
+
+    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => dayMap[d]);
+  }, [adminOrders]);
+
+  const dynamicStatusData = useMemo(() => {
+    const counts = { Delivered: 0, Processing: 0, Shipped: 0, Pending: 0 };
+    (adminOrders || []).forEach((o) => {
+      const s = o.status || "Pending";
+      if (counts[s] !== undefined) {
+        counts[s] += 1;
+      } else {
+        counts[s] = 1;
+      }
+    });
+    return Object.keys(counts).map((name) => ({ name, value: counts[name] }));
+  }, [adminOrders]);
+
   // Loading state
   const [loading, setLoading] = useState(true)
   useEffect(() => {
@@ -212,7 +280,7 @@ const AdminDashboard = () => {
         // Ignore invalid storage json
       }
     }
-    return { avg: "4.4", count: 3 }
+    return { avg: "0.0", count: 0 }
   }
 
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
@@ -459,7 +527,7 @@ const AdminDashboard = () => {
                     <StatCardSkeleton />
                     <StatCardSkeleton />
                   </>
-                ) : stats.map((stat) => (
+                ) : dynamicStats.map((stat) => (
                   <div key={stat.label} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm dark:shadow-slate-800 p-6">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.label}</span>
@@ -470,11 +538,11 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                    <div className={`flex items-center gap-1 mt-2 text-sm ${stat.up ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                    <div className={`flex items-center gap-1 mt-2 text-sm ${stat.up ? "text-green-600 dark:text-green-400" : "text-slate-500 dark:text-slate-400"}`}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.up ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"} />
                       </svg>
-                      {stat.change} from last month
+                      {stat.change}
                     </div>
                   </div>
                 ))}
@@ -486,7 +554,7 @@ const AdminDashboard = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Revenue Over Time</h3>
                   <div className="h-72 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={salesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <LineChart data={dynamicSalesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(val) => `Rs.${val/1000}k`} dx={-10} />
@@ -508,7 +576,7 @@ const AdminDashboard = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={statusData}
+                          data={dynamicStatusData}
                           cx="50%"
                           cy="45%"
                           innerRadius={60}
@@ -516,14 +584,14 @@ const AdminDashboard = () => {
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {statusData.map((entry, index) => (
+                          {dynamicStatusData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="transparent" />
                           ))}
                         </Pie>
                         <Tooltip 
                           contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
                           itemStyle={{ color: '#f8fafc' }}
-                          formatter={(value) => [`${value}%`, 'Orders']}
+                          formatter={(value) => [`${value}`, 'Orders']}
                         />
                         <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }}/>
                       </PieChart>
@@ -1256,10 +1324,14 @@ const AdminDashboard = () => {
               <div className="space-y-4">
                 {products.map(product => {
                   const storedReviews = localStorage.getItem(`shopease_reviews_${product.id}`);
-                  const productReviews = storedReviews ? JSON.parse(storedReviews) : [
-                    { id: 1, name: "Priya Sharma", rating: 5, date: "June 12, 2025", title: "Absolutely love it!", text: "The quality is outstanding. Exactly as described and beautifully packaged." },
-                    { id: 2, name: "Rohan Thapa", rating: 4, date: "May 28, 2025", title: "Great product", text: "Very happy with this purchase. The craftsmanship is excellent." }
-                  ];
+                  let productReviews = [];
+                  if (storedReviews) {
+                    try {
+                      productReviews = JSON.parse(storedReviews);
+                    } catch {
+                      productReviews = [];
+                    }
+                  }
                   return (
                     <div key={product.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-6">
                       <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">

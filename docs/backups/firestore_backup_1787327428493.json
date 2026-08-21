@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-08-21T15:50:26.585Z",
+  "projectId": "shopease-nepal-anmol-196e7",
+  "counts": {
+    "products": 0,
+    "orders": "ERROR: Missing or insufficient permissions.",
+    "users": 2,
+    "categories": "ERROR: Missing or insufficient permissions.",
+    "testimonials": "ERROR: Missing or insufficient permissions.",
+    "coupons": "ERROR: Missing or insufficient permissions.",
+    "messages": "ERROR: Missing or insufficient permissions.",
+    "sellerApplications": "ERROR: Missing or insufficient permissions.",
+    "reportedAvatars": "ERROR: Missing or insufficient permissions.",
+    "auditLogs": "ERROR: Missing or insufficient permissions.",
+    "collages": "ERROR: Missing or insufficient permissions.",
+    "projects": "ERROR: Missing or insufficient permissions."
+  },
+  "collections": {
+    "products": [],
+    "users": [
+      {
+        "id": "ZUbyDWFJtLp2fnk23VMi",
+        "email": "admin@shopease.com",
+        "username": "admin",
+        "createdAt": "2026-08-16T00:00:00.000Z",
+        "password": "admin123",
+        "banned": false,
+        "name": "System Administrator",
+        "role": "admin",
+        "violations": 0
+      },
+      {
+        "id": "novalyra068",
+        "avatar": "https://lh3.googleusercontent.com/a/ACg8ocICZmrDMSEl8Ja6p70bGu6ncDfsk17cLTiMMN21yAI4rGKmKA=s96-c",
+        "name": "Lyra Nova",
+        "password": "",
+        "username": "novalyra068",
+        "email": "novalyra068@gmail.com",
+        "violations": 0,
+        "phone": "",
+        "role": "user",
+        "banned": false,
+        "address": "",
+        "createdAt": "2026-08-21T09:07:18.828Z"
+      }
+    ]
+  }
+}

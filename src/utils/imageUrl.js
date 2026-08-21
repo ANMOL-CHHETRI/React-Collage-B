@@ -9,9 +9,9 @@
  * - Graceful fallback hierarchy with fallback fallbacks
  */
 
-export const DEFAULT_PRODUCT_FALLBACK = "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg";
-export const DEFAULT_AVATAR_FALLBACK = "https://i.pinimg.com/736x/72/3a/c3/723ac3b4ac5a703b76570cdf966ea068.jpg";
-export const DEFAULT_CATEGORY_FALLBACK = "https://i.pinimg.com/736x/89/47/66/8947664cc2390cac2bdac2b4e9ee030b.jpg";
+export const DEFAULT_PRODUCT_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='100%25' height='100%25' fill='%23f1f5f9'/%3E%3Cpath d='M160 140h80v120h-80z' fill='%23cbd5e1'/%3E%3Ccircle cx='180' cy='170' r='15' fill='%2394a3b8'/%3E%3Cpath d='M160 240l30-40 25 30 25-35 20 45z' fill='%2394a3b8'/%3E%3Ctext x='50%25' y='75%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='13' font-weight='bold' fill='%2364748b'%3ENo Image Available%3C/text%3E%3C/svg%3E";
+export const DEFAULT_AVATAR_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%2394a3b8'/%3E%3Cpath d='M20 85c0-16.5 13.5-30 30-30s30 13.5 30 30' fill='%2394a3b8'/%3E%3C/svg%3E";
+export const DEFAULT_CATEGORY_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='100%25' height='100%25' fill='%23f8fafc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='14' font-weight='bold' fill='%2364748b'%3ENepal Category%3C/text%3E%3C/svg%3E";
 
 // Static asset alias mapping to gracefully resolve historical typos in file names
 const ASSET_TYPO_MAP = {

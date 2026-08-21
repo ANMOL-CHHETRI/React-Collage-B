@@ -28,67 +28,9 @@ const Stars = ({ rating, size = "w-4 h-4" }) => (
   </div>
 );
 
-// ── Mock reviews per product ────────────────────────────────────────────────
-const MOCK_REVIEWS = [
-  {
-    id: 1,
-    name: "Priya Sharma",
-    avatar: "PS",
-    rating: 5,
-    date: "June 12, 2025",
-    verified: true,
-    title: "Absolutely love it!",
-    text: "The quality is outstanding. Exactly as described and beautifully packaged. Will definitely buy again!",
-    helpful: 24,
-  },
-  {
-    id: 2,
-    name: "Rohan Thapa",
-    avatar: "RT",
-    rating: 4,
-    date: "May 28, 2025",
-    verified: true,
-    title: "Great product, fast delivery",
-    text: "Very happy with this purchase. The craftsmanship is excellent. Shipping was quicker than expected.",
-    helpful: 18,
-  },
-  {
-    id: 3,
-    name: "Anita Gurung",
-    avatar: "AG",
-    rating: 5,
-    date: "May 15, 2025",
-    verified: false,
-    title: "Authentic Nepali quality",
-    text: "This is exactly what I was looking for. The authenticity and detail is remarkable. Highly recommend!",
-    helpful: 31,
-  },
-  {
-    id: 4,
-    name: "Bikram Rai",
-    avatar: "BR",
-    rating: 3,
-    date: "April 30, 2025",
-    verified: true,
-    title: "Good but slightly small",
-    text: "Quality is good but the size was a little smaller than I expected. Still a good buy for the price.",
-    helpful: 7,
-  },
-  {
-    id: 5,
-    name: "Sushma Karki",
-    avatar: "SK",
-    rating: 5,
-    date: "April 10, 2025",
-    verified: true,
-    title: "Perfect gift!",
-    text: "Bought this as a gift and the recipient absolutely loved it. Beautiful packaging and premium feel.",
-    helpful: 42,
-  },
-];
-
 // ── Rating summary with bars ────────────────────────────────────────────────
 const RatingSummary = ({ reviews }) => {
+  if (!reviews || reviews.length === 0) return null;
   const avg = (
     reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
   ).toFixed(1);
@@ -451,18 +393,19 @@ const ProductDetailPage = () => {
     const fetchReviews = async () => {
       try {
         const data = await api.getReviews(product.id);
-        setReviews(data);
+        setReviews(Array.isArray(data) ? data : []);
       } catch (error) {
         console.warn("Failed to fetch reviews from backend, checking local cache:", error);
         const stored = localStorage.getItem(`shopease_reviews_${product.id}`);
         if (stored) {
           try {
-            setReviews(JSON.parse(stored));
+            const parsed = JSON.parse(stored);
+            setReviews(Array.isArray(parsed) ? parsed : []);
           } catch {
-            setReviews(MOCK_REVIEWS);
+            setReviews([]);
           }
         } else {
-          setReviews(MOCK_REVIEWS);
+          setReviews([]);
         }
       }
     };
@@ -873,13 +816,24 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Rating summary bars */}
-            <RatingSummary reviews={reviews} />
+            {reviews.length > 0 && <RatingSummary reviews={reviews} />}
 
             {/* Review cards */}
             <div className="mt-6 space-y-4">
-              {reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
+              {reviews.length === 0 ? (
+                <div className="text-center py-10 px-4 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    No customer reviews yet for this product.
+                  </p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                    Be the first to share your feedback!
+                  </p>
+                </div>
+              ) : (
+                reviews.map((review) => (
+                  <ReviewCard key={review.id} review={review} />
+                ))
+              )}
             </div>
 
             {/* Write a review */}

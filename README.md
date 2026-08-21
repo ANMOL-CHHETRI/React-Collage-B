@@ -30,7 +30,7 @@ npm run build   # Builds client to dist/
 ### 4. Run Backend Tests
 ```bash
 cd functions
-npm run test    # Runs Vitest suite (49/49 tests passing)
+npm run test    # Runs Vitest suite (52/52 tests passing)
 ```
 
 ---
@@ -41,12 +41,13 @@ npm run test    # Runs Vitest suite (49/49 tests passing)
 * **Firestore Security Rules**: Deployed & active on `shopease-nepal-anmol-196e7`
 * **Test Accounts**: Refer to [docs/development/CREDENTIALS.md](docs/development/CREDENTIALS.md) for demo admin & user accounts.
 
-
 ---
 
 ## 📚 Documentation Index
 
 * 🏛️ **System Architecture**: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)
+* 🛡️ **Phase 6 Data Truth & Migration Audit**: [docs/audits/MIGRATION_AUDIT_PHASE6.md](docs/audits/MIGRATION_AUDIT_PHASE6.md)
+* 🗺️ **Data Provenance Architecture**: [docs/audits/DATA_PROVENANCE_REPORT.md](docs/audits/DATA_PROVENANCE_REPORT.md)
 * 📖 **Backend Operations Guide**: [docs/backend/BACKEND.md](docs/backend/BACKEND.md)
 * 📡 **REST API Reference**: [docs/backend/API.md](docs/backend/API.md)
 * 🚀 **Production Deployment Runbook**: [docs/deployment/DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md)

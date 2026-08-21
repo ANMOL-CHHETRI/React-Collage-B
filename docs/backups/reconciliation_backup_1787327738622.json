@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-08-21T15:55:37.176Z",
+  "projectId": "shopease-nepal-anmol-196e7",
+  "mode": "DRY_RUN",
+  "summary": {
+    "totalCollectionsChecked": 9,
+    "totalDocumentsChecked": 2,
+    "realCurrent": 2,
+    "realLegacy": 0,
+    "mockDemo": 0,
+    "testData": 0,
+    "unknown": 0
+  },
+  "provenanceMap": {
+    "totalRevenue": "Derived live from non-cancelled Firestore 'orders' collection sum",
+    "totalOrders": "Count of live Firestore 'orders' collection documents",
+    "totalProducts": "Count of live Firestore 'products' collection documents",
+    "totalUsers": "Count of live Firestore 'users' collection documents",
+    "salesOverTime": "Aggregated live from Firestore order timestamps & amounts",
+    "orderStatusDistribution": "Calculated live from Firestore order status field breakdown",
+    "customerReviews": "Fetched dynamically from Firestore 'reviews' collection per productId (empty honest fallback)",
+    "storeCoupons": "Fetched dynamically from Firestore 'coupons' collection",
+    "contactMessages": "Fetched dynamically from Firestore 'messages' collection",
+    "auditLogs": "Retrieved from immutable Firestore 'auditLogs' collection"
+  },
+  "inventory": {
+    "products": {
+      "count": 0,
+      "items": []
+    },
+    "users": {
+      "count": 2,
+      "items": [
+        {
+          "id": "ZUbyDWFJtLp2fnk23VMi",
+          "classification": "REAL + CURRENT",
+          "imageClassification": "N/A",
+          "primaryIdentifier": "System Administrator"
+        },
+        {
+          "id": "novalyra068",
+          "classification": "REAL + CURRENT",
+          "imageClassification": "REAL + CURRENT",
+          "primaryIdentifier": "Lyra Nova"
+        }
+      ]
+    },
+    "orders": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    },
+    "reviews": {
+      "count": 0,
+      "items": []
+    },
+    "coupons": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    },
+    "messages": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    },
+    "sellerApplications": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    },
+    "reportedAvatars": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    },
+    "auditLogs": {
+      "count": 0,
+      "items": [],
+      "error": "Missing or insufficient permissions."
+    }
+  }
+}

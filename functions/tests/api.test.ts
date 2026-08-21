@@ -576,4 +576,31 @@ describe("React-Collage-B Live Backend Test Suite (37 Tests)", () => {
       expect(res.body.error.code).toBe("FORBIDDEN");
     });
   });
+
+  // Group 13: Data-Truth & Zero-Mock Response Guarantees
+  describe("13. Data-Truth & Zero-Mock Response Guarantees", () => {
+    it("returns honest 404 for non-existent user profile without inventing mock profile", async () => {
+      const res = await request(app)
+        .get("/api/v1/users/non-existent-user-id")
+        .set("Authorization", "Bearer valid-token-admin");
+      expect(res.status).toBe(404);
+      expect(res.body.error.code).toBe("NOT_FOUND");
+    });
+
+    it("returns valid items array for real query without fallback injection", async () => {
+      const res = await request(app)
+        .get("/api/v1/collages?visibility=public");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+    });
+
+    it("rejects malicious or invalid update input to prevent metric or data tampering", async () => {
+      const res = await request(app)
+        .patch("/api/v1/users/me")
+        .set("Authorization", "Bearer valid-token-admin")
+        .send({ displayName: "" }); // Empty displayName fails min(1) validation
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+  });
 });

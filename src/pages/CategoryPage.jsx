@@ -75,7 +75,7 @@ const CategoryPage = () => {
         // Ignore invalid storage json
       }
     }
-    return 4.4;
+    return 0;
   };
 
   const filteredProducts = categoryProducts
@@ -85,7 +85,7 @@ const CategoryPage = () => {
       const matchesPrice = p.price <= priceRange;
       const matchesBadge = selectedBadges.length === 0 || selectedBadges.includes(p.badge);
       const rating = getProductRating(p.id);
-      const matchesRating = rating >= minRating;
+      const matchesRating = minRating === 0 || (rating > 0 && rating >= minRating);
       return matchesSearch && matchesPrice && matchesBadge && matchesRating;
     })
     .sort((a, b) => {
