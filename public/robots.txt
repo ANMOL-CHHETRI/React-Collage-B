@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /policy
+Allow: /delivery-coverage
+Allow: /category/
+Allow: /product/
+
+# Disallow private and dashboard routes
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /admin/
+Disallow: /user-login
+Disallow: /user/
+Disallow: /cart
+
+Sitemap: https://shopease-nepal-anmol-196e7.web.app/sitemap.xml

@@ -46,6 +46,7 @@ npm run test    # Runs Vitest suite (52/52 tests passing)
 ## 📚 Documentation Index
 
 * 🏛️ **System Architecture**: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)
+* 🚀 **Phase 11 Operational Readiness Audit**: [docs/audits/PRODUCTION_OPERATIONAL_READINESS_PHASE11.md](docs/audits/PRODUCTION_OPERATIONAL_READINESS_PHASE11.md)
 * 📦 **Phase 10 Catalog Readiness Audit**: [docs/audits/PRODUCTION_CATALOG_PHASE10.md](docs/audits/PRODUCTION_CATALOG_PHASE10.md)
 * 🧪 **Phase 9 Product & Category Verification**: [docs/audits/CATEGORY_PRODUCT_VERIFICATION_PHASE9.md](docs/audits/CATEGORY_PRODUCT_VERIFICATION_PHASE9.md)
 * 🖼️ **Phase 8 Zero-Unknown-Image Audit**: [docs/audits/IMAGE_PROVENANCE_PHASE8.md](docs/audits/IMAGE_PROVENANCE_PHASE8.md)

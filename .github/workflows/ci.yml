@@ -39,8 +39,10 @@ jobs:
       - name: Backend Vitest Test Suite
         run: cd functions && npm run test && cd ..
 
-      - name: Run Static Integrity & Asset Checks
+      - name: Run Static Integrity & Truth Checks
         run: |
+          node tools/image_truth_audit.mjs
+          node tools/data_truth_audit.mjs
           node tools/audit_and_repair.mjs --dry-run
           node tools/firebase-image-audit.mjs --dry-run
           node tools/repair-counters.mjs --dry-run

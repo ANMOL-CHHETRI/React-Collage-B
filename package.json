@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "npm --prefix functions test",
+    "verify:production": "node tools/verify_production.mjs",
     "preview": "vite preview",
     "test:report": "npx playwright test",
     "generate:report": "node tools/generate_test_execution_report.mjs",

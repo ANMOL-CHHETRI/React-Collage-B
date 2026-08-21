@@ -32,15 +32,27 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
   })
   
   const { clearCart, cartItems } = useCart()
-  const { success } = useToast()
+  const { success, error: toastError } = useToast()
   const navigate = useNavigate()
 
   if (!isOpen) return null
 
-  const finalTotal = grandTotal - discountAmount
+  const finalTotal = Math.max(0, (grandTotal || 0) - (discountAmount || 0))
   const itemsToCheckout = singleProduct ? [singleProduct] : [...cartItems];
 
   const handleCheckout = () => {
+    if (checkingOut) return;
+
+    if (!itemsToCheckout || itemsToCheckout.length === 0) {
+      toastError("Your cart is empty. Please add items before checking out.");
+      return;
+    }
+
+    if (!shippingDetails.fullName?.trim() || !shippingDetails.phone?.trim() || !shippingDetails.address?.trim()) {
+      toastError("Please complete your delivery address and contact information.");
+      return;
+    }
+
     setCheckingOut(true)
     setTimeout(async () => {
       setCheckingOut(false)
