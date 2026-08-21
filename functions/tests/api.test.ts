@@ -16,6 +16,9 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
         if (token === "valid-token-viewer") {
           return { uid: "viewer-1", email: "viewer@example.com", name: "Viewer User" };
         }
+        if (token === "valid-token-disabled") {
+          return { uid: "disabled-1", email: "disabled@example.com", name: "Disabled User" };
+        }
         throw new Error("Invalid token");
       }),
     },
@@ -33,6 +36,9 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
               if (docId === "viewer-1") {
                 return { exists: true, id: docId, data: () => ({ role: "viewer", isActive: true, displayName: "Viewer" }) };
               }
+              if (docId === "disabled-1") {
+                return { exists: true, id: docId, data: () => ({ role: "viewer", isActive: false, displayName: "Disabled" }) };
+              }
               return { exists: false };
             }
             if (colName === "collages" && docId === "col-123") {
@@ -44,9 +50,9 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
                   title: "Test Collage",
                   ownerId: "editor-1",
                   visibility: "public",
-                  imageCount: 0,
-                  commentCount: 0,
-                  reactionCount: 0,
+                  imageCount: 1,
+                  commentCount: 1,
+                  reactionCount: 1,
                 }),
               };
             }
@@ -79,7 +85,11 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
                     id: "item-1",
                     content: "Great work!",
                     userId: "viewer-1",
-                    type: "like",
+                    type: "heart",
+                    storagePath: "collages/col-123/img-1/nepal.jpg",
+                    downloadUrl: "https://example.com/nepal.jpg",
+                    width: 800,
+                    height: 600,
                     position: 0,
                   }),
                 },
@@ -87,12 +97,13 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
             })),
             doc: vi.fn((subId?: string) => ({
               get: vi.fn(async () => ({
-                exists: subId === "comment-1",
+                exists: subId === "comment-1" || subId === "item-1",
                 id: subId,
                 data: () => ({
-                  id: "comment-1",
+                  id: subId,
                   content: "Existing Comment",
                   userId: "viewer-1",
+                  type: "heart",
                   isDeleted: false,
                 }),
               })),
@@ -129,16 +140,29 @@ vi.mock("../src/config/firebaseAdmin.js", () => {
   };
 });
 
-describe("Express API & Cloud Functions Suite", () => {
-  it("GET /health returns healthy status", async () => {
-    const res = await request(app).get("/health");
-    expect(res.status).toBe(200);
-    expect(res.body.status).toBe("healthy");
+describe("React-Collage-B Live Backend Test Suite (37 Tests)", () => {
+  // Group 1: Service Health
+  describe("1. System Health", () => {
+    it("GET /health returns healthy status code 200", async () => {
+      const res = await request(app).get("/health");
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("healthy");
+      expect(res.body.service).toBeDefined();
+    });
   });
 
-  describe("Authentication & User Profile", () => {
+  // Group 2: Authentication & Token Verification
+  describe("2. Authentication & Security Middleware", () => {
     it("rejects unauthenticated requests to protected endpoints with 401", async () => {
       const res = await request(app).post("/api/v1/collages").send({ title: "New Collage" });
+      expect(res.status).toBe(401);
+      expect(res.body.error.code).toBe("UNAUTHORIZED");
+    });
+
+    it("rejects empty Bearer token with 401", async () => {
+      const res = await request(app)
+        .get("/api/v1/users/me")
+        .set("Authorization", "Bearer ");
       expect(res.status).toBe(401);
       expect(res.body.error.code).toBe("UNAUTHORIZED");
     });
@@ -146,7 +170,7 @@ describe("Express API & Cloud Functions Suite", () => {
     it("rejects invalid Bearer tokens with 401", async () => {
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", "Bearer invalid-token");
+        .set("Authorization", "Bearer invalid-token-xyz");
       expect(res.status).toBe(401);
       expect(res.body.error.code).toBe("UNAUTHORIZED");
     });
@@ -158,10 +182,36 @@ describe("Express API & Cloud Functions Suite", () => {
       expect(res.status).toBe(200);
       expect(res.body.data.role).toBe("editor");
     });
+
+    it("deactivated user receives 403 Forbidden", async () => {
+      const res = await request(app)
+        .get("/api/v1/users/me")
+        .set("Authorization", "Bearer valid-token-disabled");
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe("FORBIDDEN");
+    });
+
+    it("allows user to update profile details via PATCH /api/v1/users/me", async () => {
+      const res = await request(app)
+        .patch("/api/v1/users/me")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ displayName: "Updated Viewer Name" });
+      expect(res.status).toBe(200);
+    });
+
+    it("rejects profile update with invalid types via 400", async () => {
+      const res = await request(app)
+        .patch("/api/v1/users/me")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ displayName: 12345 });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
   });
 
-  describe("Authorization & Roles", () => {
-    it("viewer role cannot create collage (requires editor/admin)", async () => {
+  // Group 3: Authorization & Roles
+  describe("3. Role-Based Access Control (RBAC)", () => {
+    it("viewer cannot create collage (requires editor/admin)", async () => {
       const res = await request(app)
         .post("/api/v1/collages")
         .set("Authorization", "Bearer valid-token-viewer")
@@ -170,13 +220,13 @@ describe("Express API & Cloud Functions Suite", () => {
       expect(res.body.error.code).toBe("FORBIDDEN");
     });
 
-    it("editor role can create a collage", async () => {
+    it("editor can create a collage", async () => {
       const res = await request(app)
         .post("/api/v1/collages")
         .set("Authorization", "Bearer valid-token-editor")
-        .send({ title: "My Special Collage", description: "Memories" });
+        .send({ title: "My Editor Collage", description: "Created by editor" });
       expect(res.status).toBe(201);
-      expect(res.body.data.title).toBe("My Special Collage");
+      expect(res.body.data.title).toBe("My Editor Collage");
     });
 
     it("admin can access admin user list", async () => {
@@ -187,15 +237,39 @@ describe("Express API & Cloud Functions Suite", () => {
       expect(Array.isArray(res.body.data)).toBe(true);
     });
 
-    it("non-admin cannot access admin user list", async () => {
+    it("editor is forbidden from admin user list (403)", async () => {
       const res = await request(app)
         .get("/api/v1/users/admin/list")
         .set("Authorization", "Bearer valid-token-editor");
       expect(res.status).toBe(403);
     });
+
+    it("viewer is forbidden from admin user list (403)", async () => {
+      const res = await request(app)
+        .get("/api/v1/users/admin/list")
+        .set("Authorization", "Bearer valid-token-viewer");
+      expect(res.status).toBe(403);
+    });
+
+    it("admin can update user role", async () => {
+      const res = await request(app)
+        .patch("/api/v1/users/admin/viewer-1/role")
+        .set("Authorization", "Bearer valid-token-admin")
+        .send({ role: "editor" });
+      expect(res.status).toBe(200);
+    });
+
+    it("non-admin cannot update user role (403)", async () => {
+      const res = await request(app)
+        .patch("/api/v1/users/admin/viewer-1/role")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({ role: "admin" });
+      expect(res.status).toBe(403);
+    });
   });
 
-  describe("Collages & Projects", () => {
+  // Group 4: Collages & Projects CRUD
+  describe("4. Collages & Projects Endpoints", () => {
     it("GET /api/v1/collages lists public collages", async () => {
       const res = await request(app).get("/api/v1/collages");
       expect(res.status).toBe(200);
@@ -208,24 +282,137 @@ describe("Express API & Cloud Functions Suite", () => {
       expect(res.body.data.title).toBe("Test Collage");
     });
 
+    it("GET /api/v1/collages/non-existent returns 404", async () => {
+      const res = await request(app).get("/api/v1/collages/non-existent");
+      expect(res.status).toBe(404);
+    });
+
+    it("PATCH /api/v1/collages/:id allows owner to update", async () => {
+      const res = await request(app)
+        .patch("/api/v1/collages/col-123")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({ title: "Updated Title" });
+      expect(res.status).toBe(200);
+    });
+
+    it("PATCH /api/v1/collages/:id forbids non-owner viewer (403)", async () => {
+      const res = await request(app)
+        .patch("/api/v1/collages/col-123")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ title: "Hacked Title" });
+      expect(res.status).toBe(403);
+    });
+
+    it("DELETE /api/v1/collages/:id allows owner to delete", async () => {
+      const res = await request(app)
+        .delete("/api/v1/collages/col-123")
+        .set("Authorization", "Bearer valid-token-editor");
+      expect(res.status).toBe(200);
+    });
+
+    it("DELETE /api/v1/collages/:id forbids non-owner viewer (403)", async () => {
+      const res = await request(app)
+        .delete("/api/v1/collages/col-123")
+        .set("Authorization", "Bearer valid-token-viewer");
+      expect(res.status).toBe(403);
+    });
+
     it("GET /api/v1/projects lists public projects", async () => {
       const res = await request(app).get("/api/v1/projects");
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body.data)).toBe(true);
     });
+
+    it("GET /api/v1/projects/:id retrieves single project", async () => {
+      const res = await request(app).get("/api/v1/projects/proj-123");
+      expect(res.status).toBe(200);
+      expect(res.body.data.name).toBe("Test Project");
+    });
+
+    it("POST /api/v1/projects allows editor to create project", async () => {
+      const res = await request(app)
+        .post("/api/v1/projects")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({ name: "Himalayan Culture Project" });
+      expect(res.status).toBe(201);
+    });
+
+    it("POST /api/v1/projects forbids viewer from creating project (403)", async () => {
+      const res = await request(app)
+        .post("/api/v1/projects")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ name: "Viewer Project" });
+      expect(res.status).toBe(403);
+    });
   });
 
-  describe("Comments & Reactions", () => {
+  // Group 5: Images & Media
+  describe("5. Collage Images & Media Validation", () => {
+    it("GET /api/v1/collages/:id/images lists images", async () => {
+      const res = await request(app).get("/api/v1/collages/col-123/images");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+    });
+
+    it("POST /api/v1/collages/:id/images allows owner to add image", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages/col-123/images")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({
+          storagePath: "collages/col-123/img-2/daura.jpg",
+          downloadUrl: "https://example.com/daura.jpg",
+          contentType: "image/jpeg",
+          size: 102400,
+          width: 1024,
+          height: 768,
+        });
+      expect(res.status).toBe(201);
+    });
+
+    it("POST /api/v1/collages/:id/images rejects invalid image payload (400)", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages/col-123/images")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({ invalidField: "test" });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+  });
+
+  // Group 6: Comments & Reactions
+  describe("6. Comments & Reactions Operations", () => {
     it("viewer can post a comment to a collage", async () => {
       const res = await request(app)
         .post("/api/v1/collages/col-123/comments")
         .set("Authorization", "Bearer valid-token-viewer")
-        .send({ content: "This is a wonderful collage!" });
+        .send({ content: "Beautiful craftsmanship!" });
       expect(res.status).toBe(201);
-      expect(res.body.data.content).toBe("This is a wonderful collage!");
+      expect(res.body.data.content).toBe("Beautiful craftsmanship!");
     });
 
-    it("viewer can toggle a reaction on a collage", async () => {
+    it("rejects empty comment content with 400", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages/col-123/comments")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ content: "" });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+
+    it("retrieves comments list for collage", async () => {
+      const res = await request(app).get("/api/v1/collages/col-123/comments");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+    });
+
+    it("author can delete their comment", async () => {
+      const res = await request(app)
+        .delete("/api/v1/collages/col-123/comments/comment-1")
+        .set("Authorization", "Bearer valid-token-viewer");
+      expect(res.status).toBe(200);
+    });
+
+    it("viewer can toggle reaction on a collage", async () => {
       const res = await request(app)
         .post("/api/v1/collages/col-123/reactions")
         .set("Authorization", "Bearer valid-token-viewer")
@@ -233,10 +420,29 @@ describe("Express API & Cloud Functions Suite", () => {
       expect(res.status).toBe(200);
     });
 
-    it("retrieves list of comments for collage", async () => {
-      const res = await request(app).get("/api/v1/collages/col-123/comments");
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body.data)).toBe(true);
+    it("rejects invalid reaction type with 400", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages/col-123/reactions")
+        .set("Authorization", "Bearer valid-token-viewer")
+        .send({ type: "invalid_emoji" });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+  });
+
+  // Group 7: Error Format & 404
+  describe("7. Standardized Error Handling", () => {
+    it("returns structured 404 for unknown route", async () => {
+      const res = await request(app).get("/api/v1/nonexistent-endpoint");
+      expect(res.status).toBe(404);
+    });
+
+    it("ensures error responses follow { error: { code, message } } structure", async () => {
+      const res = await request(app).get("/api/v1/users/me");
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toHaveProperty("code");
+      expect(res.body.error).toHaveProperty("message");
     });
   });
 });

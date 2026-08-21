@@ -1,0 +1,111 @@
+{
+  "timestamp": "2026-08-21T10:36:23.466Z",
+  "mode": "DRY_RUN",
+  "summary": {
+    "totalChecked": 16,
+    "valid": 9,
+    "legacy": 0,
+    "external": 7,
+    "missing": 0,
+    "stale": 0,
+    "orphaned": 0
+  },
+  "items": [
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/pashmina_shawl.png",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/09/41/ae/0941aefdc7b7a3151698e1c3dcc3853d.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/28/c6/48/28c648b0a74979111f737955b05d05cd.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "https://i.pinimg.com/736x/63/0d/01/630d013345d875610fec89f4c28dd2b6.jpg",
+      "status": "EXTERNAL_VALID",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/daura_suruwal.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/gunyo-choli.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/hakupatasi.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/bhadgauletopi.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/dhakasaree.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/peacock_window.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/shilajit.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    },
+    {
+      "source": "productsData.js",
+      "reference": "/singing_bowl.jpg",
+      "status": "VALID_LOCAL",
+      "recommendedAction": "NONE"
+    }
+  ]
+}
