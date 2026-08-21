@@ -30,8 +30,17 @@ npm run build   # Builds client to dist/
 ### 4. Run Backend Tests
 ```bash
 cd functions
-npm run test    # Runs Vitest suite (41/41 tests passing)
+npm run test    # Runs Vitest suite (49/49 tests passing)
 ```
+
+---
+
+## 🌐 Live Production Deployment
+
+* **Firebase Hosting**: [https://shopease-nepal-anmol-196e7.web.app](https://shopease-nepal-anmol-196e7.web.app)
+* **Firestore Security Rules**: Deployed & active on `shopease-nepal-anmol-196e7`
+* **Test Accounts**: Refer to [docs/development/CREDENTIALS.md](docs/development/CREDENTIALS.md) for demo admin & user accounts.
+
 
 ---
 

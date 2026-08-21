@@ -52,12 +52,12 @@ gcloud storage rsync gs://shopease-nepal-anmol-196e7.firebasestorage.app \
 If a production frontend or backend release introduces critical regressions:
 1. Roll back Firebase Hosting to previous release:
    ```bash
-   npx firebase hosting:rollback
+   npx --yes firebase-tools hosting:rollback
    ```
 2. Roll back Cloud Functions:
    Deploy the tagged stable release git commit via CI or CLI:
    ```bash
    git checkout tags/v1.0.0-stable
    cd functions && npm ci && npm run build && cd ..
-   npx firebase deploy --only functions
+   npx --yes firebase-tools deploy --only functions --non-interactive
    ```

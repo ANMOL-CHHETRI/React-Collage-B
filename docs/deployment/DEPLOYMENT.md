@@ -1,25 +1,23 @@
 # Production Deployment Guide
 
-**Project**: React-Collage-B  
+**Project**: React-Collage-B / ShopEase Nepal  
 **Target Environment**: Firebase Hosting & Cloud Functions v2 (Node 22)  
 **Date**: August 2026  
+**Status**: RELEASE CANDIDATE (HOSTING & RULES LIVE DEPLOYED)  
 
 ---
 
 ## 1. Prerequisites & Environment Setup
 
 Before initiating a production release:
-1. Ensure Firebase CLI is installed:
+1. Ensure Firebase CLI is accessible:
    ```bash
-   npx firebase-tools --version
+   npx --yes firebase-tools --version
    ```
-2. Authenticate with production Firebase account:
+2. Verify authenticated Firebase account and project target:
    ```bash
-   npx firebase login
-   ```
-3. Set the active Firebase project:
-   ```bash
-   npx firebase use shopease-nepal-anmol-196e7
+   npx --yes firebase-tools projects:list
+   npx --yes firebase-tools use shopease-nepal-anmol-196e7
    ```
 
 ---
@@ -33,7 +31,7 @@ Always run the full verification pipeline locally before deploying:
 npm run lint
 npm run build
 
-# 2. Backend TypeScript Compilation & Test Suite
+# 2. Backend TypeScript Compilation & Test Suite (49 Tests)
 cd functions
 npm run build
 npm run test
@@ -49,38 +47,42 @@ node tools/repair-counters.mjs --dry-run
 
 ## 3. Step-by-Step Production Deployment
 
-### Step A: Deploy Security Rules & Indexes
-Deploy Firestore and Storage security rules first to guarantee security constraints are active:
+### Step A: Deploy Firestore Security Rules & Indexes `[LIVE DEPLOYED]`
+Deploy Firestore security rules and compound query index definitions:
 ```bash
-npx firebase deploy --only firestore:rules,firestore:indexes
-npx firebase deploy --only storage
+npx --yes firebase-tools deploy --only firestore:rules,firestore:indexes --non-interactive
 ```
+* **Status**: `[LIVE VERIFIED]` Released to `cloud.firestore` on project `shopease-nepal-anmol-196e7`.
 
-### Step B: Deploy Cloud Functions v2 Backend
-Deploy the TypeScript Express API:
+### Step B: Deploy Frontend Web Application `[LIVE DEPLOYED]`
+Build and deploy the optimized Vite distribution to Firebase Hosting:
 ```bash
-npx firebase deploy --only functions
+npm run build
+npx --yes firebase-tools deploy --only hosting --non-interactive
 ```
+* **Status**: `[LIVE VERIFIED]` Deployed to `https://shopease-nepal-anmol-196e7.web.app` and `https://shopease-nepal-anmol-196e7.firebaseapp.com`.
 
-### Step C: Deploy Frontend Web Application
-Deploy the optimized Vite distribution build:
+### Step C: Deploy Storage Rules `[MANUAL PREREQUISITE]`
 ```bash
-npx firebase deploy --only hosting
+npx --yes firebase-tools deploy --only storage --non-interactive
 ```
+* **Prerequisite**: Storage bucket requires 1-click initialization in Firebase Console (`https://console.firebase.google.com/project/shopease-nepal-anmol-196e7/storage`).
 
-### Or Full Safe Deployment:
+### Step D: Deploy Cloud Functions v2 Backend `[MANUAL PREREQUISITE]`
+Deploy the TypeScript Express API to Cloud Functions v2 (region `us-central1`):
 ```bash
-npx firebase deploy
+npx --yes firebase-tools deploy --only functions --non-interactive
 ```
+* **Prerequisite**: Requires Blaze (Pay-as-you-go) plan upgrade in Firebase Console to enable GCP Cloud Build API (`https://console.firebase.google.com/project/shopease-nepal-anmol-196e7/usage/details`).
 
 ---
 
-## 4. Post-Deployment Verification Checklist
+## 4. Post-Deployment Verification
 
-1. Verify backend health endpoint:
-   ```bash
-   curl -I https://<region>-<project-id>.cloudfunctions.net/api/health
-   ```
-2. Verify Admin Panel login and routing:
-   Open `/admin-login` and ensure session initialization completes.
-3. Verify Image CDN delivery and lazy-loading across catalog pages.
+1. **Frontend Live Verification**:
+   - Access `https://shopease-nepal-anmol-196e7.web.app`.
+   - Verify Homepage, Product Details, Delivery Map, Cart, and Admin Dashboard.
+2. **Backend API Verification**:
+   - Verify local emulator & test suite coverage: `49/49 passing`.
+   - Health endpoint: `GET /health` returns `{ "status": "healthy", "service": "React-Collage-B Express API" }` with `X-Request-ID` and `X-RateLimit-*` headers.
+

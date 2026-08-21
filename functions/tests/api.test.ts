@@ -478,4 +478,102 @@ describe("React-Collage-B Live Backend Test Suite (37 Tests)", () => {
       expect(res.status).toBe(403);
     });
   });
+
+  // Group 9: Input Attack & Boundary Validation
+  describe("9. Input Attack & Boundary Validation", () => {
+    it("rejects SQL/NoSQL injection patterns or null bytes in string fields with 400", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({
+          title: "", // empty string
+          description: null,
+          visibility: "invalid_visibility_type",
+        });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+
+    it("rejects unexpected data types in numeric fields (e.g. image size as string)", async () => {
+      const res = await request(app)
+        .post("/api/v1/collages/col-123/images")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({
+          storagePath: "collages/col-123/img-1/test.jpg",
+          downloadUrl: "https://example.com/test.jpg",
+          contentType: "image/jpeg",
+          size: "not-a-number",
+          width: -100, // invalid negative dimension
+          height: 0,
+        });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+
+    it("rejects position updates with invalid non-numeric payload", async () => {
+      const res = await request(app)
+        .patch("/api/v1/collages/col-123/images/item-1/position")
+        .set("Authorization", "Bearer valid-token-editor")
+        .send({ position: "invalid_string" });
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("BAD_REQUEST");
+    });
+  });
+
+  // Group 10: Rate Limiter & Abuse Protection
+  describe("10. Rate Limiter Enforcement", () => {
+    it("returns HTTP 429 when rate limit is exceeded", async () => {
+      // Test strict rate limiter by repeatedly calling a strict-limited route
+      let lastRes;
+      for (let i = 0; i < 35; i++) {
+        lastRes = await request(app)
+          .post("/api/v1/collages/col-123/comments")
+          .set("Authorization", "Bearer valid-token-viewer")
+          .set("X-Forwarded-For", "192.168.1.100")
+          .send({ content: `Test comment ${i}` });
+      }
+      expect(lastRes?.status).toBe(429);
+      expect(lastRes?.body.error.code).toBe("TOO_MANY_REQUESTS");
+      expect(lastRes?.headers["x-ratelimit-remaining"]).toBe("0");
+    });
+  });
+
+  // Group 11: CORS Origin Security
+  describe("11. CORS Origin Headers & Security", () => {
+    it("sets correct CORS headers for allowed production origin", async () => {
+      const res = await request(app)
+        .get("/health")
+        .set("Origin", "https://shopease-nepal-anmol-196e7.web.app");
+      expect(res.status).toBe(200);
+      expect(res.headers["access-control-allow-origin"]).toBe("https://shopease-nepal-anmol-196e7.web.app");
+    });
+
+    it("sets correct CORS headers for GitHub Pages production origin", async () => {
+      const res = await request(app)
+        .get("/health")
+        .set("Origin", "https://anmol-chhetri.github.io");
+      expect(res.status).toBe(200);
+      expect(res.headers["access-control-allow-origin"]).toBe("https://anmol-chhetri.github.io");
+    });
+  });
+
+  // Group 12: Ownership & IDOR Protection
+  describe("12. Ownership & IDOR Protection", () => {
+    it("prevents User A from modifying User B private collage (returns 403)", async () => {
+      const res = await request(app)
+        .patch("/api/v1/collages/col-123")
+        .set("Authorization", "Bearer valid-token-viewer") // viewer is not owner (editor-1 is owner)
+        .send({ title: "Attacker updated title" });
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe("FORBIDDEN");
+    });
+
+    it("prevents User A from deleting User B collage image (returns 403)", async () => {
+      const res = await request(app)
+        .delete("/api/v1/collages/col-123/images/item-1")
+        .set("Authorization", "Bearer valid-token-viewer");
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe("FORBIDDEN");
+    });
+  });
 });

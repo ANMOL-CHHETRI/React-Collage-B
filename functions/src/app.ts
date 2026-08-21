@@ -30,6 +30,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5173",
   "https://shopease-nepal-anmol-196e7.web.app",
   "https://shopease-nepal-anmol-196e7.firebaseapp.com",
+  "https://anmol-chhetri.github.io",
 ];
 
 app.use(

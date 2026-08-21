@@ -120,21 +120,24 @@ firebase emulators:start
 
 ---
 
-## 5. Deployment
-
-### Deploy Backend Functions Only
+### Deploy Firestore Rules & Indexes (Live Deployed)
 ```bash
-firebase deploy --only functions
+npx --yes firebase-tools deploy --only firestore:rules,firestore:indexes --non-interactive
 ```
 
-### Deploy Rules & Indexes
-```bash
-firebase deploy --only firestore
-firebase deploy --only storage
-```
-
-### Full Deployment
+### Deploy Frontend Hosting (Live Deployed)
 ```bash
 npm run build
-firebase deploy
+npx --yes firebase-tools deploy --only hosting --non-interactive
 ```
+
+### Deploy Backend Cloud Functions (Requires Blaze Plan Upgrade)
+```bash
+npx --yes firebase-tools deploy --only functions --non-interactive
+```
+
+### Deploy Storage Rules (Requires Bucket Initialization)
+```bash
+npx --yes firebase-tools deploy --only storage --non-interactive
+```
+
