@@ -40,6 +40,10 @@
     "vite": "^8.0.16",
     "xlsx": "^0.18.5"
   },
+  "allowScripts": {
+    "@firebase/util": true,
+    "protobufjs": true
+  },
   "lavamoat": {
     "allowScripts": {
       "@firebase/util": true,
