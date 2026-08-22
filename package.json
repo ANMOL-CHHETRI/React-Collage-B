@@ -39,5 +39,11 @@
     "globals": "^17.6.0",
     "vite": "^8.0.16",
     "xlsx": "^0.18.5"
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@firebase/util": true,
+      "protobufjs": true
+    }
   }
 }
