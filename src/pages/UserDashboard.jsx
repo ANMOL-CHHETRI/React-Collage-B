@@ -33,12 +33,21 @@ const UserDashboard = () => {
   const hasViolations = dbUser && dbUser.violations > 0;
 
   const [activeSection, setActiveSection] = useState("orders")
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [trackingOrderId, setTrackingOrderId] = useState(null)
   const [showContactModal, setShowContactModal] = useState(null)
   const [contactSubject, setContactSubject] = useState("")
   const [contactMessage, setContactMessage] = useState("")
+
+  const sectionTitles = {
+    orders: "My Orders",
+    profile: "My Profile",
+    settings: "Preferences & Settings",
+    "seller-dashboard": "Seller Dashboard",
+    "sell-on-shopease": "Sell on ShopEase",
+  };
 
   const getActiveStep = (status) => {
     const s = status ? status.toLowerCase() : "";
@@ -439,8 +448,173 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col md:flex-row transition-colors duration-300">
       
-      {/* SIDEBAR */}
-      <aside className="w-full md:w-64 bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 p-6 flex flex-col shrink-0">
+      {/* MOBILE STICKY TOPBAR WITH HAMBURGER BUTTON */}
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            aria-label="Toggle user dashboard menu"
+            className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div>
+            <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block">Dashboard</span>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate">{sectionTitles[activeSection] || "My Orders"}</h2>
+          </div>
+        </div>
+
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-900/60 px-3 py-1.5 rounded-lg transition"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Store</span>
+        </Link>
+      </header>
+
+      {/* MOBILE DRAWER OVERLAY & SIDEBAR */}
+      {mobileSidebarOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+          <aside
+            className="fixed top-0 left-0 bottom-0 w-[min(85vw,300px)] bg-white dark:bg-slate-950 z-50 shadow-2xl p-6 flex flex-col md:hidden border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-250 overflow-y-auto"
+          >
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-sm uppercase overflow-hidden">
+                  {(user?.avatar || user?.photoURL) ? (
+                    <ImageWithSkeleton src={user.avatar || user.photoURL} alt="Profile" className="w-full h-full object-cover" fallbackType="avatar" />
+                  ) : (
+                    user?.name ? user.name[0] : user?.username ? user.username[0] : "U"
+                  )}
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 font-semibold block">Hello,</span>
+                  <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">{user?.name || "User"}</h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mobile Nav Links */}
+            <nav className="space-y-6 flex-1 text-sm">
+              <div className="space-y-2">
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Manage My Account</h3>
+                <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "profile" ? "border-amber-600" : "border-slate-100 dark:border-slate-800"}`}>
+                  <li>
+                    <button
+                      onClick={() => { setActiveSection("profile"); setMobileSidebarOpen(false); }}
+                      className={`w-full text-left font-medium block py-1.5 transition cursor-pointer ${
+                        activeSection === "profile" ? "text-amber-600 dark:text-amber-400 font-bold" : "text-slate-500 hover:text-amber-600"
+                      }`}
+                    >
+                      My Profile
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-200">My Orders</h3>
+                <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "orders" ? "border-amber-600" : "border-slate-100 dark:border-slate-800"}`}>
+                  <li>
+                    <button
+                      onClick={() => { setActiveSection("orders"); setMobileSidebarOpen(false); }}
+                      className={`w-full text-left font-medium flex items-center justify-between py-1.5 transition cursor-pointer ${
+                        activeSection === "orders" ? "text-amber-600 dark:text-amber-400 font-bold" : "text-slate-500 hover:text-amber-600"
+                      }`}
+                    >
+                      <span>My Orders</span>
+                      {rawOrders.filter(o => o.adminMessage).length > 0 && (
+                        <span className="px-1.5 py-0.5 text-[9px] font-bold bg-amber-500 text-white rounded-full leading-none mr-2">
+                          {rawOrders.filter(o => o.adminMessage).length}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">Preferences</h3>
+                <ul className={`space-y-1.5 pl-2 border-l-2 ${activeSection === "settings" ? "border-amber-600" : "border-slate-100 dark:border-slate-800"}`}>
+                  <li>
+                    <button
+                      onClick={() => { setActiveSection("settings"); setMobileSidebarOpen(false); }}
+                      className={`w-full text-left font-medium block py-1.5 transition cursor-pointer ${
+                        activeSection === "settings" ? "text-amber-600 dark:text-amber-400 font-bold" : "text-slate-500 hover:text-amber-600"
+                      }`}
+                    >
+                      Settings
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                {user?.role === "sub-admin" ? (
+                  <button
+                    onClick={() => { setActiveSection("seller-dashboard"); setMobileSidebarOpen(false); }}
+                    className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition cursor-pointer ${
+                      activeSection === "seller-dashboard" ? "text-amber-600 dark:text-amber-400" : "text-slate-500 hover:text-amber-600"
+                    }`}
+                  >
+                    Seller Dashboard
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setActiveSection("sell-on-shopease"); setMobileSidebarOpen(false); }}
+                    className={`w-full text-left font-bold text-xs uppercase tracking-wider block items-center gap-1.5 transition cursor-pointer ${
+                      activeSection === "sell-on-shopease" ? "text-amber-600 dark:text-amber-400" : "text-slate-600 hover:text-amber-600"
+                    }`}
+                  >
+                    Sell On ShopEase
+                  </button>
+                )}
+              </div>
+            </nav>
+
+            <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+              <Link
+                to="/"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-2 text-xs transition"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Back to Store</span>
+              </Link>
+              <button
+                onClick={logout}
+                className="w-full flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 text-xs font-bold py-2.5 rounded-xl transition cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* DESKTOP PINNED SIDEBAR */}
+      <aside className="hidden md:flex md:w-64 bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 p-6 flex-col shrink-0">
         
         {/* User Card */}
         <div className="mb-8 border-b border-slate-100 dark:border-slate-800 pb-5">
@@ -564,7 +738,7 @@ const UserDashboard = () => {
 
         {/* Back link and Logout */}
         <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
-          <Link to="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-2 text-xs font-semibold transition-colors duration-200">
+          <Link to="/" className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold flex items-center gap-2 text-xs transition-colors duration-200">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -601,6 +775,15 @@ const UserDashboard = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Orders</h1>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage and track your delivery packages across Nepal.</p>
             </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-900/60 transition w-fit"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Store</span>
+            </Link>
           </div>
 
           {/* Analytics Section */}
@@ -901,6 +1084,15 @@ const UserDashboard = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">My Profile</h1>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Edit your personal contact and delivery details.</p>
             </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-900/60 transition w-fit"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Store</span>
+            </Link>
           </div>
 
           {profileSaved && (
@@ -1082,6 +1274,15 @@ const UserDashboard = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">Settings</h1>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Manage your preferences and app settings.</p>
             </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-900/60 transition w-fit"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Store</span>
+            </Link>
           </div>
 
           <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/70 dark:border-slate-800 p-6 shadow-sm max-w-lg space-y-6">
@@ -1126,6 +1327,15 @@ const UserDashboard = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-amber-900 dark:text-white">Become a Seller</h1>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Register your business and start selling on ShopEase Nepal.</p>
             </div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-900/60 transition w-fit"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Store</span>
+            </Link>
           </div>
 
           {appSubmitted && (

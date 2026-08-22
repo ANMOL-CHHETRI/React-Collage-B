@@ -127,25 +127,37 @@ const UserProfilePage = () => {
   <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
     <div className="max-w-2xl mx-auto px-4">
 
-      <Link
-        to="/user/dashboard"
-        className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium mb-6 transition"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-bold text-sm transition group"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        Back to Dashboard
-      </Link>
+          <svg
+            className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.5"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          <span>Back to Store</span>
+        </Link>
+
+        <Link
+          to="/user/dashboard"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold transition"
+        >
+          <span>Dashboard</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
 
       <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-xl border border-orange-100 dark:border-slate-800 overflow-hidden">
 

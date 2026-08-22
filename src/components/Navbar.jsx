@@ -705,7 +705,7 @@ const Navbar = () => {
             </div>
 
             {/* Drawer Navigation Body (scrollable) */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 min-h-0">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 space-y-6 min-h-0 overscroll-contain">
               {/* SHOP Section */}
               <div className="space-y-1">
                 <div className="px-3 pb-1 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">

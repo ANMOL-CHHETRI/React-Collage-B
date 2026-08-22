@@ -85,11 +85,11 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 sm:py-12 overflow-x-hidden transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Shopping Cart</h1>
-          <Link to="/" className="text-sm text-amber-600 hover:underline font-medium">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Shopping Cart</h1>
+          <Link to="/" className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 hover:underline font-bold">
             &larr; Continue Shopping
           </Link>
         </div>

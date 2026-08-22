@@ -137,7 +137,7 @@ const CategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden">
       {/* Category Banner — Full Bleed Immersive */}
       <section className="relative py-20 md:py-28 text-white overflow-hidden">
         {/* Blurred product image background */}

@@ -8,8 +8,8 @@ const ContactSuccessModal = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-[500px] bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl animate-[fadeIn_.25s] border border-slate-200 dark:border-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl animate-[fadeIn_.25s] border border-slate-200 dark:border-slate-800 max-h-[90dvh] overflow-y-auto">
         {/* Header */}
         <div className="bg-emerald-500 text-white px-6 py-4 flex justify-between items-center">
           <h2 className="font-bold text-lg">
