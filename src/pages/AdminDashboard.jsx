@@ -678,10 +678,29 @@ const AdminDashboard = () => {
               </div>
 
               {showForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
-                  <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{editing ? "Edit Product" : "Add Product"}</h3>
-                    <form onSubmit={handleSave} className="space-y-4">
+                <div 
+                  className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 sm:p-6 overflow-y-auto" 
+                  onClick={() => setShowForm(false)}
+                >
+                  <div 
+                    className="bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-lg my-auto shadow-2xl border border-gray-100 dark:border-slate-800 max-h-[90vh] flex flex-col" 
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-slate-800 mb-4 shrink-0">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editing ? "Edit Product" : "Add Product"}</h3>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowForm(false)} 
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
+                        title="Close"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleSave} className="space-y-4 overflow-y-auto pr-1 flex-1">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                         <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
@@ -705,106 +724,106 @@ const AdminDashboard = () => {
                           </select>
                         </div>
                       </div>
-                     <div className="space-y-4">
-                    {/* Main Image Upload */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Main Image
-                      </label>
+                      <div className="space-y-4">
+                        {/* Main Image Upload */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Main Image
+                          </label>
 
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60"
-                      />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60"
+                          />
 
-                      {form.image && (
-                        <div className="mt-2 flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg overflow-hidden border">
-                            <ImageWithSkeleton
-                              src={form.image}
-                              alt="Preview"
-                              className="w-full h-full object-cover"
+                          {form.image && (
+                            <div className="mt-2 flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-lg overflow-hidden border">
+                                <ImageWithSkeleton
+                                  src={form.image}
+                                  alt="Preview"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Gallery Image 2 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Gallery Image 2
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="/pashmina_side.png"
+                              value={form.image2}
+                              onChange={(e) =>
+                                setForm({ ...form, image2: e.target.value })
+                              }
+                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
                             />
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                              Upload
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image2')} />
+                            </label>
                           </div>
                         </div>
-                      )}
-                    </div>
 
-                    {/* Gallery Image 2 */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Gallery Image 2
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="/pashmina_side.png"
-                          value={form.image2}
-                          onChange={(e) =>
-                            setForm({ ...form, image2: e.target.value })
-                          }
-                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
-                        />
-                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
-                          Upload
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image2')} />
-                        </label>
-                      </div>
-                    </div>
+                        {/* Gallery Image 3 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Gallery Image 3
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="/pashmina_closeup.png"
+                              value={form.image3}
+                              onChange={(e) =>
+                                setForm({ ...form, image3: e.target.value })
+                              }
+                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                            />
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                              Upload
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image3')} />
+                            </label>
+                          </div>
+                        </div>
 
-                    {/* Gallery Image 3 */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Gallery Image 3
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="/pashmina_closeup.png"
-                          value={form.image3}
-                          onChange={(e) =>
-                            setForm({ ...form, image3: e.target.value })
-                          }
-                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
-                        />
-                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
-                          Upload
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image3')} />
-                        </label>
+                        {/* Gallery Image 4 */}
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Gallery Image 4
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="/image4.png"
+                              value={form.image4}
+                              onChange={(e) =>
+                                setForm({ ...form, image4: e.target.value })
+                              }
+                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                            />
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                              Upload
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image4')} />
+                            </label>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Gallery Image 4 */}
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Gallery Image 4
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="/image4.png"
-                          value={form.image4}
-                          onChange={(e) =>
-                            setForm({ ...form, image4: e.target.value })
-                          }
-                          className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
-                        />
-                        <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
-                          Upload
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image4')} />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <textarea rows="2" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white dark:bg-slate-950 text-gray-900 dark:text-white" />
                       </div>
-                      <div className="flex gap-3 pt-2">
-                        <button type="submit" disabled={isUploading} className="flex-1 bg-amber-600 text-white py-2.5 rounded-lg font-medium hover:bg-amber-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                          {isUploading ? "Uploading..." : (editing ? "Update" : "Create")}
+                      <div className="flex gap-3 pt-3 border-t border-gray-100 dark:border-slate-800 mt-2 shrink-0 sticky bottom-0 bg-white dark:bg-slate-900 pb-1 z-10">
+                        <button type="submit" disabled={isUploading} className="flex-1 bg-amber-600 text-white py-2.5 rounded-lg font-medium hover:bg-amber-700 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow">
+                          {isUploading ? "Uploading..." : (editing ? "Update Product" : "Create Product")}
                         </button>
                         <button type="button" disabled={isUploading} onClick={() => setShowForm(false)} className="flex-1 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-slate-700 transition cursor-pointer disabled:opacity-50">Cancel</button>
                       </div>

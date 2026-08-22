@@ -25,7 +25,7 @@ export const checkBackendHealth = async () => {
       setConnected(false);
       return false;
     }
-    await getDoc(doc(db, "_health", "check"));
+    await getDocs(query(collection(db, "products")));
     setConnected(true);
     return true;
   } catch {
@@ -274,21 +274,69 @@ export const api = {
 
   // Orders
   getOrders: async (username = null) => {
-    if (!db) return [];
-    let q = collection(db, "orders");
-    if (username) {
-      q = query(q, where("username", "==", username));
+    if (!db) {
+      try {
+        const raw = localStorage.getItem("shopease_orders");
+        const all = raw ? JSON.parse(raw) : [];
+        return username ? all.filter((o) => o.username === username) : all;
+      } catch {
+        return [];
+      }
     }
-    const snap = await getDocs(q);
-    const orders = snap.docs.map(mapDoc);
-    return orders.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    try {
+      let q = collection(db, "orders");
+      if (username) {
+        q = query(q, where("username", "==", username));
+      }
+      const snap = await getDocs(q);
+      const orders = snap.docs.map(mapDoc);
+      const sorted = orders.sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+      if (sorted.length > 0 && !username) {
+        try { localStorage.setItem("shopease_orders", JSON.stringify(sorted)); } catch (e) { void e; }
+      }
+      return sorted;
+    } catch (err) {
+      console.warn("Firestore getOrders fallback:", err?.message || err);
+      try {
+        const raw = localStorage.getItem("shopease_orders");
+        const all = raw ? JSON.parse(raw) : [];
+        return username ? all.filter((o) => o.username === username) : all;
+      } catch {
+        return [];
+      }
+    }
   },
 
   createOrder: async (order) => {
-    if (!db) throw new Error("Firestore database is not initialized.");
     const newOrder = { ...order, createdAt: new Date().toISOString() };
-    const docRef = await addDoc(collection(db, "orders"), newOrder);
-    return { id: docRef.id, ...newOrder };
+    if (!db) {
+      const fallbackOrder = { id: `local_ord_${Date.now()}`, ...newOrder };
+      try {
+        const raw = localStorage.getItem("shopease_orders");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_orders", JSON.stringify([fallbackOrder, ...list]));
+      } catch (e) { void e; }
+      return fallbackOrder;
+    }
+    try {
+      const docRef = await addDoc(collection(db, "orders"), newOrder);
+      const saved = { id: docRef.id, ...newOrder };
+      try {
+        const raw = localStorage.getItem("shopease_orders");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_orders", JSON.stringify([saved, ...list]));
+      } catch (e) { void e; }
+      return saved;
+    } catch (err) {
+      console.warn("Firestore createOrder fallback:", err?.message || err);
+      const fallbackOrder = { id: `local_ord_${Date.now()}`, ...newOrder };
+      try {
+        const raw = localStorage.getItem("shopease_orders");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_orders", JSON.stringify([fallbackOrder, ...list]));
+      } catch (e) { void e; }
+      return fallbackOrder;
+    }
   },
 
   updateOrderStatus: async (id, status) => {
@@ -307,8 +355,13 @@ export const api = {
 
   getSellerApplications: async () => {
     if (!db) return [];
-    const snap = await getDocs(collection(db, "sellerApplications"));
-    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    try {
+      const snap = await getDocs(collection(db, "sellerApplications"));
+      return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    } catch (err) {
+      console.warn("Firestore getSellerApplications fallback:", err?.message || err);
+      return [];
+    }
   },
 
   reviewSellerApplication: async (username, status) => {
@@ -330,8 +383,13 @@ export const api = {
 
   getReportedAvatars: async () => {
     if (!db) return [];
-    const snap = await getDocs(collection(db, "reportedAvatars"));
-    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    try {
+      const snap = await getDocs(collection(db, "reportedAvatars"));
+      return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    } catch (err) {
+      console.warn("Firestore getReportedAvatars fallback:", err?.message || err);
+      return [];
+    }
   },
 
   dismissAvatarReport: async (username) => {
@@ -354,8 +412,13 @@ export const api = {
   // Administrative / Users
   getUsers: async () => {
     if (!db) return [];
-    const snap = await getDocs(collection(db, "users"));
-    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    try {
+      const snap = await getDocs(collection(db, "users"));
+      return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    } catch (err) {
+      console.warn("Firestore getUsers fallback:", err?.message || err);
+      return [];
+    }
   },
 
   updateUserViolations: async (username, delta) => {
@@ -400,60 +463,165 @@ export const api = {
 
   // Coupons
   getCoupons: async () => {
-    if (!db) return [];
-    const snap = await getDocs(collection(db, "coupons"));
-    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    if (!db) {
+      try {
+        const raw = localStorage.getItem("shopease_coupons");
+        return raw ? JSON.parse(raw) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+      } catch {
+        return [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+      }
+    }
+    try {
+      const snap = await getDocs(collection(db, "coupons"));
+      const list = snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+      if (list.length > 0) {
+        try { localStorage.setItem("shopease_coupons", JSON.stringify(list)); } catch (e) { void e; }
+        return list;
+      }
+    } catch (err) {
+      console.warn("Firestore getCoupons fallback:", err?.message || err);
+    }
+    try {
+      const raw = localStorage.getItem("shopease_coupons");
+      return raw ? JSON.parse(raw) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+    } catch {
+      return [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+    }
   },
 
   createCoupon: async (coupon) => {
-    if (!db) throw new Error("Firestore database is not initialized.");
     const newCoupon = { ...coupon, createdAt: new Date().toISOString() };
-    const docRef = await addDoc(collection(db, "coupons"), newCoupon);
-    return { id: docRef.id, ...newCoupon };
+    if (!db) {
+      const localC = { id: `local_cpn_${Date.now()}`, ...newCoupon };
+      try {
+        const raw = localStorage.getItem("shopease_coupons");
+        const list = raw ? JSON.parse(raw) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+        localStorage.setItem("shopease_coupons", JSON.stringify([...list, localC]));
+      } catch (e) { void e; }
+      return localC;
+    }
+    try {
+      const docRef = await addDoc(collection(db, "coupons"), newCoupon);
+      const saved = { id: docRef.id, ...newCoupon };
+      try {
+        const raw = localStorage.getItem("shopease_coupons");
+        const list = raw ? JSON.parse(raw) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+        localStorage.setItem("shopease_coupons", JSON.stringify([...list, saved]));
+      } catch (e) { void e; }
+      return saved;
+    } catch (err) {
+      console.warn("Firestore createCoupon fallback:", err?.message || err);
+      const localC = { id: `local_cpn_${Date.now()}`, ...newCoupon };
+      try {
+        const raw = localStorage.getItem("shopease_coupons");
+        const list = raw ? JSON.parse(raw) : [{ code: "FESTIVAL20", percent: 20, creator: "admin" }];
+        localStorage.setItem("shopease_coupons", JSON.stringify([...list, localC]));
+      } catch (e) { void e; }
+      return localC;
+    }
   },
 
   deleteCoupon: async (code) => {
+    try {
+      const raw = localStorage.getItem("shopease_coupons");
+      if (raw) {
+        const list = JSON.parse(raw).filter((c) => c.code !== code);
+        localStorage.setItem("shopease_coupons", JSON.stringify(list));
+      }
+    } catch (e) { void e; }
     if (!db) return true;
-    const q = query(collection(db, "coupons"), where("code", "==", code));
-    const snap = await getDocs(q);
-    for (const docSnap of snap.docs) {
-      await deleteDoc(docSnap.ref);
+    try {
+      const q = query(collection(db, "coupons"), where("code", "==", code));
+      const snap = await getDocs(q);
+      for (const docSnap of snap.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+    } catch (err) {
+      console.warn("Firestore deleteCoupon fallback:", err?.message || err);
     }
     return true;
   },
 
   // Messages
   getMessages: async () => {
-    if (!db) return [];
-    const snap = await getDocs(collection(db, "messages"));
-    return snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+    if (!db) {
+      try {
+        const raw = localStorage.getItem("shopease_messages");
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+    try {
+      const snap = await getDocs(collection(db, "messages"));
+      const list = snap.docs.map(mapDoc).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+      if (list.length > 0) {
+        try { localStorage.setItem("shopease_messages", JSON.stringify(list)); } catch (e) { void e; }
+        return list;
+      }
+    } catch (err) {
+      console.warn("Firestore getMessages fallback:", err?.message || err);
+    }
+    try {
+      const raw = localStorage.getItem("shopease_messages");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
   },
 
   createMessage: async (msg) => {
-    if (!db) throw new Error("Firestore database is not initialized.");
     const newMsg = { ...msg, createdAt: new Date().toISOString() };
-    const docRef = await addDoc(collection(db, "messages"), newMsg);
-    return { id: docRef.id, ...newMsg };
+    if (!db) {
+      const localM = { id: `local_msg_${Date.now()}`, ...newMsg };
+      try {
+        const raw = localStorage.getItem("shopease_messages");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_messages", JSON.stringify([...list, localM]));
+      } catch (e) { void e; }
+      return localM;
+    }
+    try {
+      const docRef = await addDoc(collection(db, "messages"), newMsg);
+      const saved = { id: docRef.id, ...newMsg };
+      try {
+        const raw = localStorage.getItem("shopease_messages");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_messages", JSON.stringify([...list, saved]));
+      } catch (e) { void e; }
+      return saved;
+    } catch (err) {
+      console.warn("Firestore createMessage fallback:", err?.message || err);
+      const localM = { id: `local_msg_${Date.now()}`, ...newMsg };
+      try {
+        const raw = localStorage.getItem("shopease_messages");
+        const list = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("shopease_messages", JSON.stringify([...list, localM]));
+      } catch (e) { void e; }
+      return localM;
+    }
   },
 
   // Audit Logs
   getAuditLogs: async (limit = 20, startAfter = null) => {
-    try {
-      const token = await auth?.currentUser?.getIdToken();
-      const params = new URLSearchParams({ limit: String(limit) });
-      if (startAfter) params.append("startAfter", startAfter);
+    if (import.meta.env.VITE_API_URL) {
+      try {
+        const token = await auth?.currentUser?.getIdToken();
+        const params = new URLSearchParams({ limit: String(limit) });
+        if (startAfter) params.append("startAfter", startAfter);
 
-      const res = await fetch(`${FUNCTIONS_API_BASE}/audit-logs?${params.toString()}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-      if (res.ok) {
-        return await res.json();
+        const res = await fetch(`${FUNCTIONS_API_BASE}/audit-logs?${params.toString()}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn("Audit logs API fetch fallback:", e?.message || e);
       }
-    } catch (e) {
-      console.warn("Audit logs API fetch error, checking Firestore fallback:", e);
     }
 
     if (!db) return { data: [], hasMore: false };
