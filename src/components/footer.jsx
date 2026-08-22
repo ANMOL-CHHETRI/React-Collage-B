@@ -18,7 +18,7 @@ const Footer = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
           
           {/* Top section: Brand + Links */}
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-8 mb-14">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-6 sm:gap-8 mb-14">
             
             {/* Brand column */}
             <div className="col-span-2 md:col-span-4 space-y-5">

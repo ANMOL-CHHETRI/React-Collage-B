@@ -556,7 +556,7 @@ const HomePage = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,150px),1fr))] sm:grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3 sm:gap-6">
             {categories.map((cat) => (
               <Link
                 key={cat.name}
@@ -733,7 +733,7 @@ const HomePage = () => {
 
           {/* Product Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] gap-4 sm:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
@@ -760,7 +760,7 @@ const HomePage = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 items-stretch">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,230px),1fr))] gap-4 sm:gap-6 items-stretch">
               {filteredProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -862,7 +862,7 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-4 sm:gap-5">
             {testimonials.map((t) => (
               <div
                 key={t.name}

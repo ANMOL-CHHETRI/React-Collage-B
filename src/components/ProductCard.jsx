@@ -131,8 +131,8 @@ const ProductCard = ({ product }) => {
           </span>
         </div>
 
-        <Link to={`/product/${product.id}`} className="block mb-2 group/title focus:outline-none">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug group-hover/title:text-amber-600 dark:group-hover/title:text-amber-400 transition-colors line-clamp-2">
+        <Link to={`/product/${product.id}`} className="block mb-2 group/title focus:outline-none min-w-0">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug group-hover/title:text-amber-600 dark:group-hover/title:text-amber-400 transition-colors line-clamp-2 break-words">
             {product.name}
           </h3>
         </Link>

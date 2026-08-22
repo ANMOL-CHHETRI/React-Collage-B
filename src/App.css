@@ -77,8 +77,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --page-gutter: clamp(1rem, 3.5vw, 2.5rem);
+  --content-max-width: 1400px;
+}
+
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  overflow-wrap: break-word;
+}
+
+/* Fluid Page Container */
+.page-container {
+  width: min(100% - 2 * var(--page-gutter), var(--content-max-width));
+  margin-inline: auto;
 }
 
 /* Focus Ring Utility for Keyboard Accessibility */
@@ -99,4 +111,5 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
 

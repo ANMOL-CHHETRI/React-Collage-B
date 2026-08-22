@@ -147,9 +147,9 @@ const CartPage = () => {
                 return (
                   <div
                     key={item.id}
-                    className="bg-white rounded-xl p-4 flex items-center gap-4 border border-slate-100 shadow-sm"
+                    className="bg-white dark:bg-slate-900 rounded-2xl p-4 flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 border border-slate-100 dark:border-slate-800 shadow-sm"
                   >
-                    <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0">
                       <ImageWithSkeleton
                         src={item.image || item.images?.[0] || item.imageUrl || item.downloadUrl}
                         alt={item.name}
@@ -157,16 +157,16 @@ const CartPage = () => {
                       />
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 text-sm truncate">{item.name}</h3>
-                      <p className="text-amber-600 font-bold mt-1">Rs. {item.price.toLocaleString()}</p>
+                    <div className="flex-1 min-w-[140px]">
+                      <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">{item.name}</h3>
+                      <p className="text-amber-600 dark:text-amber-400 font-bold mt-1">Rs. {item.price.toLocaleString()}</p>
 
                       {isOutOfStock ? (
-                        <span className="inline-block mt-1 text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
+                        <span className="inline-block mt-1 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-950/30 px-2 py-0.5 rounded-full">
                           Out of Stock
                         </span>
                       ) : item.stock !== undefined && item.stock <= 5 ? (
-                        <span className="inline-block mt-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                        <span className="inline-block mt-1 text-xs font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-full">
                           Only {item.stock} left
                         </span>
                       ) : null}
@@ -176,22 +176,24 @@ const CartPage = () => {
                       <button
                         onClick={() => handleDecrease(item)}
                         disabled={isOutOfStock}
-                        className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Decrease item quantity"
+                        className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         &minus;
                       </button>
-                      <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
+                      <span className="w-8 text-center font-medium text-sm text-slate-800 dark:text-slate-100">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         disabled={isOutOfStock || isAtMax}
-                        className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Increase item quantity"
+                        className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         +
                       </button>
                     </div>
 
-                    <div className="text-right">
-                      <p className="font-bold text-slate-900">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                    <div className="text-right sm:ml-auto">
+                      <p className="font-bold text-slate-900 dark:text-white">Rs. {(item.price * item.quantity).toLocaleString()}</p>
                       <button
                         onClick={() => handleRemoveItem(item.id)}
                         className="text-xs text-red-500 hover:underline mt-1 cursor-pointer"

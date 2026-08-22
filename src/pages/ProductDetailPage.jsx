@@ -497,7 +497,7 @@ const ProductDetailPage = () => {
 
         {/* ── Product Card ─────────────────────────────────────────────── */}
         <div className="bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 p-4 sm:p-6 lg:p-8">
             {/* Images */}
             <div className="flex flex-col gap-4">
               <div className="aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
@@ -549,7 +549,7 @@ const ProductDetailPage = () => {
                 </span>
               ) : null}
 
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white break-words">
                 {product.name}
               </h1>
 
@@ -606,7 +606,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden h-11 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white">
                   {/* Decrease quantity */}
@@ -786,7 +786,7 @@ const ProductDetailPage = () => {
         {/* Description Tab Content */}
         {activeTab === "description" && (
           <div className="mt-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg min-h-[200px] p-8">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg min-h-[200px] p-4 sm:p-6 md:p-8">
               <p className="text-slate-700 dark:text-slate-300 leading-8 text-justify">
                 {product.longDescription || product.description}
               </p>

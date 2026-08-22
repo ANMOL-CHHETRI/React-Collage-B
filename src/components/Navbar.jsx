@@ -327,7 +327,7 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-56 lg:w-72 pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400 focus-ring"
+                className="w-36 md:w-44 lg:w-64 max-w-full pl-9 pr-3 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 dark:text-slate-200 placeholder-slate-400 focus-ring"
               />
               <svg
                 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"

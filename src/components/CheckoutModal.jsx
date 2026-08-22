@@ -133,11 +133,11 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
   const isShippingValid = shippingDetails.fullName && isPhoneValid && shippingDetails.address && shippingDetails.city
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className={`bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-fade-in-up border border-slate-200 dark:border-slate-800 ${checkoutStep === 4 ? 'md:max-w-2xl' : ''}`}>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className={`bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-fade-in-up border border-slate-200 dark:border-slate-800 max-h-[90dvh] overflow-y-auto ${checkoutStep === 4 ? 'md:max-w-2xl' : ''}`}>
         <button 
           onClick={handleClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 no-print"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 no-print cursor-pointer"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
@@ -195,7 +195,7 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
                   <p className="text-red-500 text-xs mt-1">Phone number must be exactly 10 digits.</p>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Address</label>
                   <input 
