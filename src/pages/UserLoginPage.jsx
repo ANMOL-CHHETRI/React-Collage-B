@@ -198,10 +198,19 @@ const UserLoginPage = () => {
   };
 
   /* ── Redirect guards ── */
-  if (user?.role === "user" || user?.role === "sub-admin") {
-    navigate("/", { replace: true }); return null;
+  useEffect(() => {
+    if (user) {
+      if (user.role === "user" || user.role === "sub-admin") {
+        navigate("/", { replace: true });
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      }
+    }
+  }, [user, navigate]);
+
+  if (user) {
+    return null;
   }
-  if (user?.role === "admin") { navigate("/admin/dashboard", { replace: true }); return null; }
 
   /* ─────────── Shared input class ─────────── */
   const inputCls = `w-full px-4 py-2.5 rounded-xl border outline-none transition text-sm
