@@ -1226,6 +1226,7 @@ const UserDashboard = () => {
                   <input
                     type="password"
                     required
+                    autoComplete="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
@@ -1238,6 +1239,7 @@ const UserDashboard = () => {
                       type="password"
                       required
                       minLength={4}
+                      autoComplete="new-password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"
@@ -1249,6 +1251,7 @@ const UserDashboard = () => {
                       type="password"
                       required
                       minLength={4}
+                      autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="w-full text-sm border border-slate-200 dark:border-slate-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition"

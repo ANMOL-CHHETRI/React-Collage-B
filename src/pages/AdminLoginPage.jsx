@@ -138,15 +138,15 @@ const AdminLoginPage = () => {
                         placeholder="admin"
                         onChange={e=>{ setUsername(e.target.value); setError("") }}
                         className={`w-full px-4 py-2.5 rounded-lg border outline-none transition text-sm ${dark ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"}`}
-                        autoComplete="off" />
+                        autoComplete="username" />
                     </div>
                     <div>
-                      <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-700"}`}>Password</label>
+                       <label className={`block text-sm font-medium mb-1 ${dark ? "text-slate-300" : "text-gray-700"}`}>Password</label>
                       <input type="password" required value={password}
                         placeholder="••••••••"
                         onChange={e=>{ setPassword(e.target.value); setError("") }}
                         className={`w-full px-4 py-2.5 rounded-lg border outline-none transition text-sm ${dark ? "bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"}`}
-                        autoComplete="new-password" />
+                        autoComplete="current-password" />
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
