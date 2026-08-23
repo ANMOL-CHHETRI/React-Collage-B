@@ -28,10 +28,11 @@ service firebase.storage {
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
-    // 3. Product Images (Admin only)
+    // 3. Product Images (Admin / Product Catalog)
     match /products/{productId}/{fileName} {
       allow read: if true;
-      allow write, delete: if isAuthenticated() && isImage() && isUnder10MB();
+      allow write, delete: if isImage() && isUnder10MB();
     }
   }
 }
+

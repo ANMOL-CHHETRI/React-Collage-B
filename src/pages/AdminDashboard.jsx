@@ -392,7 +392,12 @@ const AdminDashboard = () => {
         percent: 100,
         stats: result.compressionStats,
       })
-      success(`Image compressed (${result.compressionStats.compressionRatio}) and saved!`)
+      const providerLabel = result.storageProvider === "firebase"
+        ? "Firebase Storage"
+        : result.storageProvider === "cloudinary"
+        ? "Cloudinary"
+        : "Optimized Storage"
+      success(`Image compressed (${result.compressionStats.compressionRatio}) & saved via ${providerLabel}!`)
     } catch (err) {
       setUploadStatus({ active: false, stage: "", percent: 0, stats: null })
       toastError(err.message || "Failed to upload image")
@@ -421,7 +426,12 @@ const AdminDashboard = () => {
         percent: 100,
         stats: result.compressionStats,
       })
-      success(`Gallery image compressed (${result.compressionStats.compressionRatio}) and saved!`)
+      const providerLabel = result.storageProvider === "firebase"
+        ? "Firebase Storage"
+        : result.storageProvider === "cloudinary"
+        ? "Cloudinary"
+        : "Optimized Storage"
+      success(`Gallery image compressed (${result.compressionStats.compressionRatio}) & saved via ${providerLabel}!`)
     } catch (err) {
       setUploadStatus({ active: false, stage: "", percent: 0, stats: null })
       toastError(err.message || "Failed to upload image")
@@ -795,7 +805,9 @@ const AdminDashboard = () => {
                               <span>
                                 {uploadStatus.stage === "compressing"
                                   ? "⚡ Adaptively compressing image..."
-                                  : `☁️ Uploading to Firebase Storage (${uploadStatus.percent}%)...`}
+                                  : uploadStatus.percent >= 100
+                                  ? "✓ Finalizing and saving image..."
+                                  : `☁️ Uploading optimized image (${uploadStatus.percent}%)...`}
                               </span>
                               <span>{uploadStatus.percent}%</span>
                             </div>
