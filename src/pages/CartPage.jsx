@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext"
 import CheckoutModal from "../components/CheckoutModal"
 import ConfirmDialog from "../components/ConfirmDialog"
 import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
+import { resolveProductImage } from "../utils/imageUrl"
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartSubtotal } = useCart()
@@ -151,7 +152,7 @@ const CartPage = () => {
                   >
                     <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0">
                       <ImageWithSkeleton
-                        src={item.image || item.images?.[0] || item.imageUrl || item.downloadUrl}
+                        src={resolveProductImage(item)}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />

@@ -22,25 +22,30 @@ export const ImageWithSkeleton = ({
   const resolvedSrc = resolveImageUrl(src, fallbackSrc || fallbackType);
   const fallbackUrl = fallbackSrc || getFallbackUrl(fallbackType);
 
-  const [loaded, setLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [loaded, setLoaded] = useState(() => {
+    // If the image is a data URI, it is synchronously available
+    return typeof resolvedSrc === "string" && resolvedSrc.startsWith("data:");
+  });
   const imgRef = useRef(null);
 
-  // Check if the image was already cached by the browser
+  // Sync state whenever the resolved source changes
   useEffect(() => {
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
       setLoaded(true);
+      setHasError(false);
+    } else if (typeof resolvedSrc === "string" && resolvedSrc.startsWith("data:")) {
+      setLoaded(true);
+      setHasError(false);
+    } else {
+      setLoaded(false);
+      setHasError(false);
     }
   }, [resolvedSrc]);
 
-  // Reset load state when src changes
-  useEffect(() => {
-    setHasError(false);
-    setLoaded(false);
-  }, [src]);
-
   const handleLoad = (e) => {
     setLoaded(true);
+    setHasError(false);
     if (typeof customOnLoad === "function") {
       customOnLoad(e);
     }

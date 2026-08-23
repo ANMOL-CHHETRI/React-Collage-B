@@ -6,6 +6,7 @@ import NepalDeliveryMap from "../components/NepalDeliveryMap";
 import { ProductCardSkeleton } from "../components/Skeleton";
 import ProductCard from "../components/ProductCard";
 import { ImageWithSkeleton } from "../components/ImageWithSkeleton";
+import { resolveProductImage } from "../utils/imageUrl";
 
 // ── Category Definitions ───────────────────────────────────────────────────────
 const categories = [
@@ -334,7 +335,7 @@ const HeroSection = ({ products, addToCart, onSearchSubmit }) => {
                 {/* Product Showcase Image */}
                 <div className="relative rounded-xl overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-slate-100 dark:bg-slate-800 mb-4">
                   <ImageWithSkeleton
-                    src={activeProduct.image}
+                    src={resolveProductImage(activeProduct)}
                     alt={activeProduct.name}
                     className="w-full h-full object-cover"
                   />

@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-08-23T05:51:31.193Z",
+  "projectId": "shopease-nepal-anmol-196e7",
+  "counts": {
+    "products": 2,
+    "orders": 0,
+    "users": 3,
+    "categories": "ERROR: Missing or insufficient permissions.",
+    "testimonials": "ERROR: Missing or insufficient permissions.",
+    "coupons": 0,
+    "messages": 0,
+    "sellerApplications": 2,
+    "reportedAvatars": 0,
+    "auditLogs": 0,
+    "collages": 0,
+    "projects": 0
+  },
+  "collections": {
+    "products": [
+      {
+        "id": "cTgWl22XauhA7zLnffIF",
+        "name": "Dhaka-surwal-set",
+        "description": "It is a dhaka-surwal set which is traditional dress of nepal ",
+        "image": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450198/ginpmc2azzoo8ewvp8xh.png",
+        "images": [
+          "https://res.cloudinary.com/dw8watuy/image/upload/v1787450198/ginpmc2azzoo8ewvp8xh.png",
+          "https://res.cloudinary.com/dw8watuy/image/upload/v1787450208/fylck81evfycuga7qhm2.jpg"
+        ],
+        "badge": null,
+        "longDescription": "",
+        "stock": 5,
+        "category": "Traditional Apparel",
+        "createdAt": "2026-08-23T01:56:49.476Z",
+        "price": 5000,
+        "addedBy": "admin"
+      },
+      {
+        "id": "diOIvy5BUI0xG2wLl9dp",
+        "description": "It is a traditional dress dhaka-saree of nepali woman",
+        "images": [
+          "https://res.cloudinary.com/dw8watuy/image/upload/v1787450460/t7hw7cww9ztxjyfij89n.jpg",
+          "https://res.cloudinary.com/dw8watuy/image/upload/v1787450474/fjeirsh5l3fkhnyargec.jpg",
+          "https://res.cloudinary.com/dw8watuy/image/upload/v1787450481/bzjwzdrbbzjmz0mdtl41.jpg"
+        ],
+        "stock": 4,
+        "category": "Traditional Apparel",
+        "addedBy": "admin",
+        "price": 4000,
+        "name": "Dhaka-saree-Diamond-set",
+        "longDescription": "",
+        "createdAt": "2026-08-23T02:01:22.823Z",
+        "badge": null,
+        "image": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450460/t7hw7cww9ztxjyfij89n.jpg"
+      }
+    ],
+    "orders": [],
+    "users": [
+      {
+        "id": "ZUbyDWFJtLp2fnk23VMi",
+        "role": "admin",
+        "username": "admin",
+        "banned": false,
+        "violations": 0,
+        "name": "System Administrator",
+        "password": "admin123",
+        "createdAt": "2026-08-16T00:00:00.000Z",
+        "email": "admin@shopease.com"
+      },
+      {
+        "id": "novalyra068",
+        "password": "",
+        "violations": 0,
+        "createdAt": "2026-08-21T09:07:18.828Z",
+        "name": "Lyra Nova",
+        "phone": "9767606302",
+        "email": "novalyra068@gmail.com",
+        "role": "user",
+        "address": "Sunwal",
+        "avatar": "data:image/jpeg;base64,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",
+        "username": "novalyra068",
+        "banned": false
+      },
+      {
+        "id": "yo",
+        "password": "admin123",
+        "role": "user",
+        "phone": "",
+        "email": "baralanupam111@gmail.com",
+        "createdAt": "2026-08-22T07:38:38.299Z",
+        "address": "",
+        "banned": false,
+        "username": "yo",
+        "violations": 0,
+        "avatar": null,
+        "name": "Anupam Baral"
+      }
+    ],
+    "coupons": [],
+    "messages": [],
+    "sellerApplications": [
+      {
+        "id": "ALh2roV7YIa5gUBRRGEm",
+        "shopAddress": "KTM",
+        "shopDescription": "Yo",
+        "contactNumber": "9767606000",
+        "shopName": "BKC",
+        "username": "novalyra068",
+        "createdAt": "2026-08-22T07:08:03.019Z",
+        "shopCategory": "Traditional Apparel",
+        "status": "Pending"
+      },
+      {
+        "id": "VNxSNxdfa6oJ9avZ78YN",
+        "createdAt": "2026-08-22T07:07:58.091Z",
+        "contactNumber": "9767606000",
+        "shopCategory": "Traditional Apparel",
+        "shopName": "BKC",
+        "shopDescription": "Yo",
+        "username": "novalyra068",
+        "status": "Pending",
+        "shopAddress": "KTM"
+      }
+    ],
+    "reportedAvatars": [],
+    "auditLogs": [],
+    "collages": [],
+    "projects": []
+  }
+}

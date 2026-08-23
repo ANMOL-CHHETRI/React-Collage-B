@@ -3,6 +3,7 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useState } from "react";
 import { ImageWithSkeleton } from "./ImageWithSkeleton";
+import { resolveProductImage } from "../utils/imageUrl";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -44,6 +45,7 @@ const ProductCard = ({ product }) => {
   const badge = getBadge();
   const hasRating = typeof product.rating === "number" && !isNaN(product.rating) && product.rating > 0;
   const ratingValue = hasRating ? Number(product.rating) : null;
+  const productImgSrc = resolveProductImage(product);
 
   return (
     <article className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group relative focus-within:ring-2 focus-within:ring-amber-500">
@@ -52,7 +54,7 @@ const ProductCard = ({ product }) => {
       <div className="relative overflow-hidden aspect-[4/5] bg-slate-100 dark:bg-slate-800 shrink-0">
         <Link to={`/product/${product.id}`} className="block w-full h-full focus:outline-none" tabIndex={0}>
           <ImageWithSkeleton
-            src={product.image}
+            src={productImgSrc}
             alt={product.name}
             className={`w-full h-full object-cover transition-transform duration-500 ease-out ${product.stock === 0 ? "grayscale opacity-80" : "group-hover:scale-105"}`}
           />

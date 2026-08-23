@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { ProductDetailSkeleton } from "../components/Skeleton";
 import { ImageWithSkeleton } from "../components/ImageWithSkeleton";
+import { resolveProductImages } from "../utils/imageUrl";
 import { api } from "../utils/api";
 import ContactSuccessModal from "../components/ContactSuccessModal";
 import ProductCard from "../components/ProductCard";
@@ -471,6 +472,8 @@ const ProductDetailPage = () => {
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : "0.0";
+  const galleryImages = resolveProductImages(product);
+  const activeImageSrc = galleryImages[activeImgIndex] || galleryImages[0];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 py-12 transition-colors duration-300">
@@ -502,22 +505,20 @@ const ProductDetailPage = () => {
             <div className="flex flex-col gap-4">
               <div className="aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-slate-100 to-white dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg">
                 <ImageWithSkeleton
-                  src={
-                    Array.isArray(product.images) && product.images.length > 0
-                      ? product.images[activeImgIndex] || product.images[0]
-                      : product.image || product.imageUrl || product.downloadUrl
-                  }
+                  src={activeImageSrc}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-110 cursor-zoom-in"
                 />
               </div>
-              {Array.isArray(product.images) && product.images.length > 1 && (
+              {galleryImages.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-2">
-                  {product.images.map((img, idx) => (
+                  {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => setActiveImgIndex(idx)}
-                      className={`w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 shadow-sm transition-all duration-300 cursor-pointer ${
+                      aria-label={`View image ${idx + 1} of ${product.name}`}
+                      className={`w-24 h-24 shrink-0 rounded-xl overflow-hidden border-2 shadow-xs transition-all duration-300 cursor-pointer ${
                         activeImgIndex === idx
                           ? "border-amber-500 ring-2 ring-amber-300 scale-105 opacity-100"
                           : "border-transparent opacity-60 hover:opacity-100"

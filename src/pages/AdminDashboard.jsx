@@ -7,7 +7,8 @@ import { ProductRowSkeleton, StatCardSkeleton } from "../components/Skeleton"
 import { ImageWithSkeleton } from "../components/ImageWithSkeleton"
 import { ErrorBoundary } from "../components/ErrorBoundary"
 import { api } from "../utils/api"
-import { uploadToCloudinary } from "../utils/cloudinary"
+import { uploadProductImageToStorage } from "../utils/productStorage"
+import { resolveProductImage } from "../utils/imageUrl"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
 
 const PIE_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#64748b']
@@ -73,6 +74,12 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("name")
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState({
+    active: false,
+    stage: "",
+    percent: 0,
+    stats: null,
+  })
 
   const handleAdminAvatarUpload = (e) => {
     const file = e.target.files[0];
@@ -342,14 +349,28 @@ const AdminDashboard = () => {
     const file = e.target.files[0]
     if (!file) return
     setIsUploading(true)
+    setUploadStatus({ active: true, stage: "compressing", percent: 10, stats: null })
     try {
-      const url = await uploadToCloudinary(file)
-      setForm({ ...form, image: url, imageFile: file })
-      success("Main image uploaded!")
+      const result = await uploadProductImageToStorage(file, {
+        productId: editing?.id || "catalog",
+        onProgress: (percent, stage) => {
+          setUploadStatus((prev) => ({ ...prev, percent, stage }))
+        },
+      })
+      setForm((prev) => ({ ...prev, image: result.downloadUrl }))
+      setUploadStatus({
+        active: false,
+        stage: "done",
+        percent: 100,
+        stats: result.compressionStats,
+      })
+      success(`Image compressed (${result.compressionStats.compressionRatio}) and saved!`)
     } catch (err) {
+      setUploadStatus({ active: false, stage: "", percent: 0, stats: null })
       toastError(err.message || "Failed to upload image")
     } finally {
       setIsUploading(false)
+      e.target.value = ""
     }
   }
 
@@ -357,14 +378,28 @@ const AdminDashboard = () => {
     const file = e.target.files[0]
     if (!file) return
     setIsUploading(true)
+    setUploadStatus({ active: true, stage: "compressing", percent: 10, stats: null })
     try {
-      const url = await uploadToCloudinary(file)
-      setForm({ ...form, [field]: url })
-      success("Gallery image uploaded!")
+      const result = await uploadProductImageToStorage(file, {
+        productId: editing?.id || "catalog",
+        onProgress: (percent, stage) => {
+          setUploadStatus((prev) => ({ ...prev, percent, stage }))
+        },
+      })
+      setForm((prev) => ({ ...prev, [field]: result.downloadUrl }))
+      setUploadStatus({
+        active: false,
+        stage: "done",
+        percent: 100,
+        stats: result.compressionStats,
+      })
+      success(`Gallery image compressed (${result.compressionStats.compressionRatio}) and saved!`)
     } catch (err) {
+      setUploadStatus({ active: false, stage: "", percent: 0, stats: null })
       toastError(err.message || "Failed to upload image")
     } finally {
       setIsUploading(false)
+      e.target.value = ""
     }
   }
 
@@ -725,27 +760,68 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                       <div className="space-y-4">
+                        {/* Compression & Upload Progress Banner */}
+                        {uploadStatus.active && (
+                          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-xl space-y-2 animate-pulse">
+                            <div className="flex justify-between text-xs font-bold text-amber-800 dark:text-amber-300">
+                              <span>
+                                {uploadStatus.stage === "compressing"
+                                  ? "⚡ Adaptively compressing image..."
+                                  : `☁️ Uploading to Firebase Storage (${uploadStatus.percent}%)...`}
+                              </span>
+                              <span>{uploadStatus.percent}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-amber-200 dark:bg-amber-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                                style={{ width: `${uploadStatus.percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
                         {/* Main Image Upload */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Main Image
-                          </label>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                              Main Image (Auto-Compressed)
+                            </label>
+                            {uploadStatus.stats && form.image && (
+                              <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40">
+                                ✓ Compressed: {(uploadStatus.stats.originalSize / 1024).toFixed(0)} KB → {(uploadStatus.stats.compressedSize / 1024).toFixed(0)} KB ({uploadStatus.stats.compressionRatio})
+                              </span>
+                            )}
+                          </div>
 
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60"
-                          />
+                          <div className="space-y-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              disabled={isUploading}
+                              onChange={handleImageUpload}
+                              className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 dark:file:bg-amber-950/40 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 dark:hover:file:bg-amber-950/60 disabled:opacity-50"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Or enter direct URL / storage URL (e.g. https://...)"
+                              value={form.image}
+                              onChange={(e) => setForm({ ...form, image: e.target.value })}
+                              className="w-full rounded-lg border border-gray-300 dark:border-slate-700 px-3 py-2 text-xs text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                            />
+                          </div>
 
                           {form.image && (
                             <div className="mt-2 flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg overflow-hidden border">
+                              <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xs shrink-0">
                                 <ImageWithSkeleton
-                                  src={form.image}
+                                  src={resolveProductImage(form.image)}
                                   alt="Preview"
                                   className="w-full h-full object-cover"
                                 />
+                              </div>
+                              <div className="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">
+                                <span className="font-semibold block text-slate-700 dark:text-slate-300 truncate">Image Preview</span>
+                                <span className="truncate block font-mono text-[10px]">{form.image}</span>
                               </div>
                             </div>
                           )}
@@ -759,16 +835,16 @@ const AdminDashboard = () => {
                           <div className="flex gap-2">
                             <input
                               type="text"
-                              placeholder="/pashmina_side.png"
+                              placeholder="/pashmina_side.png or https://..."
                               value={form.image2}
                               onChange={(e) =>
                                 setForm({ ...form, image2: e.target.value })
                               }
-                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-900"
                             />
-                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-medium">
                               Upload
-                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image2')} />
+                              <input type="file" accept="image/*" disabled={isUploading} className="hidden" onChange={(e) => handleGalleryUpload(e, 'image2')} />
                             </label>
                           </div>
                         </div>
@@ -781,16 +857,16 @@ const AdminDashboard = () => {
                           <div className="flex gap-2">
                             <input
                               type="text"
-                              placeholder="/pashmina_closeup.png"
+                              placeholder="/pashmina_closeup.png or https://..."
                               value={form.image3}
                               onChange={(e) =>
                                 setForm({ ...form, image3: e.target.value })
                               }
-                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-900"
                             />
-                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-medium">
                               Upload
-                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image3')} />
+                              <input type="file" accept="image/*" disabled={isUploading} className="hidden" onChange={(e) => handleGalleryUpload(e, 'image3')} />
                             </label>
                           </div>
                         </div>
@@ -803,16 +879,16 @@ const AdminDashboard = () => {
                           <div className="flex gap-2">
                             <input
                               type="text"
-                              placeholder="/image4.png"
+                              placeholder="/image4.png or https://..."
                               value={form.image4}
                               onChange={(e) =>
                                 setForm({ ...form, image4: e.target.value })
                               }
-                              className="flex-1 rounded-lg border px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-slate-900"
+                              className="flex-1 rounded-lg border border-gray-300 dark:border-slate-700 px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-900"
                             />
-                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center">
+                            <label className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-medium">
                               Upload
-                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleGalleryUpload(e, 'image4')} />
+                              <input type="file" accept="image/*" disabled={isUploading} className="hidden" onChange={(e) => handleGalleryUpload(e, 'image4')} />
                             </label>
                           </div>
                         </div>

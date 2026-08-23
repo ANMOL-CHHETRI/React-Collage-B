@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-08-23T06:04:36.700Z",
+  "projectId": "shopease-nepal-anmol-196e7",
+  "totalProducts": 2,
+  "summary": {
+    "valid": 2,
+    "oversized": 0,
+    "broken": 0,
+    "missing": 0,
+    "invalid": 0
+  },
+  "products": [
+    {
+      "id": "cTgWl22XauhA7zLnffIF",
+      "name": "Dhaka-surwal-set",
+      "category": "Traditional Apparel",
+      "price": 5000,
+      "stock": 5,
+      "primaryImage": {
+        "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450198/ginpmc2azzoo8ewvp8xh.png",
+        "status": "VALID",
+        "httpStatus": 200,
+        "contentType": "image/png",
+        "sizeBytes": 110552
+      },
+      "galleryImages": [
+        {
+          "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450198/ginpmc2azzoo8ewvp8xh.png",
+          "status": "VALID",
+          "httpStatus": 200,
+          "contentType": "image/png",
+          "sizeBytes": 110552
+        },
+        {
+          "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450208/fylck81evfycuga7qhm2.jpg",
+          "status": "VALID",
+          "httpStatus": 200,
+          "contentType": "image/jpeg",
+          "sizeBytes": 34042
+        }
+      ],
+      "status": "VALID",
+      "createdAt": "2026-08-23T01:56:49.476Z"
+    },
+    {
+      "id": "diOIvy5BUI0xG2wLl9dp",
+      "name": "Dhaka-saree-Diamond-set",
+      "category": "Traditional Apparel",
+      "price": 4000.03,
+      "stock": 4,
+      "primaryImage": {
+        "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450460/t7hw7cww9ztxjyfij89n.jpg",
+        "status": "VALID",
+        "httpStatus": 200,
+        "contentType": "image/jpeg",
+        "sizeBytes": 60871
+      },
+      "galleryImages": [
+        {
+          "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450460/t7hw7cww9ztxjyfij89n.jpg",
+          "status": "VALID",
+          "httpStatus": 200,
+          "contentType": "image/jpeg",
+          "sizeBytes": 60871
+        },
+        {
+          "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450474/fjeirsh5l3fkhnyargec.jpg",
+          "status": "VALID",
+          "httpStatus": 200,
+          "contentType": "image/jpeg",
+          "sizeBytes": 15859
+        },
+        {
+          "url": "https://res.cloudinary.com/dw8watuy/image/upload/v1787450481/bzjwzdrbbzjmz0mdtl41.jpg",
+          "status": "VALID",
+          "httpStatus": 200,
+          "contentType": "image/jpeg",
+          "sizeBytes": 16500
+        }
+      ],
+      "status": "VALID",
+      "createdAt": "2026-08-23T02:01:22.823Z"
+    }
+  ]
+}

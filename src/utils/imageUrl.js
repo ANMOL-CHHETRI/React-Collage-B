@@ -99,6 +99,38 @@ export function resolveImageUrl(source, fallbackType = "product") {
 }
 
 /**
+ * Resolves the primary canonical image URL for a product entity.
+ * Handles product.image, product.images[0], product.imageUrl, product.downloadUrl, etc.
+ * @param {object|string} product
+ * @returns {string} Fully resolved renderable image URL
+ */
+export function resolveProductImage(product) {
+  if (!product) return DEFAULT_PRODUCT_FALLBACK;
+  if (typeof product === "string") return resolveImageUrl(product, "product");
+  const raw =
+    product.image ||
+    (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : null) ||
+    product.imageUrl ||
+    product.downloadUrl;
+  return resolveImageUrl(raw, "product");
+}
+
+/**
+ * Resolves an array of canonical image URLs for a product gallery.
+ * @param {object} product
+ * @returns {string[]} Array of fully resolved image URLs
+ */
+export function resolveProductImages(product) {
+  if (!product) return [DEFAULT_PRODUCT_FALLBACK];
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    const list = product.images.map((img) => resolveImageUrl(img, "product")).filter(Boolean);
+    if (list.length > 0) return list;
+  }
+  const single = resolveProductImage(product);
+  return [single];
+}
+
+/**
  * Returns the fallback URL for a given type or custom string.
  */
 export function getFallbackUrl(fallbackType) {
@@ -115,3 +147,4 @@ export function getFallbackUrl(fallbackType) {
       return DEFAULT_PRODUCT_FALLBACK;
   }
 }
+
