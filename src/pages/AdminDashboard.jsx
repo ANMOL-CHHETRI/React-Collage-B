@@ -202,7 +202,7 @@ const AdminDashboard = () => {
       }
     };
     fetchAdminData();
-  }, [activeSection, toastError]);
+  }, [activeSection, toastError, registeredUsers]);
 
   // Dynamic calculations for truth-enforced metrics
   const totalRevenue = useMemo(() => {

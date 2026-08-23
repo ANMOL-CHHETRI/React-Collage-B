@@ -838,7 +838,7 @@ const UserDashboard = () => {
           </div>
 
           <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 overflow-x-auto whitespace-nowrap scrollbar-none">
-            {["All", "To Pay", "To Ship", "To Receive", "To Review(3)"].map((tab) => (
+            {["All", "To Pay", "To Ship", "To Receive", "To Review"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
