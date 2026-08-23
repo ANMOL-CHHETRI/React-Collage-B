@@ -184,7 +184,7 @@ const Navbar = () => {
         {/* Top Bar for Desktop & Mobile */}
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* Mobile Menu Button (left on mobile) */}
+          {/* Mobile Hamburger Button */}
           <button
             type="button"
             onClick={() => {
@@ -194,7 +194,7 @@ const Navbar = () => {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation"
             aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-            className="md:hidden p-2.5 min-w-[44px] min-h-[44px] rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer focus-ring"
+            className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer focus-ring"
           >
             {isOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -232,7 +232,7 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Primary Navigation */}
-            <div className="hidden md:flex items-center gap-1.5 ml-2">
+            <div className="hidden lg:flex items-center gap-1.5 ml-2">
               {/* Categories Dropdown */}
               <div className="relative">
                 <button
@@ -318,7 +318,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Right Action Group */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {/* Search Bar */}
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
@@ -613,7 +613,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Right Action (Cart button for mobile top bar) */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-2">
             <button
               onClick={() => setIsCartOpen(true)}
               aria-label={`Open Cart with ${cartCount} items`}
@@ -632,7 +632,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Sub-Header Search Bar (Always visible below top bar on mobile) */}
-        <div className="md:hidden pb-3 px-1">
+        <div className="lg:hidden pb-3 px-1">
           <form onSubmit={handleSearchSubmit} className="relative">
             <input
               type="text"
@@ -664,7 +664,7 @@ const Navbar = () => {
         <>
           {/* Backdrop Overlay */}
           <div
-            className="fixed inset-0 h-dvh bg-slate-900/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            className="fixed inset-0 h-dvh bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
             onClick={() => setIsOpen(false)}
           />
 
@@ -674,7 +674,7 @@ const Navbar = () => {
             aria-label="Mobile navigation"
             role="dialog"
             aria-modal="true"
-            className="fixed top-0 left-0 bottom-0 h-dvh w-[min(88vw,360px)] bg-white dark:bg-slate-950 z-50 shadow-2xl overflow-hidden md:hidden flex flex-col border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-250"
+            className="fixed top-0 left-0 bottom-0 h-dvh w-[min(88vw,360px)] bg-white dark:bg-slate-950 z-50 shadow-2xl overflow-hidden lg:hidden flex flex-col border-r border-slate-200 dark:border-slate-800 animate-in slide-in-from-left duration-250"
           >
             {/* Drawer Top Header (fixed) */}
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-950">

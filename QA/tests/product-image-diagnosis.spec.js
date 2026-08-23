@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test('Diagnose live product image rendering on Home and Product Detail', async ({ page }) => {
   const consoleLogs = [];

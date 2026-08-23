@@ -8,6 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "test": "npm --prefix functions test",
+    "test:compression": "node tools/test_image_compression.mjs",
+    "audit:images": "node tools/product_image_audit.mjs",
     "verify:production": "node tools/verify_production.mjs",
     "preview": "vite preview",
     "test:report": "npx playwright test",

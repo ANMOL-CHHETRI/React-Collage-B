@@ -114,10 +114,26 @@ test.describe('ShopEase Nepal — Product Image Rendering & Responsive Suite', (
       await page.goto('/');
       await page.waitForTimeout(1000);
 
-      // Check for horizontal overflow
-      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-      const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
-      expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 2); // 2px margin of error for subpixel rendering
+      const overflowInfo = await page.evaluate(() => {
+        const docWidth = document.documentElement.scrollWidth;
+        const winWidth = window.innerWidth;
+        const overflowing = [];
+        if (docWidth > winWidth + 2) {
+          const all = document.querySelectorAll('*');
+          for (const el of all) {
+            const r = el.getBoundingClientRect();
+            if (r.right > winWidth + 2) {
+              overflowing.push({ tag: el.tagName, className: String(el.className).slice(0, 50), right: r.right, width: r.width });
+            }
+          }
+        }
+        return { docWidth, winWidth, overflowing: overflowing.slice(0, 5) };
+      });
+
+      if (overflowInfo.docWidth > overflowInfo.winWidth + 2) {
+        console.log(`Overflow at ${bp.name}:`, overflowInfo);
+      }
+      expect(overflowInfo.docWidth).toBeLessThanOrEqual(overflowInfo.winWidth + 2);
 
       // Check card images rendered without breakage
       const cardImages = page.locator('article img');
