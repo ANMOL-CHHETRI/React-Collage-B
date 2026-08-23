@@ -115,8 +115,8 @@ const CategoryPage = () => {
   // Visual header details based on category
   const categoryMeta = {
     "Traditional Apparel": {
-      image: "/dhakasaree.jpg",
-      fallbackImage: "/dhakasaree.jpg",
+      image: "/traditional_apparel.jpg",
+      fallbackImage: "/traditional_apparel.jpg",
       gradient: "from-amber-950/85 via-orange-950/70 to-black/85",
       badgeText: "Handwoven Textiles",
       description: "Authentic, handwoven Palpa Dhaka clothing, Newari Haku Patasi, and pure Himalayan Pashmina shawls from local master artisans.",
@@ -145,8 +145,8 @@ const CategoryPage = () => {
   }
 
   const meta = categoryMeta[decodedCategory] || {
-    image: categoryProducts[0]?.image || "/dhakasaree.jpg",
-    fallbackImage: "/dhakasaree.jpg",
+    image: categoryProducts[0]?.image || "/traditional_apparel.jpg",
+    fallbackImage: "/traditional_apparel.jpg",
     gradient: "from-amber-950/85 via-black/70 to-black/85",
     badgeText: "Regional Collection",
     description: "Browse authentic Nepalese goods and regional specialties sourced directly from verified local producers.",

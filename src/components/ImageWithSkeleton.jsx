@@ -24,8 +24,11 @@ export const ImageWithSkeleton = ({
 
   const [hasError, setHasError] = useState(false);
   const [loaded, setLoaded] = useState(() => {
-    // If the image is a data URI, it is synchronously available
-    return typeof resolvedSrc === "string" && resolvedSrc.startsWith("data:");
+    // If the image is a data URI or local static asset, it is immediately available
+    if (typeof resolvedSrc === "string" && (resolvedSrc.startsWith("data:") || resolvedSrc.startsWith("/"))) {
+      return true;
+    }
+    return false;
   });
   const imgRef = useRef(null);
 
@@ -34,7 +37,7 @@ export const ImageWithSkeleton = ({
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
       setLoaded(true);
       setHasError(false);
-    } else if (typeof resolvedSrc === "string" && resolvedSrc.startsWith("data:")) {
+    } else if (typeof resolvedSrc === "string" && (resolvedSrc.startsWith("data:") || resolvedSrc.startsWith("/"))) {
       setLoaded(true);
       setHasError(false);
     } else {
@@ -52,10 +55,12 @@ export const ImageWithSkeleton = ({
   };
 
   const handleError = (e) => {
-    setHasError(true);
-    setLoaded(true);
-    if (typeof customOnError === "function") {
-      customOnError(e);
+    if (!hasError) {
+      setHasError(true);
+      setLoaded(true);
+      if (typeof customOnError === "function") {
+        customOnError(e);
+      }
     }
   };
 
