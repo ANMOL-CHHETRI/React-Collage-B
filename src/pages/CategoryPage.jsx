@@ -115,28 +115,28 @@ const CategoryPage = () => {
   // Visual header details based on category
   const categoryMeta = {
     "Traditional Apparel": {
-      image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+      image: "/dhakasaree.jpg",
       fallbackImage: "/dhakasaree.jpg",
       gradient: "from-amber-950/85 via-orange-950/70 to-black/85",
       badgeText: "Handwoven Textiles",
       description: "Authentic, handwoven Palpa Dhaka clothing, Newari Haku Patasi, and pure Himalayan Pashmina shawls from local master artisans.",
     },
     "Organic Tea & Coffee": {
-      image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
-      fallbackImage: "https://i.pinimg.com/736x/63/0d/01/630d013345d875610fec89f4c28dd2b6.jpg",
+      image: "/organic_tea.jpg",
+      fallbackImage: "/organic_tea.jpg",
       gradient: "from-emerald-950/85 via-teal-950/70 to-black/85",
       badgeText: "100% Organic Himalayan Harvest",
       description: "Fragrant Himalayan orthodox golden teas and single-origin Arabica coffee beans sourced from high-altitude plantations in Ilam and Nuwakot.",
     },
     "Local Handicrafts": {
-      image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
+      image: "/singing_bowl.jpg",
       fallbackImage: "/singing_bowl.jpg",
       gradient: "from-amber-950/85 via-stone-950/70 to-black/85",
       badgeText: "Authentic Masterpieces",
       description: "Exquisite gold-gilded bronze statues from Patan, meditating Tibetan singing bowls, hand-carved peacock windows, and traditional steel Khukuris.",
     },
     "Herbs & Spices": {
-      image: "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg",
+      image: "/shilajit.jpg",
       fallbackImage: "/shilajit.jpg",
       gradient: "from-red-950/85 via-orange-950/70 to-black/85",
       badgeText: "Pure Mountain Wellness",
@@ -145,7 +145,7 @@ const CategoryPage = () => {
   }
 
   const meta = categoryMeta[decodedCategory] || {
-    image: categoryProducts[0]?.image || "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+    image: categoryProducts[0]?.image || "/dhakasaree.jpg",
     fallbackImage: "/dhakasaree.jpg",
     gradient: "from-amber-950/85 via-black/70 to-black/85",
     badgeText: "Regional Collection",

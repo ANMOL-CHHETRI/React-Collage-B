@@ -313,7 +313,16 @@ export const AuthProvider = ({ children }) => {
 
     } catch (err) {
       console.error("Google Sign-In Error:", err)
-      setError(err.message || "Failed to login with Google")
+      if (err?.code === "auth/unauthorized-domain") {
+        const domain = typeof window !== "undefined" ? window.location.hostname : "your deployment domain"
+        setError(`Domain not authorized for OAuth: Please add '${domain}' to Firebase Console -> Authentication -> Settings -> Authorized domains.`)
+      } else if (err?.code === "auth/popup-closed-by-user") {
+        setError("Sign-in popup was closed before completing authentication.")
+      } else if (err?.code === "auth/popup-blocked") {
+        setError("Sign-in popup was blocked by the browser. Please allow popups for this domain.")
+      } else {
+        setError(err.message || "Failed to login with Google")
+      }
       return false
     } finally {
       setLoading(false)
