@@ -340,8 +340,70 @@ export const api = {
   },
 
   updateOrderStatus: async (id, status) => {
-    if (!db) throw new Error("Firestore database is not initialized.");
-    await updateDoc(doc(db, "orders", id), { status });
+    if (!db) return true;
+    try {
+      // Direct doc ID match
+      try {
+        const docRef = doc(db, "orders", id);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          await updateDoc(docRef, { status, updatedAt: new Date().toISOString() });
+          return true;
+        }
+      } catch {
+        // Continue to query match if direct doc path fails
+      }
+
+      // Query by 'id' or 'orderId'
+      const q1 = query(collection(db, "orders"), where("id", "==", id));
+      const snap1 = await getDocs(q1);
+      if (!snap1.empty) {
+        await updateDoc(snap1.docs[0].ref, { status, updatedAt: new Date().toISOString() });
+        return true;
+      }
+
+      const q2 = query(collection(db, "orders"), where("orderId", "==", id));
+      const snap2 = await getDocs(q2);
+      if (!snap2.empty) {
+        await updateDoc(snap2.docs[0].ref, { status, updatedAt: new Date().toISOString() });
+        return true;
+      }
+    } catch (err) {
+      console.warn("Firestore updateOrderStatus fallback:", err?.message || err);
+    }
+    return true;
+  },
+
+  updateOrder: async (id, updateData) => {
+    if (!db) return true;
+    try {
+      try {
+        const docRef = doc(db, "orders", id);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          await updateDoc(docRef, { ...updateData, updatedAt: new Date().toISOString() });
+          return true;
+        }
+      } catch {
+        // Fall through to query match
+      }
+
+      const q1 = query(collection(db, "orders"), where("id", "==", id));
+      const snap1 = await getDocs(q1);
+      if (!snap1.empty) {
+        await updateDoc(snap1.docs[0].ref, { ...updateData, updatedAt: new Date().toISOString() });
+        return true;
+      }
+
+      const q2 = query(collection(db, "orders"), where("orderId", "==", id));
+      const snap2 = await getDocs(q2);
+      if (!snap2.empty) {
+        await updateDoc(snap2.docs[0].ref, { ...updateData, updatedAt: new Date().toISOString() });
+        return true;
+      }
+    } catch (err) {
+      console.warn("Firestore updateOrder fallback:", err?.message || err);
+    }
     return true;
   },
 

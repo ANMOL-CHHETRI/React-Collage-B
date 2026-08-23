@@ -60,17 +60,22 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
       const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000)
       const simulatedOrder = {
         orderId,
-        username: user?.username,
-        fullName: shippingDetails.fullName,
-        phone: shippingDetails.phone,
-        address: shippingDetails.address,
-        city: shippingDetails.city,
+        id: orderId,
+        username: user?.username || "guest",
+        fullName: shippingDetails.fullName?.trim() || user?.name || user?.username || "Customer",
+        customer: shippingDetails.fullName?.trim() || user?.name || user?.username || "Customer",
+        phone: shippingDetails.phone?.trim() || user?.phone || "",
+        address: shippingDetails.address?.trim() || user?.address || "",
+        city: shippingDetails.city?.trim() || "",
         provinceName: "Bagmati", 
+        email: user?.email || "",
         items: itemsToCheckout,
         subtotal: grandTotal, 
         discount: discountAmount,
         shipping: 0,
         total: finalTotal,
+        amount: finalTotal,
+        paymentMethod: paymentMethod || "credit_card",
         estDays: "2-4 Days",
         status: "Processing",
         promoCode: promoCode || "",
@@ -78,19 +83,33 @@ const CheckoutModal = ({ isOpen, onClose, grandTotal, discountAmount = 0, discou
       };
 
       const orderPayload = {
-        id: simulatedOrder.orderId || `ORD-${Date.now().toString().slice(-5)}`,
-        username: user?.username || "guest",
+        id: simulatedOrder.orderId,
+        orderId: simulatedOrder.orderId,
+        username: simulatedOrder.username,
+        fullName: simulatedOrder.fullName,
+        customer: simulatedOrder.customer,
+        phone: simulatedOrder.phone,
+        address: simulatedOrder.address,
+        city: simulatedOrder.city,
+        provinceName: simulatedOrder.provinceName,
+        email: simulatedOrder.email,
         storeName: "ShopEase Official",
         status: "Processing",
         promoCode: promoCode || "",
-        date: new Date().toISOString(),
+        subtotal: grandTotal,
+        discount: discountAmount,
+        shipping: 0,
+        total: finalTotal,
+        amount: finalTotal,
+        paymentMethod: paymentMethod || "credit_card",
+        estDays: "2-4 Days",
+        date: simulatedOrder.date,
         items: itemsToCheckout.map(item => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          image: item.image
-        })),
-        amount: finalTotal
+          image: item.image || item.imageUrl || ""
+        }))
       };
 
       try {

@@ -132,21 +132,49 @@ const AdminDashboard = () => {
     const fetchAdminData = async () => {
       try {
         const dbOrders = await api.getOrders();
-        const orders = dbOrders.map(o => ({
-          orderId: o.id,
-          username: o.username,
-          fullName: o.fullName || o.customer,
-          storeName: o.storeName,
-          status: o.status,
-          date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
-          items: (o.items || []).map(item => ({
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image
-          })),
-          amount: o.amount || `Rs. ${o.total?.toLocaleString()}`
-        }));
+        const orders = dbOrders.map(o => {
+          const userProfile = (registeredUsers || []).find(
+            u => u.username === o.username || u.id === o.userId || u.email === o.email
+          );
+          const fullName = o.fullName?.trim() || o.customer?.trim() || o.recipient?.trim() || o.name?.trim() || userProfile?.name || o.username || "Customer";
+          const phone = o.phone?.trim() || o.phoneNumber?.trim() || o.contact?.trim() || userProfile?.phone || "N/A";
+          const address = o.address?.trim() || userProfile?.address || "N/A";
+          const city = o.city?.trim() || userProfile?.city || "";
+          const provinceName = o.provinceName?.trim() || userProfile?.province || "";
+          const email = o.email?.trim() || userProfile?.email || "";
+
+          return {
+            ...o,
+            orderId: o.orderId || o.id,
+            id: o.id || o.orderId,
+            username: o.username || "guest",
+            fullName,
+            customer: fullName,
+            phone,
+            address,
+            city,
+            provinceName,
+            email,
+            storeName: o.storeName || "ShopEase Official",
+            status: o.status || "Processing",
+            date: o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown Date",
+            rawDate: o.date || o.createdAt,
+            items: (o.items || []).map(item => ({
+              name: item.name || "Product Item",
+              price: item.price || 0,
+              quantity: item.quantity || item.qty || 1,
+              image: item.image || item.imageUrl || ""
+            })),
+            subtotal: o.subtotal || o.amount || o.total || 0,
+            discount: o.discount || 0,
+            shipping: o.shipping || 0,
+            total: o.total || o.amount || 0,
+            amount: o.amount || (typeof o.total === 'number' ? `Rs. ${o.total.toLocaleString()}` : o.total) || `Rs. 0`,
+            paymentMethod: o.paymentMethod || "Credit Card / COD",
+            estDays: o.estDays || "2-4 Days",
+            adminMessage: o.adminMessage || ""
+          };
+        });
         setAdminOrders(orders);
       } catch {
         toastError("Failed to fetch admin orders.");
@@ -1605,152 +1633,228 @@ const AdminDashboard = () => {
         </main>
       </div>
 
-      {viewingOrder && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setViewingOrder(null)}>
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-              <div>
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Order Details</span>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">
-                  {viewingOrder.orderId || viewingOrder.id}
-                </h3>
-              </div>
-              <button 
-                onClick={() => setViewingOrder(null)} 
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+      {viewingOrder && (() => {
+        const userProfile = (registeredUsers || []).find(
+          u => u.username === viewingOrder.username || u.id === viewingOrder.userId || u.email === viewingOrder.email
+        );
+        const recipientName = viewingOrder.fullName?.trim() || viewingOrder.customer?.trim() || viewingOrder.recipient?.trim() || viewingOrder.name?.trim() || userProfile?.name || viewingOrder.username || "Customer";
+        const phoneNumber = viewingOrder.phone?.trim() || viewingOrder.phoneNumber?.trim() || viewingOrder.contact?.trim() || userProfile?.phone || "N/A";
+        const rawAddr = viewingOrder.address?.trim() || userProfile?.address || "";
+        const cityStr = viewingOrder.city?.trim() || userProfile?.city || "";
+        const provStr = viewingOrder.provinceName?.trim() || userProfile?.province || "";
+        const fullAddress = rawAddr && rawAddr !== "N/A"
+          ? [rawAddr, cityStr, provStr].filter(Boolean).join(", ")
+          : (userProfile?.address || "N/A");
+        const customerEmail = viewingOrder.email?.trim() || userProfile?.email || "";
 
-            {/* Content */}
-            <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-              {/* Customer & Delivery */}
-              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl space-y-3">
-                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Shipping Details</h4>
-                <div className="grid grid-cols-2 gap-4 text-xs">
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Recipient</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {viewingOrder.fullName || viewingOrder.customer || "N/A"}
+        return (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setViewingOrder(null)}>
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 transition-all transform scale-100" onClick={(e) => e.stopPropagation()}>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Order Details</span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      viewingOrder.status === "Delivered"
+                        ? "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400"
+                        : viewingOrder.status === "Processing"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
+                          : viewingOrder.status === "Shipped"
+                            ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400"
+                            : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}>
+                      {viewingOrder.status || "Processing"}
                     </span>
                   </div>
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Phone Number</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {viewingOrder.phone || "N/A"}
-                    </span>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-slate-400 dark:text-slate-500 block mb-0.5">Address</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {viewingOrder.address ? `${viewingOrder.address}, ${viewingOrder.city || ""}, ${viewingOrder.provinceName || ""}` : "N/A"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Items List */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ordered Items</h4>
-                <div className="space-y-2">
-                  {viewingOrder.items && Array.isArray(viewingOrder.items) && viewingOrder.items.length > 0 ? (
-                    viewingOrder.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-xs border-b border-slate-100 dark:border-slate-850 pb-2">
-                        <div>
-                          <p className="font-semibold text-slate-800 dark:text-slate-200">{item.name}</p>
-                          <p className="text-slate-400 dark:text-slate-500 text-[10px]">Qty: {item.quantity || 1} × Rs. {item.price}</p>
-                        </div>
-                        <span className="font-bold text-slate-800 dark:text-slate-200">
-                          Rs. {((item.quantity || 1) * item.price).toLocaleString()}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-600 dark:text-slate-400">
-                        {viewingOrder.product || "Demo Product"}
-                      </span>
-                      <span className="font-bold text-slate-800 dark:text-slate-200">
-                        {viewingOrder.amount}
-                      </span>
-                    </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">
+                    {viewingOrder.orderId || viewingOrder.id}
+                  </h3>
+                  {viewingOrder.date && (
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                      Placed on: {viewingOrder.date}
+                    </p>
                   )}
                 </div>
+                <button 
+                  onClick={() => setViewingOrder(null)} 
+                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
 
-              {/* Admin message to customer */}
-              <div className="bg-amber-50/40 dark:bg-amber-950/10 p-4 rounded-2xl border border-amber-100/50 dark:border-amber-900/20 space-y-3">
-                <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  Message to Customer
-                </h4>
+              {/* Content */}
+              <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                {/* Customer & Delivery */}
+                <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl space-y-3 border border-slate-100 dark:border-slate-850">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Customer & Delivery</h4>
+                    {viewingOrder.username && (
+                      <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                        @{viewingOrder.username}
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500 block mb-0.5 font-medium">Recipient</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        {recipientName}
+                      </span>
+                      {customerEmail && (
+                        <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                          {customerEmail}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500 block mb-0.5 font-medium">Phone Number</span>
+                      {phoneNumber !== "N/A" ? (
+                        <a href={`tel:${phoneNumber}`} className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
+                          {phoneNumber}
+                        </a>
+                      ) : (
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">N/A</span>
+                      )}
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-slate-400 dark:text-slate-500 block mb-0.5 font-medium">Delivery Address</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        {fullAddress}
+                      </span>
+                    </div>
+                    {viewingOrder.paymentMethod && (
+                      <div className="col-span-2 pt-1 border-t border-slate-200/60 dark:border-slate-800 flex justify-between text-[11px]">
+                        <span className="text-slate-500 dark:text-slate-400">Payment:</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-300 uppercase">
+                          {viewingOrder.paymentMethod.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Items List */}
                 <div className="space-y-2">
-                  <textarea
-                    rows="2"
-                    placeholder="Type order updates, delivery notes, or support messages..."
-                    value={adminNote}
-                    onChange={(e) => setAdminNote(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-slate-950 text-gray-800 dark:text-gray-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const id = viewingOrder.orderId || viewingOrder.id;
-                      let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
+                  <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ordered Items</h4>
+                  <div className="space-y-2.5">
+                    {viewingOrder.items && Array.isArray(viewingOrder.items) && viewingOrder.items.length > 0 ? (
+                      viewingOrder.items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-xs border-b border-slate-100 dark:border-slate-850 pb-2.5 gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            {item.image && (
+                              <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
+                                <ImageWithSkeleton
+                                  src={resolveProductImage(item.image)}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="font-semibold text-slate-800 dark:text-slate-200 truncate">{item.name}</p>
+                              <p className="text-slate-400 dark:text-slate-500 text-[10px]">Qty: {item.quantity || 1} × Rs. {item.price?.toLocaleString?.() || item.price}</p>
+                            </div>
+                          </div>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 shrink-0">
+                            Rs. {(((item.quantity || 1) * item.price) || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-600 dark:text-slate-400">
+                          {viewingOrder.product || "Demo Product"}
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
+                          {viewingOrder.amount}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin message to customer */}
+                <div className="bg-amber-50/40 dark:bg-amber-950/10 p-4 rounded-2xl border border-amber-100/50 dark:border-amber-900/20 space-y-3">
+                  <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Message to Customer
+                  </h4>
+                  <div className="space-y-2">
+                    <textarea
+                      rows="2"
+                      placeholder="Type order updates, delivery notes, or support messages..."
+                      value={adminNote}
+                      onChange={(e) => setAdminNote(e.target.value)}
+                      className="w-full text-xs px-3 py-2 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-slate-950 text-gray-800 dark:text-gray-100"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const id = viewingOrder.orderId || viewingOrder.id;
+                        try {
+                          await api.updateOrder(id, { adminMessage: adminNote });
+                        } catch (err) {
+                          console.warn("Could not save message to Firestore:", err);
+                        }
+
+                        let currentOrders = JSON.parse(localStorage.getItem("shopease_orders"));
                         if (!currentOrders || !Array.isArray(currentOrders) || currentOrders.length === 0) {
                           currentOrders = [];
                         }
-                      const updated = currentOrders.map(order => {
-                        const oid = order.orderId || order.id;
-                        if (oid === id) {
-                          return { ...order, adminMessage: adminNote };
-                        }
-                        return order;
-                      });
-                      localStorage.setItem("shopease_orders", JSON.stringify(updated));
-                      setAdminOrders(updated);
-                      setViewingOrder({ ...viewingOrder, adminMessage: adminNote });
-                      success("Message updated and sent to customer!");
-                    }}
-                    className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer"
-                  >
-                    Update & Send Message
-                  </button>
-                  {viewingOrder.adminMessage && (
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
-                      <span className="font-bold">Sent Message:</span> "{viewingOrder.adminMessage}"
-                    </div>
-                  )}
+                        const updated = currentOrders.map(order => {
+                          const oid = order.orderId || order.id;
+                          if (oid === id) {
+                            return { ...order, adminMessage: adminNote };
+                          }
+                          return order;
+                        });
+                        localStorage.setItem("shopease_orders", JSON.stringify(updated));
+                        setAdminOrders(prev => prev.map(o => (o.orderId === id || o.id === id) ? { ...o, adminMessage: adminNote } : o));
+                        setViewingOrder({ ...viewingOrder, adminMessage: adminNote });
+                        success("Message updated and sent to customer!");
+                      }}
+                      className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer"
+                    >
+                      Update & Send Message
+                    </button>
+                    {viewingOrder.adminMessage && (
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                        <span className="font-bold">Sent Message:</span> "{viewingOrder.adminMessage}"
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Total Summary */}
+                <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">Total Amount</span>
+                  <span className="text-lg font-black text-amber-600 dark:text-amber-400">
+                    {typeof viewingOrder.total === "number"
+                      ? `Rs. ${viewingOrder.total.toLocaleString()}`
+                      : (viewingOrder.amount || "Rs. 0")}
+                  </span>
                 </div>
               </div>
 
-              {/* Total Summary */}
-              <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
-                <span className="text-sm font-bold text-slate-900 dark:text-white">Total Amount</span>
-                <span className="text-lg font-black text-amber-600 dark:text-amber-400">
-                  {viewingOrder.total ? `Rs. ${viewingOrder.total.toLocaleString()}` : viewingOrder.amount}
-                </span>
+              {/* Footer buttons */}
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+                <button 
+                  onClick={() => setViewingOrder(null)} 
+                  className="w-full py-2.5 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
+                >
+                  Close Details
+                </button>
               </div>
             </div>
-
-            {/* Footer buttons */}
-            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">
-              <button 
-                onClick={() => setViewingOrder(null)} 
-                className="w-full py-2.5 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm transition cursor-pointer text-center"
-              >
-                Close Details
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   )
 }

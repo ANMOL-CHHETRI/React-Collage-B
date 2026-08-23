@@ -94,36 +94,55 @@ const CartDrawer = () => {
       const grandTotal = cartSubtotal + shippingFee - discountAmount;
 
       const simulatedOrder = {
+        id: orderId,
         orderId,
-        username: user?.username,
-        fullName,
-        phone,
-        address,
-        city,
+        username: user?.username || "guest",
+        fullName: fullName?.trim() || user?.name || user?.username || "Customer",
+        customer: fullName?.trim() || user?.name || user?.username || "Customer",
+        phone: phone?.trim() || user?.phone || "",
+        address: address?.trim() || user?.address || "",
+        city: city?.trim() || "",
         provinceName: provincesData[provinceValue]?.name || "Bagmati",
+        email: user?.email || "",
         items: [...cartItems],
         subtotal: cartSubtotal,
         discount: discountAmount,
         shipping: shippingFee,
         total: grandTotal,
-        estDays,
+        amount: grandTotal,
+        paymentMethod: "cash_on_delivery",
+        estDays: estDays || "2-4 Days",
         status: "Processing",
         date: new Date().toISOString()
       };
 
       const orderPayload = {
-        id: simulatedOrder.orderId || `ORD-${Date.now().toString().slice(-5)}`,
-        username: user?.username || "guest",
+        id: simulatedOrder.orderId,
+        orderId: simulatedOrder.orderId,
+        username: simulatedOrder.username,
+        fullName: simulatedOrder.fullName,
+        customer: simulatedOrder.customer,
+        phone: simulatedOrder.phone,
+        address: simulatedOrder.address,
+        city: simulatedOrder.city,
+        provinceName: simulatedOrder.provinceName,
+        email: simulatedOrder.email,
         storeName: "ShopEase Official",
         status: "Processing",
-        date: new Date().toISOString(),
+        subtotal: cartSubtotal,
+        discount: discountAmount,
+        shipping: shippingFee,
+        total: grandTotal,
+        amount: grandTotal,
+        paymentMethod: "cash_on_delivery",
+        estDays: simulatedOrder.estDays,
+        date: simulatedOrder.date,
         items: cartItems.map(item => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          image: item.image
-        })),
-        amount: grandTotal
+          image: item.image || item.imageUrl || ""
+        }))
       };
 
       try {
