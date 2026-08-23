@@ -12,33 +12,42 @@ import { resolveProductImage } from "../utils/imageUrl";
 const categories = [
   {
     name: "Traditional Apparel",
-    gradient: "from-amber-600 to-orange-700 dark:from-amber-700 dark:to-orange-900",
+    image: "https://i.pinimg.com/736x/d4/16/12/d41612e4db1ef4157d6e3f11e4b832c0.jpg",
+    fallbackImage: "/dhakasaree.jpg",
+    gradient: "from-amber-900/80 to-orange-950/90",
     iconPath: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01",
     subtitle: "Dhaka Topis, Saree & Traditional Attire",
     count: "Handwoven",
   },
   {
     name: "Organic Tea & Coffee",
-    gradient: "from-emerald-600 to-teal-700 dark:from-emerald-700 dark:to-teal-900",
+    image: "https://i.pinimg.com/736x/56/d0/7f/56d07fba8ab764c361db3999425b48f1.jpg",
+    fallbackImage: "https://i.pinimg.com/736x/63/0d/01/630d013345d875610fec89f4c28dd2b6.jpg",
+    gradient: "from-emerald-950/80 to-teal-950/90",
     iconPath: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
     subtitle: "Ilam Orthodox Tea & Himalayan Beans",
     count: "100% Organic",
   },
   {
     name: "Local Handicrafts",
-    gradient: "from-amber-700 to-amber-900 dark:from-amber-800 dark:to-amber-950",
+    image: "https://i.pinimg.com/736x/f2/df/28/f2df28734e8b2f896da2e4c7cad2f354.jpg",
+    fallbackImage: "/singing_bowl.jpg",
+    gradient: "from-amber-950/80 to-stone-950/90",
     iconPath: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z",
     subtitle: "Patan Statues, Singing Bowls & Woodwork",
     count: "Artisan Made",
   },
   {
     name: "Herbs & Spices",
-    gradient: "from-red-600 to-orange-700 dark:from-red-700 dark:to-orange-900",
+    image: "https://i.pinimg.com/736x/aa/a0/66/aaa066bd92f5721e603358173e219353.jpg",
+    fallbackImage: "/shilajit.jpg",
+    gradient: "from-red-950/80 to-orange-950/90",
     iconPath: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
     subtitle: "Wild Himalayan Honey, Shilajit & Spices",
     count: "Pure Natural",
   },
 ];
+
 
 // ── Testimonials ───────────────────────────────────────────────────────────────
 const testimonials = [
@@ -562,19 +571,32 @@ const HomePage = () => {
               <Link
                 key={cat.name}
                 to={`/category/${encodeURIComponent(cat.name)}`}
-                className={`group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-xs hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-1 transition-all duration-300 border border-slate-200 dark:border-slate-800 bg-gradient-to-br ${cat.gradient} p-4 sm:p-5 flex flex-col justify-between`}
+                className="group relative rounded-2xl overflow-hidden aspect-[3/4] block cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col justify-between"
               >
-                {/* Decorative background motif & glowing orb */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500" />
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "20px 20px" }} />
+                {/* Background Sample Photo with Smooth Scale */}
+                <div className="absolute inset-0 z-0 overflow-hidden bg-slate-900">
+                  <ImageWithSkeleton
+                    src={cat.image}
+                    fallbackSrc={cat.fallbackImage}
+                    alt={cat.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    containerClassName="w-full h-full"
+                  />
+                  {/* Multi-tier gradient overlay for crystal clear typography and vibrant colors */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/25 group-hover:via-black/50 transition-colors duration-300" />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-30 mix-blend-overlay`} />
+                </div>
+
+                {/* Glowing hover accent orb */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-400/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 z-0 pointer-events-none" />
 
                 {/* Top Badge & Vector Icon */}
                 <div className="relative z-10 flex items-start justify-between">
-                  <span className="inline-block bg-white/20 backdrop-blur-xs text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-white/20">
+                  <span className="inline-block bg-black/40 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs border border-white/25">
                     {cat.count}
                   </span>
-                  <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-black/40 backdrop-blur-md flex items-center justify-center text-amber-300 border border-white/25 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-xs">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d={cat.iconPath} />
                     </svg>
                   </div>
@@ -582,12 +604,18 @@ const HomePage = () => {
                 
                 {/* Content */}
                 <div className="relative z-10 text-left">
-                  <h3 className="text-sm sm:text-base font-extrabold text-white leading-tight">
+                  <h3 className="text-sm sm:text-base md:text-lg font-black text-white leading-tight drop-shadow-xs group-hover:text-amber-300 transition-colors duration-200">
                     {cat.name}
                   </h3>
-                  <p className="text-[11px] text-white/80 hidden sm:block line-clamp-2 mt-1 font-normal leading-snug">
+                  <p className="text-[11px] sm:text-xs text-slate-200/95 hidden sm:block line-clamp-2 mt-1 font-medium leading-snug drop-shadow-xs">
                     {cat.subtitle}
                   </p>
+                  <div className="mt-2.5 hidden sm:flex items-center gap-1 text-[11px] font-bold text-amber-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                    <span>Explore Collection</span>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </Link>
             ))}
